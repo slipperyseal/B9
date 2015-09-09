@@ -1,8 +1,6 @@
 package net.catchpole.B9.devices.gps;
 
-import net.catchpole.B9.devices.gps.listener.HeadingListener;
-import net.catchpole.B9.devices.gps.listener.LocationListener;
-import net.catchpole.B9.devices.gps.listener.MessageListener;
+import net.catchpole.B9.devices.gps.listener.*;
 import net.catchpole.B9.devices.gps.parser.*;
 
 import java.util.ArrayList;
@@ -16,10 +14,10 @@ public class GpsParser {
     private Map<String,List<MessageListener>> listenerMap = new HashMap<String, List<MessageListener>>();
 
     public GpsParser() {
-        addMessageParser(new DilutionOfPrecisionParser(), null);
+        addMessageParser(new DilutionOfPrecisionParser(), DilutionOfPrecisionListener.class);
         addMessageParser(new HeadingParser(), HeadingListener.class);
         addMessageParser(new LocationParser(), LocationListener.class);
-        addMessageParser(new RecommendedMinimumParser(), null);
+        addMessageParser(new RecommendedMinimumParser(), RecommendedMinimumListener.class);
     }
 
     private void addMessageParser(GpsMessageParser gpsMessageParser, Class listenerClass) {
