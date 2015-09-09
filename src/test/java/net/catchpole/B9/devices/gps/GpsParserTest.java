@@ -1,9 +1,9 @@
 package net.catchpole.B9.devices.gps;
 
 import junit.framework.TestCase;
-import net.catchpole.B9.spacial.Heading;
 import net.catchpole.B9.devices.gps.listener.HeadingListener;
 import net.catchpole.B9.devices.gps.listener.LocationListener;
+import net.catchpole.B9.spacial.Heading;
 import net.catchpole.B9.spacial.Location;
 import org.junit.Test;
 

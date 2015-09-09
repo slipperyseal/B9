@@ -1,7 +1,7 @@
 package net.catchpole.B9.devices.gps.parser;
 
-import net.catchpole.B9.math.DecimalCoordinates;
 import net.catchpole.B9.devices.gps.message.RecommendedMinimum;
+import net.catchpole.B9.math.DecimalCoordinates;
 
 public class RecommendedMinimumParser implements GpsMessageParser<RecommendedMinimum> {
     private DecimalCoordinates decimalCoordinates = new DecimalCoordinates();
