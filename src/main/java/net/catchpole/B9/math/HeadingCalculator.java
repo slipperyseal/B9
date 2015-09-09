@@ -1,7 +1,7 @@
 package net.catchpole.B9.math;
 
-import net.catchpole.B9.devices.compass.Heading;
-import net.catchpole.B9.devices.gps.message.Location;
+import net.catchpole.B9.spacial.Heading;
+import net.catchpole.B9.spacial.Location;
 
 public class HeadingCalculator {
     private static final double EARTH_RADIUS = 6371.0d;

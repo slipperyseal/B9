@@ -1,4 +1,4 @@
-package net.catchpole.B9.devices.gps.message;
+package net.catchpole.B9.spacial;
 
 public class Location {
     private double latitude;

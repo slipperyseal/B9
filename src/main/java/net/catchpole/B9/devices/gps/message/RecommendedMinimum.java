@@ -1,5 +1,7 @@
 package net.catchpole.B9.devices.gps.message;
 
+import net.catchpole.B9.spacial.Location;
+
 public class RecommendedMinimum {
     private String time;
     private char status;

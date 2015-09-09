@@ -1,6 +1,6 @@
 package net.catchpole.B9.devices.gps.parser;
 
-import net.catchpole.B9.devices.compass.Heading;
+import net.catchpole.B9.spacial.Heading;
 
 public class HeadingParser implements GpsMessageParser<Heading> {
     public Heading parse(String[] line) {

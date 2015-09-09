@@ -1,7 +1,7 @@
 package net.catchpole.B9.devices.gps.parser;
 
 import net.catchpole.B9.math.DecimalCoordinates;
-import net.catchpole.B9.devices.gps.message.Location;
+import net.catchpole.B9.spacial.Location;
 
 public class LocationParser implements GpsMessageParser<Location> {
     private DecimalCoordinates decimalCoordinates = new DecimalCoordinates();

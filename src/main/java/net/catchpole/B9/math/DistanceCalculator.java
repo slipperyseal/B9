@@ -1,6 +1,6 @@
 package net.catchpole.B9.math;
 
-import net.catchpole.B9.devices.gps.message.Location;
+import net.catchpole.B9.spacial.Location;
 
 public class DistanceCalculator {
     public double degreesDistance(Location location, Location target) {

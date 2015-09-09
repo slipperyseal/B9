@@ -1,4 +1,4 @@
-package net.catchpole.B9.devices.compass;
+package net.catchpole.B9.spacial;
 
 public class Heading {
     // currently, a heading (0.0-360.0 degrees) is in the range 0 - 1 - i might change this to the correct 0.0-360.0

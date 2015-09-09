@@ -1,7 +1,7 @@
 package net.catchpole.B9.math;
 
 import junit.framework.TestCase;
-import net.catchpole.B9.devices.gps.message.Location;
+import net.catchpole.B9.spacial.Location;
 import org.junit.Test;
 
 public class DecimalCoordinatesTest {

@@ -3,10 +3,11 @@ package net.catchpole.B9.devices.hardware;
 import net.catchpole.B9.devices.compass.Compass;
 import net.catchpole.B9.devices.gps.Gps;
 import net.catchpole.B9.devices.gps.GpsParser;
-import net.catchpole.B9.devices.compass.Heading;
+import net.catchpole.B9.devices.gps.listener.MessageListener;
+import net.catchpole.B9.spacial.Heading;
 import net.catchpole.B9.devices.gps.listener.HeadingListener;
 import net.catchpole.B9.devices.gps.listener.LocationListener;
-import net.catchpole.B9.devices.gps.message.Location;
+import net.catchpole.B9.spacial.Location;
 
 import java.io.IOException;
 
@@ -35,6 +36,10 @@ public class SerialGps implements Gps, Compass {
                 processLine(line);
             }
         };
+    }
+
+    public void addListener(MessageListener messageListener) {
+        this.gpsParser.addListener(messageListener);
     }
 
     public Location getLocation() {
