@@ -1,4 +1,4 @@
-package net.catchpole.B9.devices.hardware;
+package net.catchpole.B9.devices.clock;
 
 public class SystemClock implements Clock {
     public long getCurrentTime() {

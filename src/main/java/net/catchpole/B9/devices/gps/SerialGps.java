@@ -1,11 +1,10 @@
-package net.catchpole.B9.devices.hardware;
+package net.catchpole.B9.devices.gps;
 
 import net.catchpole.B9.devices.compass.Compass;
-import net.catchpole.B9.devices.gps.Gps;
-import net.catchpole.B9.devices.gps.GpsParser;
 import net.catchpole.B9.devices.gps.listener.HeadingListener;
 import net.catchpole.B9.devices.gps.listener.LocationListener;
 import net.catchpole.B9.devices.gps.listener.MessageListener;
+import net.catchpole.B9.devices.serial.PiCommPort;
 import net.catchpole.B9.spacial.Heading;
 import net.catchpole.B9.spacial.Location;
 

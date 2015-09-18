@@ -1,4 +1,4 @@
-package net.catchpole.B9.devices.hardware;
+package net.catchpole.B9.devices.serial;
 
 import com.pi4j.io.serial.*;
 

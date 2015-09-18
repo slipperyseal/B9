@@ -1,6 +1,6 @@
 package net.catchpole.B9.math;
 
-import net.catchpole.B9.devices.hardware.Clock;
+import net.catchpole.B9.devices.clock.Clock;
 
 public class TimeLimiter {
     private final Clock clock;
