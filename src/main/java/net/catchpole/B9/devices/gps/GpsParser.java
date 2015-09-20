@@ -42,14 +42,16 @@ public class GpsParser {
     }
 
     public void parse(String line) {
-        String key = line.substring(0,6);
-        GpsMessageParser gpsMessageParser = messageParserMap.get(key);
-        List<MessageListener> messageListenerList = listenerMap.get(key);
-        if (gpsMessageParser != null && messageListenerList != null && checkSum(line)) {
-            Object result = gpsMessageParser.parse(line.split(","));
-            if (result != null) {
-                for (MessageListener messageListener : messageListenerList) {
-                    messageListener.listen(result);
+        if (line.length() > 6) {
+            String key = line.substring(0, 6);
+            GpsMessageParser gpsMessageParser = messageParserMap.get(key);
+            List<MessageListener> messageListenerList = listenerMap.get(key);
+            if (gpsMessageParser != null && messageListenerList != null && checkSum(line)) {
+                Object result = gpsMessageParser.parse(line.split(","));
+                if (result != null) {
+                    for (MessageListener messageListener : messageListenerList) {
+                        messageListener.listen(result);
+                    }
                 }
             }
         }

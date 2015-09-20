@@ -7,8 +7,12 @@ public abstract class PiCommPort {
     private final StringBuilder dataBuffer = new StringBuilder();
 
     public PiCommPort() throws SerialPortException {
+        this(Serial.DEFAULT_COM_PORT, 9600);
+    }
+
+    public PiCommPort(String port, int baud) throws SerialPortException {
         this.serial.addListener(new DataListener());
-        this.serial.open(Serial.DEFAULT_COM_PORT, 9600);
+        this.serial.open(port, baud);
     }
 
     public void writeln(String line) {
@@ -18,6 +22,8 @@ public abstract class PiCommPort {
     public abstract void process(String line);
 
     class DataListener implements SerialDataListener {
+        // we might not receive entire lines in serial events
+        // we buffer received strings and then push complete lines to process() as they become available
         public void dataReceived(SerialDataEvent event) {
             String data = event.getData();
             dataBuffer.append(data);
