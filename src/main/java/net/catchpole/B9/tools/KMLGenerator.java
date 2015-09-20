@@ -11,16 +11,20 @@ import java.io.*;
  */
 public class KMLGenerator {
     private GpsParser gpsParser = new GpsParser();
+    private PrintWriter writer;
+    private int count;
 
     public KMLGenerator(String inFile) throws IOException {
         DataInputStream dis = new DataInputStream(new BufferedInputStream(new FileInputStream(inFile)));
         try {
-            final PrintWriter writer = new PrintWriter(inFile + ".kml", "UTF-8");
+            String outFile = inFile + ".kml";
+            this.writer = new PrintWriter(outFile, "UTF-8");
             writer.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?><kml xmlns=\"http://www.opengis.net/kml/2.2\"><Document><Placemark><name>" +
                     inFile + "</name><description></description><LineString><extrude>1</extrude><tessellate>1</tessellate><coordinates>");
             gpsParser.addListener(new LocationListener() {
                 public void listen(Location location) {
                     writer.println(String.format( "%.6f", location.getLongitude() ) + "," + String.format( "%.6f", location.getLatitude() )+ ",0");
+                    count++;
                 }
             });
             try {
@@ -32,6 +36,7 @@ public class KMLGenerator {
             } finally {
                 writer.close();
             }
+            System.out.println(count + " coordinates written to " + outFile);
         } finally {
             dis.close();
         }
