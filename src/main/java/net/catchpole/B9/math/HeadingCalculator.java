@@ -4,9 +4,19 @@ import net.catchpole.B9.spacial.Heading;
 import net.catchpole.B9.spacial.Location;
 
 public class HeadingCalculator {
-    private static final double EARTH_RADIUS = 6371.0d;
-    private static final double MARS_RADIUS = 3390.0d;
-    private static final double JUPITER_RADIUS = 69911.0d;
+    public static final double EARTH_RADIUS = 6371.0d;
+    public static final double MARS_RADIUS = 3390.0d;
+    public static final double JUPITER_RADIUS = 69911.0d;
+
+    private double planetRadius;
+
+    public HeadingCalculator() {
+        this(EARTH_RADIUS);
+    }
+
+    public HeadingCalculator(double planetRadius) {
+        this.planetRadius = planetRadius;
+    }
 
     public Heading getExpectedHeading(Location location, Location targetLocation) {
         double startLatitude = Math.toRadians(location.getLatitude());
@@ -28,7 +38,7 @@ public class HeadingCalculator {
     }
 
     public Location getLocation(Location location, Heading heading, double distance) {
-        double dr = distance / EARTH_RADIUS;
+        double dr = distance / planetRadius;
         double bearing = Math.toRadians(heading.getDegrees() * 360.0d);
 
         double locationLatitude = Math.toRadians(location.getLatitude());
