@@ -11,7 +11,7 @@ import net.catchpole.B9.spacial.Vector;
 
 import java.io.IOException;
 
-public class SerialGps implements Gps, Compass {
+public class SerialGps implements Gps, Compass, Speedometer {
     private final PiCommPort piCommPort;
     private final GpsParser gpsParser = new GpsParser();
     private volatile Vector vector;
@@ -44,22 +44,30 @@ public class SerialGps implements Gps, Compass {
 
     public Location getLocation() {
         while (location == null) {
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException ie) {
-            }
+            waitForGpsFix();
         }
         return location;
     }
 
     public Heading getHeading() {
         while (vector == null) {
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException ie) {
-            }
+            waitForGpsFix();
         }
         return vector.getHeading();
+    }
+
+    public double getVelocity() {
+        while (vector == null) {
+            waitForGpsFix();
+        }
+        return vector.getVelocity();
+    }
+
+    private void waitForGpsFix() {
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException ie) {
+        }
     }
 
     public void processLine(String line) {
