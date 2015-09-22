@@ -15,7 +15,7 @@ public class GpsParser {
 
     public GpsParser() {
         addMessageParser(new DilutionOfPrecisionParser(), DilutionOfPrecisionListener.class);
-        addMessageParser(new HeadingParser(), HeadingListener.class);
+        addMessageParser(new VectorParser(), VectorListener.class);
         addMessageParser(new LocationParser(), LocationListener.class);
         addMessageParser(new RecommendedMinimumParser(), RecommendedMinimumListener.class);
     }
