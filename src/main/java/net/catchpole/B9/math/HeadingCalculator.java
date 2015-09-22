@@ -33,8 +33,7 @@ public class HeadingCalculator {
             }
         }
 
-        double bearing = (Math.toDegrees(Math.atan2(diffLogitude, phi)) + 360.0) % 360.0;
-        return new Heading(bearing / 360);
+        return new Heading((Math.toDegrees(Math.atan2(diffLogitude, phi)) + 360.0) % 360.0);
     }
 
     public Location getLocation(Location location, Heading heading, double distance) {
@@ -53,7 +52,7 @@ public class HeadingCalculator {
     }
 
     public double getSwivel(Heading heading, Heading newHeading) {
-        double swivel = newHeading.getDegrees() - heading.getDegrees();
+        double swivel = (newHeading.getDegrees() - heading.getDegrees()) / 360.0d;
         if (swivel > 1.0d) {
             swivel -= 1.0d;
         }

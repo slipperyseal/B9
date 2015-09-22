@@ -111,7 +111,7 @@ public class HMC5883LCompass implements Compass {
 
                 System.out.println(heading + "\t| rx = " + rx + "\try = " + ry + "\trz =  " + rz + "\t| x =" + (int)x + "\ty = " + (int)y + "\tz = " + (int)z);
 
-                return new Heading(heading/360.0);
+                return new Heading(heading);
             } else {
                 System.out.println("ERRRR: " + r);
             }

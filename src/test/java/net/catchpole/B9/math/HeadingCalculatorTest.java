@@ -13,18 +13,18 @@ public class HeadingCalculatorTest {
         Heading newHeading = headingCalculator.getExpectedHeading(
                 new Location(-37.5, 145.4),
                 new Location(-37.9, 145.8));
-        TestCase.assertTrue(Almost.equals( 0.3934, 0.0001, newHeading.getDegrees()));
+        TestCase.assertTrue(Almost.equals( 141.6482, 0.0001, newHeading.getDegrees()));
 
-        TestCase.assertTrue(Almost.equals( 0.3934, 0.0001, headingCalculator.getSwivel(new Heading(0.00), newHeading)));
-        TestCase.assertTrue(Almost.equals( 0.1434, 0.0001, headingCalculator.getSwivel(new Heading(0.25), newHeading)));
-        TestCase.assertTrue(Almost.equals(-0.1065, 0.0001, headingCalculator.getSwivel(new Heading(0.50), newHeading)));
-        TestCase.assertTrue(Almost.equals(-0.3565, 0.0001, headingCalculator.getSwivel(new Heading(0.75), newHeading)));
+        TestCase.assertTrue(Almost.equals( 0.3934, 0.0001, headingCalculator.getSwivel(new Heading(0), newHeading)));
+        TestCase.assertTrue(Almost.equals( 0.1434, 0.0001, headingCalculator.getSwivel(new Heading(90), newHeading)));
+        TestCase.assertTrue(Almost.equals(-0.1065, 0.0001, headingCalculator.getSwivel(new Heading(180), newHeading)));
+        TestCase.assertTrue(Almost.equals(-0.3565, 0.0001, headingCalculator.getSwivel(new Heading(270), newHeading)));
 
-        Heading otherHeading = new Heading(0.9);
-        TestCase.assertTrue(Almost.equals(-0.0999, 0.0001, headingCalculator.getSwivel(new Heading(0.00), otherHeading)));
-        TestCase.assertTrue(Almost.equals(-0.3500, 0.0001, headingCalculator.getSwivel(new Heading(0.25), otherHeading)));
-        TestCase.assertTrue(Almost.equals( 0.4000, 0.0001, headingCalculator.getSwivel(new Heading(0.50), otherHeading)));
-        TestCase.assertTrue(Almost.equals( 0.1500, 0.0001, headingCalculator.getSwivel(new Heading(0.75), otherHeading)));
+        Heading otherHeading = new Heading(324);
+        TestCase.assertTrue(Almost.equals(-0.0999, 0.0001, headingCalculator.getSwivel(new Heading(0), otherHeading)));
+        TestCase.assertTrue(Almost.equals(-0.3500, 0.0001, headingCalculator.getSwivel(new Heading(90), otherHeading)));
+        TestCase.assertTrue(Almost.equals( 0.4000, 0.0001, headingCalculator.getSwivel(new Heading(180), otherHeading)));
+        TestCase.assertTrue(Almost.equals( 0.1500, 0.0001, headingCalculator.getSwivel(new Heading(270), otherHeading)));
 
 
         Heading zeroHeading = headingCalculator.getExpectedHeading(

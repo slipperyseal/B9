@@ -33,7 +33,7 @@ public class SimulationThrusters implements Thrusters {
 
     public void adviseNewHeading(Heading heading) {
         double error = ((((errorDegrees*100)/2)-random.nextInt(errorDegrees*100))/100.0);
-        simulationGps.setHeading(new Heading(Normalise.fraction(heading.getDegrees() + (error / 360.0))));
+        simulationGps.setHeading(new Heading(Normalise.degrees(heading.getDegrees() + error)));
     }
 
     public void oneSecondTick() {

@@ -16,4 +16,9 @@ public class Vector {
     public double getVelocity() {
         return velocity;
     }
+
+    @Override
+    public String toString() {
+        return heading + " " + velocity + " kph";
+    }
 }

@@ -1,7 +1,6 @@
 package net.catchpole.B9.spacial;
 
 public class Heading {
-    // currently, a heading (0.0-360.0 degrees) is in the range 0 - 1 - i might change this to the correct 0.0-360.0
     private double degrees;
 
     public Heading(double degrees) {
@@ -14,7 +13,7 @@ public class Heading {
 
     @Override
     public String toString() {
-        return "Heading " + String.format( "%.2f", degrees*360.0d );
+        return "Heading " + String.format( "%.2f", degrees );
     }
 
     @Override

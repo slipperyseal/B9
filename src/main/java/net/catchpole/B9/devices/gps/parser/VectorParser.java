@@ -5,11 +5,7 @@ import net.catchpole.B9.spacial.Vector;
 
 public class VectorParser implements GpsMessageParser<Vector> {
     public Vector parse(String[] line) {
-        double value = 1.0D/360.D * Double.parseDouble(line[1]);
-        if (value >= 1.0D) {
-            value = Math.floor(value);
-        }
-        return new Vector(new Heading(value), Double.parseDouble(line[7]));
+        return new Vector(new Heading(Double.parseDouble(line[1])), Double.parseDouble(line[7]));
     }
 
     public String getKey() {
