@@ -12,6 +12,7 @@ Stuff that's in there now..
 * Binary motor control (forward and reverse 'tank tracks')
 * Abstract Time (system time, GPS time, simulated time for running test cases)
 * Wii Classic Controller (I2C)
+* Raspberry Pi camera (via the raspistill executable)
 
 Stuff that's in there but is still in progress..
 
