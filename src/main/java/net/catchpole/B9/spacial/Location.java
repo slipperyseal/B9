@@ -3,10 +3,17 @@ package net.catchpole.B9.spacial;
 public class Location {
     private double latitude;
     private double longitude;
+    private double altitude;
 
     public Location(double latitude, double longitude) {
         this.latitude = latitude;
         this.longitude = longitude;
+    }
+
+    public Location(double latitude, double longitude, double altitude) {
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.altitude = altitude;
     }
 
     public double getLatitude() {
@@ -15,6 +22,10 @@ public class Location {
 
     public double getLongitude() {
         return longitude;
+    }
+
+    public double getAltitude() {
+        return altitude;
     }
 
     @Override
@@ -26,8 +37,8 @@ public class Location {
 
         if (Double.compare(location.latitude, latitude) != 0) return false;
         if (Double.compare(location.longitude, longitude) != 0) return false;
+        return Double.compare(location.altitude, altitude) == 0;
 
-        return true;
     }
 
     @Override
@@ -38,11 +49,13 @@ public class Location {
         result = (int) (temp ^ (temp >>> 32));
         temp = Double.doubleToLongBits(longitude);
         result = 31 * result + (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(altitude);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
         return result;
     }
 
     @Override
     public String toString() {
-        return "Location " + String.format( "%.6f", latitude ) + " " + String.format( "%.6f", longitude );
+        return "Location " + String.format( "%.6f", latitude ) + " " + String.format( "%.6f", longitude) + " " + altitude + " m";
     }
 }

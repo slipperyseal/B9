@@ -10,12 +10,12 @@ import java.util.List;
 public class Raspistill {
     private Integer width;
     private Integer height;
-    private Integer quality;
+    private Integer qualityPercent;
 
-    public Raspistill(Integer width, Integer height, Integer quality) {
+    public Raspistill(Integer width, Integer height, Integer qualityPercent) {
         this.width = width;
         this.height = height;
-        this.quality = quality;
+        this.qualityPercent = qualityPercent;
     }
 
     public void snap(File file, boolean wait) throws IOException, InterruptedException {
@@ -31,9 +31,9 @@ public class Raspistill {
             args.add("-h");
             args.add(Integer.toString(height));
         }
-        if (quality != null) {
+        if (qualityPercent != null) {
             args.add("-q");
-            args.add(Integer.toString(quality));
+            args.add(Integer.toString(qualityPercent));
         }
         ProcessBuilder processBuilder = new ProcessBuilder(args);
         Process process = processBuilder.start();

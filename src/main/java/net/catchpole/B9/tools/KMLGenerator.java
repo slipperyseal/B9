@@ -23,7 +23,9 @@ public class KMLGenerator {
                     inFile + "</name><description></description><LineString><extrude>1</extrude><tessellate>1</tessellate><coordinates>");
             gpsParser.addListener(new LocationListener() {
                 public void listen(Location location) {
-                    writer.println(String.format( "%.6f", location.getLongitude() ) + "," + String.format( "%.6f", location.getLatitude() )+ ",0");
+                    writer.println(String.format( "%.6f", location.getLongitude() ) + "," +
+                            String.format( "%.6f", location.getLatitude() )+ "," +
+                            location.getAltitude());
                     count++;
                 }
             });

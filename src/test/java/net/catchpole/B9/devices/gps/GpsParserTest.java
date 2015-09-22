@@ -40,7 +40,7 @@ public class GpsParserTest {
         TestCase.assertEquals(773, locationResults.size());
         TestCase.assertEquals(943, headingResults.size());
         // floating point values need to be tested with the Almost class. for now, checking the toString
-        TestCase.assertEquals("Location -37.872653 145.023383", locationResults.get(0).toString());
+        TestCase.assertEquals("Location -37.872653 145.023383 -57.4 m", locationResults.get(0).toString());
         TestCase.assertEquals("Heading 279.71", headingResults.get(900).toString());
     }
 }
