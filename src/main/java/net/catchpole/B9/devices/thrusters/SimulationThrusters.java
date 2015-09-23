@@ -13,17 +13,17 @@ public class SimulationThrusters implements Thrusters {
     private DistanceCalculator distanceCalculator = new DistanceCalculator();
 
     private final Random random = new Random();
-    private final int errorDegrees = 50;
-
     private final SimulationGps simulationGps;
     private final double kilometersPerSecond;
+    private final int errorDegrees;
 
     private double left;
     private double right;
 
-    public SimulationThrusters(SimulationGps simulationGps, double kilometersPerSecond) {
+    public SimulationThrusters(SimulationGps simulationGps, double kilometersPerSecond, int errorDegrees) {
         this.simulationGps = simulationGps;
         this.kilometersPerSecond = kilometersPerSecond;
+        this.errorDegrees = 0;
     }
 
     public void update(double left, double right) {
@@ -32,7 +32,7 @@ public class SimulationThrusters implements Thrusters {
     }
 
     public void adviseNewHeading(Heading heading) {
-        double error = random.nextInt(errorDegrees) - (errorDegrees/2);
+        double error = errorDegrees == 0 ? 0 : random.nextInt(errorDegrees) - (errorDegrees/2);
         simulationGps.setHeading(new Heading(Normalise.degrees(heading.getDegrees() + error)));
     }
 

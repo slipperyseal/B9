@@ -52,7 +52,7 @@ public class HeadingCalculator {
     }
 
     public double getSwivel(Heading heading, Heading newHeading) {
-        double swivel = (newHeading.getDegrees() - heading.getDegrees()) / 360.0d;
+        double swivel = toDecimalFraction(newHeading.getDegrees() - heading.getDegrees());
         if (swivel > 1.0d) {
             swivel -= 1.0d;
         }
@@ -60,5 +60,13 @@ public class HeadingCalculator {
             swivel = 0.0d - (1.0d - swivel);
         }
         return swivel;
+    }
+
+    public double toDecimalFraction(Heading heading) {
+        return heading.getDegrees() / 360.0d;
+    }
+
+    public double toDecimalFraction(double degrees) {
+        return degrees / 360.0d;
     }
 }
