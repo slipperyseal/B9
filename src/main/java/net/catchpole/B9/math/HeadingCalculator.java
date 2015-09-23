@@ -38,7 +38,7 @@ public class HeadingCalculator {
 
     public Location getLocation(Location location, Heading heading, double distance) {
         double dr = distance / planetRadius;
-        double bearing = Math.toRadians(heading.getDegrees() * 360.0d);
+        double bearing = Math.toRadians(heading.getDegrees());
 
         double locationLatitude = Math.toRadians(location.getLatitude());
         double locationLogitude = Math.toRadians(location.getLongitude());
