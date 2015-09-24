@@ -9,9 +9,9 @@ import java.util.List;
 import java.util.Map;
 
 public class GpsParser {
-    private Map<String,GpsMessageParser> messageParserMap = new HashMap<String, GpsMessageParser>();
-    private Map<Class,String> listenerClasses = new HashMap<Class, String>();
-    private Map<String,List<MessageListener>> listenerMap = new HashMap<String, List<MessageListener>>();
+    private Map<String,List<GpsMessageParser>> messageParserMap = new HashMap<String, List<GpsMessageParser>>();
+    private Map<Class,Class> listenerClasses = new HashMap<Class, Class>();
+    private Map<Class,List<MessageListener>> listenerMap = new HashMap<Class, List<MessageListener>>();
 
     public GpsParser() {
         addMessageParser(new DilutionOfPrecisionParser(), DilutionOfPrecisionListener.class);
@@ -21,14 +21,19 @@ public class GpsParser {
     }
 
     private void addMessageParser(GpsMessageParser gpsMessageParser, Class listenerClass) {
-        messageParserMap.put(gpsMessageParser.getKey(), gpsMessageParser);
+        List<GpsMessageParser> gpsMessageParserList = messageParserMap.get(gpsMessageParser.getKey());
+        if (gpsMessageParserList == null) {
+            gpsMessageParserList = new ArrayList<GpsMessageParser>();
+            messageParserMap.put(gpsMessageParser.getKey(), gpsMessageParserList);
+        }
+        gpsMessageParserList.add(gpsMessageParser);
         if (listenerClass != null) {
-            listenerClasses.put(listenerClass, gpsMessageParser.getKey());
+            listenerClasses.put(listenerClass, gpsMessageParser.getClass());
         }
     }
 
     public void addListener(MessageListener messageListener) {
-        for (Map.Entry<Class,String> entry : listenerClasses.entrySet()) {
+        for (Map.Entry<Class,Class> entry : listenerClasses.entrySet()) {
             if (entry.getKey().isAssignableFrom(messageListener.getClass())) {
                 List<MessageListener> messageListeners = listenerMap.get(entry.getValue());
                 if (messageListeners == null) {
@@ -42,17 +47,28 @@ public class GpsParser {
     }
 
     public void parse(String line) {
+        String[] split = null;
         if (line.length() > 6) {
-            String key = line.substring(0, 6);
-            GpsMessageParser gpsMessageParser = messageParserMap.get(key);
-            List<MessageListener> messageListenerList = listenerMap.get(key);
-            if (gpsMessageParser != null && messageListenerList != null && checkSum(line)) {
-                Object result = gpsMessageParser.parse(line.split(","));
-                if (result != null) {
-                    for (MessageListener messageListener : messageListenerList) {
-                        messageListener.listen(result);
+            String messageType = line.substring(0, 6);
+            List<GpsMessageParser> gpsMessageParserList = messageParserMap.get(messageType);
+            if (gpsMessageParserList != null) {
+                for (GpsMessageParser gpsMessageParser : gpsMessageParserList) {
+                    List<MessageListener> messageListenerList = listenerMap.get(gpsMessageParser.getClass());
+                    if (messageListenerList != null && checkSum(line)) {
+                        if (split == null) {
+                            split = line.split(",");
+                        }
+                        notifyListeners(messageListenerList, gpsMessageParser.parse(split));
                     }
                 }
+            }
+        }
+    }
+
+    private void notifyListeners(List<MessageListener> messageListenerList, Object result) {
+        if (result != null) {
+            for (MessageListener messageListener : messageListenerList) {
+                messageListener.listen(result);
             }
         }
     }
