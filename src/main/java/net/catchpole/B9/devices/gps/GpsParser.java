@@ -14,6 +14,7 @@ public class GpsParser {
     private Map<Class,List<MessageListener>> listenerMap = new HashMap<Class, List<MessageListener>>();
 
     public GpsParser() {
+        addMessageParser(new DateTimeParser(), DateTimeListener.class);
         addMessageParser(new DilutionOfPrecisionParser(), DilutionOfPrecisionListener.class);
         addMessageParser(new VectorParser(), VectorListener.class);
         addMessageParser(new LocationParser(), LocationListener.class);
