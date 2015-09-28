@@ -17,14 +17,14 @@ public class BlueESCData {
 
     public BlueESCData(int pulse, int voltage, int temperature, int current, int identifier) {
         this.pulse = pulse;
-        this.voltage = ((float)voltage)/65536.0f * 5.0f * 6.45f;
+        this.voltage = ((double)voltage)/65536.0f * 5.0f * 6.45f;
         this.temperature = calculateTemperature(temperature);
-        this.current = (((float)current)-32767.0f)/65535.0f * 5.0f * 14.706f;
+        this.current = (((double)current)-32767.0f)/65535.0f * 5.0f * 14.706f;
         this.identifier = identifier;
     }
 
     private double calculateTemperature(float raw) {
-        float resistance = SERIESRESISTOR/(65535/raw-1);
+        double resistance = SERIESRESISTOR/(65535/raw-1);
         double steinhart = resistance / THERMISTORNOMINAL;  // (R/Ro)
         steinhart = Math.log(steinhart);             // ln(R/Ro)
         steinhart /= BCOEFFICIENT;                   // 1/B * ln(R/Ro)
@@ -62,9 +62,9 @@ public class BlueESCData {
     public String toString() {
         return "BlueESCData " +
                 "pulse=" + pulse +
-                ", voltage=" + voltage +
-                ", temperature=" + temperature +
-                ", current=" + current +
+                ", voltage=" + String.format( "%.2f", voltage ) +
+                ", temperature=" + String.format( "%.2f", temperature ) +
+                ", current=" + String.format( "%.2f", current ) +
                 ", isAlive=" + isAlive();
     }
 }
