@@ -3,8 +3,9 @@ package net.catchpole.B9.tools;
 import net.catchpole.B9.network.UDPSession;
 
 /**
- * Allows communications between two firewalled applications by pointing them both to a
- * server running UDPProxy which has a public IP.
+ * Allows UDP communications between two inbound firewalled applications.
+ * Pointing them both to a server running UDPProxy which has a public IP.
+ * Packets received will be routed as replies to packets received on the alternate port.
  */
 public class UDPProxy {
     public static void main(String[] args) throws Exception {
