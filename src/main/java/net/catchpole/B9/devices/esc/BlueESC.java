@@ -9,8 +9,11 @@ public class BlueESC implements ESC {
     private final I2CDevice device;
     private final byte[] readBuffer = new byte[9];
     private final byte[] writeBuffer = new byte[2];
+    private final boolean forwardPropeller;
 
-    public BlueESC(int device) throws Exception {
+    // the Blue Robotics thrusters (T100 etc) can be installed with a forward or reverse propeller
+    public BlueESC(int device, boolean forwardPropeller) throws Exception {
+        this.forwardPropeller = forwardPropeller;
         this.bus = I2CFactory.getInstance(I2CBus.BUS_1);
         this.device = bus.getDevice(0x29 + device);
 
@@ -28,7 +31,7 @@ public class BlueESC implements ESC {
     public void initialize() {
         for (int x=0;x<2;x++) {
             update(0);
-            this.sleep(1500);
+            this.sleep(1000);
         }
     }
 
@@ -53,6 +56,9 @@ public class BlueESC implements ESC {
     }
 
     public boolean update(int throttle) {
+        if (!this.forwardPropeller) {
+            throttle = 0-throttle;
+        }
         try {
             writeBuffer[0] = (byte) (throttle >> 8);
             writeBuffer[1] = (byte) throttle;
