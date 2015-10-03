@@ -6,24 +6,25 @@ import com.pi4j.io.i2c.I2CFactory;
 
 public class BlueESC implements ESC {
     private final I2CBus bus;
-    private final I2CDevice device;
+    private final I2CDevice i2CDevice;
+    private final int device;
     private final byte[] readBuffer = new byte[9];
     private final byte[] writeBuffer = new byte[2];
     private final boolean forwardPropeller;
+    private boolean stopping = false;
 
     // the Blue Robotics thrusters (T100 etc) can be installed with a forward or reverse propeller
     public BlueESC(int device, boolean forwardPropeller) throws Exception {
         this.forwardPropeller = forwardPropeller;
         this.bus = I2CFactory.getInstance(I2CBus.BUS_1);
-        this.device = bus.getDevice(0x29 + device);
+        this.device = device;
+        this.i2CDevice = bus.getDevice(0x29 + device);
 
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run() {
-                try {
-                    update(0);
-                } catch (Exception e) {
-                }
+                stopping = true;
+                update(0);
             }
         });
     }
@@ -37,7 +38,7 @@ public class BlueESC implements ESC {
 
     public BlueESCData read() {
         try {
-            if (device.read(0x02, readBuffer, 0, readBuffer.length) == readBuffer.length) {
+            if (i2CDevice.read(0x02, readBuffer, 0, readBuffer.length) == readBuffer.length) {
                 return new BlueESCData(
                         getValue(readBuffer, 0),
                         getValue(readBuffer, 2),
@@ -56,13 +57,18 @@ public class BlueESC implements ESC {
     }
 
     public boolean update(int throttle) {
+        if (throttle != 0 && stopping) {
+            return false;
+        }
         if (!this.forwardPropeller) {
             throttle = 0-throttle;
         }
         try {
             writeBuffer[0] = (byte) (throttle >> 8);
             writeBuffer[1] = (byte) throttle;
-            device.write(0, writeBuffer, 0, 2);
+            synchronized (bus) {
+                i2CDevice.write(0, writeBuffer, 0, 2);
+            }
             return true;
         } catch (Exception e) {
             return false;
