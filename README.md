@@ -7,7 +7,8 @@ B9 is a Java library to provide robotics devices support and uses the excellent 
 
 Stuff that's in there now..
 
-* GPS parsing via the Pi's onboard serial
+* Controller for Blue Robotics BlueESC (T100/T200) marine thrusters
+* GPS parsing and integration via the Pi's onboard serial
 * Spacial maths. Decimal degrees, headings - position, target and angle calculations.
 * Binary motor control (forward and reverse 'tank tracks')
 * Abstract Time (system time, GPS time, simulated time for running test cases)
@@ -17,7 +18,6 @@ Stuff that's in there now..
 Stuff that's in there but is still in progress..
 
 * Compass Module
-* Blue Robotics T100 BlueESC marine thrusters
 
 This project is part of the [Robotics Mission to Antarctica](http://www.slipperyseal.net/projects/nyx-robot-mission/)
 

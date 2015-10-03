@@ -81,4 +81,11 @@ public class BlueESC implements ESC {
         } catch (Exception e) {
         }
     }
+
+    @Override
+    public String toString() {
+        return "BlueESC " +
+                "device=" + device +
+                ", forwardPropeller=" + forwardPropeller;
+    }
 }

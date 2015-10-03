@@ -9,18 +9,18 @@ public class BlueESCTest {
         int target = Integer.parseInt(args[1]);
         int increment = Integer.parseInt(args[2]);
 
-        BlueESC blueESC = new BlueESC(device, false);
-        BlueESC blueESC2 = new BlueESC(device+1, false);
+        BlueESC blueESC0 = new BlueESC(device, false);
+        BlueESC blueESC1 = new BlueESC(device+1, false);
 
-        blueESC.initialize();
-        blueESC2.initialize();
+        blueESC0.initialize();
+        blueESC1.initialize();
         int velocity=0;
         for (;;) {
-            blueESC.update(velocity);
-            blueESC2.update(velocity);
+            blueESC0.update(velocity);
+            blueESC1.update(velocity);
             System.out.println();
-            System.out.println("0: " + velocity + " " + blueESC.read());
-            System.out.println("1: " + velocity + " " + blueESC2.read());
+            System.out.println("0: " + velocity + " " + blueESC0.read());
+            System.out.println("1: " + velocity + " " + blueESC1.read());
             Thread.sleep(200);
             if (target > 0) {
                 if (velocity < target) {
