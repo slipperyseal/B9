@@ -14,6 +14,7 @@ Stuff that's in there now..
 * Abstract Time (system time, GPS time, simulated time for running test cases)
 * Wii Classic Controller (I2C)
 * Raspberry Pi camera (via the raspistill executable)
+* Compact Binary Symmetric Serialization (for UDP broadcast of telemetry and command packets)
 
 Stuff that's in there but is still in progress..
 

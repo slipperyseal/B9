@@ -12,6 +12,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 
+// Compact Binary Symmetric Serialization (for UDP broadcast of telemetry and command packets).
+// The codec requires that classes are identical on both peers so that field names need not be transmitted.
 public class Codec {
     private final BaseTypeTranscoder baseTypeTranscoder = new BaseTypeTranscoder();
     private final Types types = new Types();

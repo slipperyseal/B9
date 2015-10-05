@@ -15,10 +15,10 @@ public class CodecTest {
 
     @Test
     public void testCodec() throws Exception {
-        test(getBean(10, false), 70);
         test(getBean(-10, true), 25);
-        test(getBean(1000000, false), 91);
+        test(getBean(10, false), 70);
         test(getBean(-1000000, true), 33);
+        test(getBean(1000000, false), 91);
     }
 
     private void test(GnarlyBean gnarlyBean, int length) throws Exception {
