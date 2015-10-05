@@ -14,6 +14,9 @@ import java.util.Map;
 
 // Compact Binary Symmetric Serialization (for UDP broadcast of telemetry and command packets).
 // The codec requires that classes are identical on both peers so that field names need not be transmitted.
+// currently supported types: Strings, all primative types including Object boxed type
+// collections and arrays not yet support (but these 'should not' be in telemetry)
+// nested Object types are supported but all classes must be registered
 public class Codec {
     private final BaseTypeTranscoder baseTypeTranscoder = new BaseTypeTranscoder();
     private final Types types = new Types();
@@ -53,6 +56,7 @@ public class Codec {
                 if (value != null) {
                     typeTranscoder.write(dataOutputStream, value, bitHeader);
                 } else {
+                    // value is null, write not called - but we must push flag count
                     int flagCount = typeTranscoder.getFlagCount();
                     for (int x = 0; x < flagCount; x++) {
                         bitHeader.writeFlag(false);
@@ -62,6 +66,7 @@ public class Codec {
         }
         dataOutputStream.flush();
 
+        // store size of bitheader which is required by the decoder
         byte[] header = bitHeader.toByteArray();
         if (!headerSizes.containsKey(id)) {
             headerSizes.put(id, header.length);
@@ -80,15 +85,16 @@ public class Codec {
     }
 
     public Object decode(DataInputStream dataInputStream) throws IOException, IllegalAccessException, InstantiationException, InvocationTargetException {
-        if (headerSizes.size() == 0) {
-            profile();
-        }
-
         char id = (char)dataInputStream.read();
         Class clazz = types.getType(id);
         if (clazz == null) {
             throw new IllegalArgumentException("No type found for id " + id);
         }
+        if (headerSizes.get(id) == null) {
+            // get header size by encoding an empty object. this also is a good test that type encoding is going to work
+            encode(construct(clazz));
+        }
+
         byte[] header = new byte[headerSizes.get(id)];
         dataInputStream.readFully(header);
         BitHeader bitHeader = new BitHeader(header);
@@ -111,6 +117,7 @@ public class Codec {
                 boolean hasValue = type.isPrimitive() || bitHeader.readFlag();
                 Object value = hasValue ? typeTranscoder.read(dataInputStream, bitHeader) : null;
                 if (!hasValue) {
+                    // value is null, read not called - but we must push flag count
                     int flagCount = typeTranscoder.getFlagCount();
                     for (int x = 0; x < flagCount; x++) {
                         bitHeader.readFlag();
@@ -142,12 +149,5 @@ public class Codec {
             }
         }
         return constructor.newInstance(params);
-    }
-
-    private void profile() throws IOException, InstantiationException, IllegalAccessException, InvocationTargetException {
-        // get header size by encoding an empty object. this also is a good test that type encoding is going to work
-        for (Class type : types.getClasses()) {
-            encode(construct(type));
-        }
     }
 }

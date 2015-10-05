@@ -43,8 +43,4 @@ public class Types {
     public List<Field> getFields(Class clazz) {
         return fieldsByName.get(clazz.getName());
     }
-
-    public Collection<Class> getClasses() {
-        return typesById.values();
-    }
 }
