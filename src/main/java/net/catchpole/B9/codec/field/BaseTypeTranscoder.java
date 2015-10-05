@@ -65,7 +65,7 @@ public class BaseTypeTranscoder {
         }
 
         public int getFlagCount() {
-            return 0;
+            return 1;
         }
     }
     

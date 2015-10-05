@@ -6,22 +6,24 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 
 public class UDPTransceiver implements PacketTarget {
-    private int port;
+    private int listenPort;
+    private int sendPort;
     private InetAddress targetHost;
     private byte[] receiveBuffer = new byte[2000];
     private DatagramPacket receivePacket = new DatagramPacket(receiveBuffer, receiveBuffer.length);
     private DatagramSocket socket;
     private PacketTarget packetTarget;
 
-    public UDPTransceiver(String targetHost, int port, PacketTarget packetTarget) throws IOException {
+    public UDPTransceiver(String targetHost, int listenPort, int sendPort, PacketTarget packetTarget) throws IOException {
         this.targetHost = InetAddress.getByName(targetHost);
-        this.port = port;
-        this.socket = new DatagramSocket(port);
+        this.listenPort = listenPort;
+        this.sendPort = sendPort;
+        this.socket = new DatagramSocket(listenPort);
         this.packetTarget = packetTarget;
     }
 
     public void send(byte[] data) {
-        DatagramPacket outPacket = new DatagramPacket(data, data.length, targetHost, port);
+        DatagramPacket outPacket = new DatagramPacket(data, data.length, targetHost, sendPort);
         try {
             socket.send(outPacket);
         } catch (IOException ioe) {

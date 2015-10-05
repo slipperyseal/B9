@@ -22,8 +22,12 @@ public class Codec {
     private final Types types = new Types();
     private final Map<Character, Integer> headerSizes = new HashMap<Character, Integer>();
 
-    public void addType(Character character, Class clazz) throws IOException, InstantiationException, IllegalAccessException {
-        this.types.addType(character, clazz);
+    public void addType(Character character, Class clazz) {
+        try {
+            this.types.addType(character, clazz);
+        } catch (Exception e) {
+            throw new IllegalArgumentException(e);
+        }
     }
 
     public byte[] encode(Object object) throws IOException, IllegalAccessException {
