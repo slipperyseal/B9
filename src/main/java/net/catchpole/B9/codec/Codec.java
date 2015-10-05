@@ -6,7 +6,9 @@ import net.catchpole.B9.codec.field.TypeTranscoder;
 import net.catchpole.B9.codec.field.Types;
 
 import java.io.*;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -70,12 +72,12 @@ public class Codec {
         return result.toByteArray();
     }
 
-    public Object decode(byte[] bytes) throws IOException, IllegalAccessException, InstantiationException {
+    public Object decode(byte[] bytes) throws IOException, IllegalAccessException, InstantiationException, InvocationTargetException {
         ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
         return decode(new DataInputStream(byteArrayInputStream));
     }
 
-    public Object decode(DataInputStream dataInputStream) throws IOException, IllegalAccessException, InstantiationException {
+    public Object decode(DataInputStream dataInputStream) throws IOException, IllegalAccessException, InstantiationException, InvocationTargetException {
         if (headerSizes.size() == 0) {
             profile();
         }
@@ -119,11 +121,28 @@ public class Codec {
         return object;
     }
 
-    private Object construct(Class clazz) throws InstantiationException, IllegalAccessException {
-        return clazz.newInstance();
+    private Object construct(Class clazz) throws InstantiationException, IllegalAccessException, InvocationTargetException {
+        Constructor[] constructors = clazz.getDeclaredConstructors();
+        for (Constructor constructor : constructors) {
+            if (constructor.getParameterTypes().length == 0) {
+                // use default constructor if available
+                return constructor.newInstance();
+            }
+        }
+        // try a constructor and use "default" values which we will write over later
+        Constructor constructor = constructors[0];
+        Class[] paramClasses = constructor.getParameterTypes();
+        Object[] params = new Object[paramClasses.length];
+        for (int x=0;x<paramClasses.length;x++) {
+            Class paramClass = paramClasses[x];
+            if (paramClass.isPrimitive()) {
+                params[x] = baseTypeTranscoder.getDefault(paramClass);
+            }
+        }
+        return constructor.newInstance(params);
     }
 
-    private void profile() throws IOException, InstantiationException, IllegalAccessException {
+    private void profile() throws IOException, InstantiationException, IllegalAccessException, InvocationTargetException {
         // get header size by encoding an empty object. this also is a good test that type encoding is going to work
         for (Class type : types.getClasses()) {
             encode(construct(type));

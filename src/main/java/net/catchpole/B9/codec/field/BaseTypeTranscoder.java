@@ -8,6 +8,7 @@ import java.util.Map;
 
 public class BaseTypeTranscoder {
     private Map<String,TypeTranscoder> transcoderMap = new HashMap<String, TypeTranscoder>();
+    private Map<String,Object> defaults = new HashMap<String, Object>();
 
     public BaseTypeTranscoder() {
         transcoderMap.put(Boolean.class.getName(), new BooleanTranscoder());
@@ -27,10 +28,31 @@ public class BaseTypeTranscoder {
         transcoderMap.put(Double.class.getName(), new DoubleTranscoder());
         transcoderMap.put(Double.TYPE.getName(), new DoubleTranscoder());
         transcoderMap.put(String.class.getName(), new StringTranscoder());
+
+        defaults.put(Boolean.class.getName(), false);
+        defaults.put(Boolean.TYPE.getName(), false);
+        defaults.put(Byte.class.getName(), (byte)0);
+        defaults.put(Byte.TYPE.getName(), (byte)0);
+        defaults.put(Short.class.getName(), (short)0);
+        defaults.put(Short.TYPE.getName(), (short)0);
+        defaults.put(Character.class.getName(), (char)0);
+        defaults.put(Character.TYPE.getName(), (char)0);
+        defaults.put(Integer.class.getName(), (int)0);
+        defaults.put(Integer.TYPE.getName(), (int)0);
+        defaults.put(Long.class.getName(), (long)0);
+        defaults.put(Long.TYPE.getName(), (long)0);
+        defaults.put(Float.class.getName(), (float)0.0f);
+        defaults.put(Float.TYPE.getName(), (float)0.0);
+        defaults.put(Double.class.getName(), (double)0.0d);
+        defaults.put(Double.TYPE.getName(), (double)0.0d);
     }
 
     public TypeTranscoder getTranscoder(Class clazz) {
         return transcoderMap.get(clazz.getName());
+    }
+
+    public Object getDefault(Class type) {
+        return defaults.get(type.getName());
     }
 
     class BooleanTranscoder implements TypeTranscoder<Boolean> {

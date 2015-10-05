@@ -15,9 +15,9 @@ public class CodecTest {
 
     @Test
     public void testCodec() throws Exception {
-        test(getBean(10, false), 66);
+        test(getBean(10, false), 70);
         test(getBean(-10, true), 25);
-        test(getBean(1000000, false), 87);
+        test(getBean(1000000, false), 91);
         test(getBean(-1000000, true), 33);
     }
 
@@ -51,10 +51,10 @@ public class CodecTest {
         gnarlyBean.d1 = ((double)value++) + 0.1d;
         gnarlyBean.d2 = useNull ? null : ((double)value) + 0.1d;
         gnarlyBean.string = useNull ? null : "Value " + value;
-        gnarlyBean.maya = useNull ? null : new ChildBean();
-        if (!useNull) gnarlyBean.maya.i = 1;
-        gnarlyBean.lucinda = useNull ? null : new ChildBean();
-        if (!useNull) gnarlyBean.lucinda.i = 2;
+        gnarlyBean.maya = useNull ? null : new ChildBean(1.1f);
+        if (!useNull) gnarlyBean.maya.f = 1.1f;
+        gnarlyBean.lucinda = useNull ? null : new ChildBean(1.2f);
+        if (!useNull) gnarlyBean.lucinda.f = 1.2f;
         return gnarlyBean;
     }
 }

@@ -1,7 +1,11 @@
 package net.catchpole.B9.codec.bean;
 
 public class ChildBean {
-    public int i;
+    public float f;
+
+    public ChildBean(float f) {
+        this.f = f;
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -10,13 +14,13 @@ public class ChildBean {
 
         ChildBean childBean = (ChildBean) o;
 
-        return i == childBean.i;
+        return f == childBean.f;
     }
 
     @Override
     public String toString() {
         return "ChildBean{" +
-                "i=" + i +
+                "f=" + f +
                 '}';
     }
 }
