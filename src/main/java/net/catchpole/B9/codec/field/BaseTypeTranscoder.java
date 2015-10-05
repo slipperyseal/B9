@@ -37,14 +37,14 @@ public class BaseTypeTranscoder {
         defaults.put(Short.TYPE.getName(), (short)0);
         defaults.put(Character.class.getName(), (char)0);
         defaults.put(Character.TYPE.getName(), (char)0);
-        defaults.put(Integer.class.getName(), (int)0);
-        defaults.put(Integer.TYPE.getName(), (int)0);
-        defaults.put(Long.class.getName(), (long)0);
-        defaults.put(Long.TYPE.getName(), (long)0);
-        defaults.put(Float.class.getName(), (float)0.0f);
-        defaults.put(Float.TYPE.getName(), (float)0.0);
-        defaults.put(Double.class.getName(), (double)0.0d);
-        defaults.put(Double.TYPE.getName(), (double)0.0d);
+        defaults.put(Integer.class.getName(), 0);
+        defaults.put(Integer.TYPE.getName(), 0);
+        defaults.put(Long.class.getName(), 0l);
+        defaults.put(Long.TYPE.getName(), 0l);
+        defaults.put(Float.class.getName(), 0.0f);
+        defaults.put(Float.TYPE.getName(), 0.0f);
+        defaults.put(Double.class.getName(), 0.0d);
+        defaults.put(Double.TYPE.getName(), 0.0d);
     }
 
     public TypeTranscoder getTranscoder(Class clazz) {
