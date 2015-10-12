@@ -1,7 +1,7 @@
 package net.catchpole.B9.devices.clock;
 
 public interface Clock {
-    public long getCurrentTime();
+    long getCurrentTime();
 
-    public void sleep(long millis);
+    void sleep(long millis);
 }
