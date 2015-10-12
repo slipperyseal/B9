@@ -56,7 +56,6 @@
     </dependencies>
 
     <build>
-        <finalName>B9</finalName>
         <plugins>
             <plugin>
                 <artifactId>maven-dependency-plugin</artifactId>
