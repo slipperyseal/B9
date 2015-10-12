@@ -11,5 +11,6 @@
 
     <modules>
         <module>B9-core</module>
+        <module>B9-pi</module>
     </modules>
 </project>
