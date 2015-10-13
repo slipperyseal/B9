@@ -23,7 +23,7 @@ public class SimulationThrusters implements Thrusters {
     public SimulationThrusters(SimulationGps simulationGps, double kilometersPerSecond, int errorDegrees) {
         this.simulationGps = simulationGps;
         this.kilometersPerSecond = kilometersPerSecond;
-        this.errorDegrees = 0;
+        this.errorDegrees = errorDegrees;
     }
 
     public void update(double left, double right) {
@@ -38,9 +38,10 @@ public class SimulationThrusters implements Thrusters {
 
     public void oneSecondTick() {
         if (left != 0.0 && right != 0.0) {
+            double kps = kilometersPerSecond * ((left + right) / 2.0d);
             simulationGps.setLocation(
                     headingCalculator.getLocation(simulationGps.getLocation(), simulationGps.getHeading(),
-                            distanceCalculator.kilometersToDegrees(kilometersPerSecond))
+                            distanceCalculator.kilometersToDegrees(kps))
             );
         }
     }
