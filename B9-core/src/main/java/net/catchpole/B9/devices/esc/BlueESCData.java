@@ -12,9 +12,16 @@ public class BlueESCData {
     private double current;
     private int identifier;
 
-    public BlueESCData() {
+    // construct with normalized values
+    public BlueESCData(int pulse, double voltage, double temperature, double current) {
+        this.pulse = pulse;
+        this.voltage = voltage;
+        this.temperature = temperature;
+        this.current = current;
+        this.identifier = 0xab;
     }
 
+    // construct with raw BlueESC I2C values
     public BlueESCData(int pulse, int voltage, int temperature, int current, int identifier) {
         this.pulse = pulse;
         this.voltage = ((double)voltage)/65536.0f * 5.0f * 6.45f;

@@ -15,7 +15,7 @@ public class BlueESCThrusters implements Thrusters {
         this.blueESCLeft.initialize();
         this.blueESCRight.initialize();
 
-        // the blueesc will shut down if it hasn't received an uodate in a while
+        // the blueesc will shut down if it hasn't received an update in a while
         new Thread() {
             public void run() {
                 for (; ; ) {

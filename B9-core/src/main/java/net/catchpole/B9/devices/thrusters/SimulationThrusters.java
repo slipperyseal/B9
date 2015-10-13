@@ -1,5 +1,6 @@
 package net.catchpole.B9.devices.thrusters;
 
+import net.catchpole.B9.devices.esc.BlueESCData;
 import net.catchpole.B9.devices.gps.SimulationGps;
 import net.catchpole.B9.math.DistanceCalculator;
 import net.catchpole.B9.math.HeadingCalculator;
@@ -44,5 +45,17 @@ public class SimulationThrusters implements Thrusters {
                             distanceCalculator.kilometersToDegrees(kps))
             );
         }
+    }
+
+    public BlueESCData getLeftData() {
+        return getData(left);
+    }
+
+    public BlueESCData getRightData() {
+        return getData(right);
+    }
+
+    private BlueESCData getData(double throttle) {
+        return new BlueESCData((int)(100.0d * throttle), 12.1 - throttle, 22 + (throttle * 4), throttle * 10);
     }
 }
