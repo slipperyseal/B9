@@ -6,6 +6,8 @@ import com.pi4j.io.i2c.I2CFactory;
 import net.catchpole.B9.spacial.Heading;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 // a work in progress. im getting crazy results from it :/ awkward
 public class HMC5883LCompass implements Compass {
@@ -71,12 +73,21 @@ public class HMC5883LCompass implements Compass {
     private static final int HMC5883L_STATUS_LOCK_BIT    = 1;
     private static final int HMC5883L_STATUS_READY_BIT   = 0;
 
+    private Map<Double,Gauss> gaussMap = new HashMap<Double, Gauss>();
     private final I2CBus bus;
     private final I2CDevice device;
     private final byte[] bytes = new byte[32];
     private double scale;
 
     public HMC5883LCompass() throws Exception {
+        this.addGauss(0.88, 0x00, 0.73d);
+        this.addGauss(1.3d, 0x01, 0.92d);
+        this.addGauss(1.9d, 0x02, 1.22d);
+        this.addGauss(2.5d, 0x04, 2.27d);
+        this.addGauss(4.7d, 0x05, 2.56d);
+        this.addGauss(5.6d, 0x06, 3.03d);
+        this.addGauss(8.1d, 0x07, 4.35);
+
         this.bus = I2CFactory.getInstance(I2CBus.BUS_1);
         this.device = bus.getDevice(HMC5883L_ADDRESS);
 
@@ -84,7 +95,7 @@ public class HMC5883LCompass implements Compass {
                 (byte)( (HMC5883L_AVERAGING_8 << (HMC5883L_CRA_AVERAGE_BIT - HMC5883L_CRA_AVERAGE_LENGTH + 1)) |
                         (HMC5883L_RATE_15     << (HMC5883L_CRA_RATE_BIT - HMC5883L_CRA_RATE_LENGTH + 1)) |
                         (HMC5883L_BIAS_NORMAL << (HMC5883L_CRA_BIAS_BIT - HMC5883L_CRA_BIAS_LENGTH + 1)) ));
-        setScale(1.3);
+        setScale(1.3d);
 //        this.device.write(HMC5883L_RA_CONFIG_B,
 //                (byte)(HMC5883L_GAIN_1090 << (HMC5883L_CRB_GAIN_BIT - HMC5883L_CRB_GAIN_LENGTH + 1)) );
         this.device.write(HMC5883L_RA_MODE,
@@ -107,9 +118,9 @@ public class HMC5883LCompass implements Compass {
                 double y = ry * scale;
                 double z = rz * scale;
 
-                double heading = Math.atan2(y,x) * (180 / Math.PI) + 180; // angle in degrees
+                double heading = Math.atan2(y,x) * (180.0d / Math.PI) + 180.0d;
 
-                System.out.println(heading + "\t| rx = " + rx + "\try = " + ry + "\trz =  " + rz + "\t| x =" + (int)x + "\ty = " + (int)y + "\tz = " + (int)z);
+                //System.out.println((int)heading + "\t| rx = " + rx + "\try = " + ry + "\trz =  " + rz + "\t| x =" + (int)x + "\ty = " + (int)y + "\tz = " + (int)z);
 
                 return new Heading(heading);
             } else {
@@ -121,42 +132,33 @@ public class HMC5883LCompass implements Compass {
         return new Heading(0.0);
     }
 
+    private void addGauss(double gauss, int register, double scale) {
+        Gauss g = new Gauss();
+        g.gauss = gauss;
+        g.register = register;
+        g.scale = scale;
+        gaussMap.put(g.gauss, g);
+    }
+
     public void setScale(double gauss) throws IOException {
-        int register;
-        if(gauss == 0.88) {
-            register = 0x00;
-            scale = 0.73;
-        } else if(gauss == 1.3) {
-            register = 0x01;
-            scale = 0.92;
-        } else if(gauss == 1.9) {
-            register = 0x02;
-            scale = 1.22;
-        } else if(gauss == 2.5) {
-            register = 0x03;
-            scale = 1.52;
-        } else if(gauss == 4.0) {
-            register = 0x04;
-            scale = 2.27;
-        } else if(gauss == 4.7) {
-            register = 0x05;
-            scale = 2.56;
-        } else if(gauss == 5.6) {
-            register = 0x06;
-            scale = 3.03;
-        } else if(gauss == 8.1) {
-            register = 0x07;
-            scale = 4.35;
-        } else {
+        Gauss g = gaussMap.get(gauss);
+        if (g == null) {
             throw new IllegalArgumentException("no support of this gauss of course: " + gauss);
         }
-        this.device.write(HMC5883L_RA_CONFIG_B, (byte)(register << (HMC5883L_CRB_GAIN_BIT - HMC5883L_CRB_GAIN_LENGTH + 1)));
+        scale = g.scale;
+        this.device.write(HMC5883L_RA_CONFIG_B, (byte)(g.register << (HMC5883L_CRB_GAIN_BIT - HMC5883L_CRB_GAIN_LENGTH + 1)));
+    }
+
+    private class Gauss {
+        double gauss;
+        int register;
+        double scale;
     }
 
     public static void main(String[] args) throws Exception {
         HMC5883LCompass hmc5883LCompass = new HMC5883LCompass();
         for (;;) {
-            hmc5883LCompass.getHeading();
+            System.out.println("Test: " + hmc5883LCompass.test() + " " + hmc5883LCompass.getHeading());
             Thread.sleep(200);
         }
     }
