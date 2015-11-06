@@ -17,22 +17,28 @@ public class SimulationThrusters implements Thrusters {
     private final SimulationGps simulationGps;
     private final double kilometersPerSecond;
     private final int errorDegrees;
+    private final double steerBias;
 
     private double left;
     private double right;
 
-    public SimulationThrusters(SimulationGps simulationGps, double kilometersPerSecond, int errorDegrees) {
+    public SimulationThrusters(SimulationGps simulationGps, double kilometersPerSecond, int errorDegrees, double steerBias) {
         this.simulationGps = simulationGps;
         this.kilometersPerSecond = kilometersPerSecond;
         this.errorDegrees = errorDegrees;
+        this.steerBias = steerBias;
     }
 
     public void update(double left, double right) {
         this.left = left;
         this.right = right;
+        adviseNewHeading();
     }
 
-    public void adviseNewHeading(Heading heading) {
+    private void adviseNewHeading() {
+        double steer = left - right;
+        double steerDegrees = steer * steerBias;
+        Heading heading = new Heading( Normalise.degrees(simulationGps.getHeading().getDegrees() + steerDegrees));
         double error = errorDegrees == 0 ? 0 : random.nextInt(errorDegrees) - (errorDegrees/2);
         simulationGps.setHeading(new Heading(Normalise.degrees(heading.getDegrees() + error)));
     }
