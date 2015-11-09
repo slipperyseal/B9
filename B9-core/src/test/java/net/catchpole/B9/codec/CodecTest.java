@@ -5,8 +5,10 @@ import net.catchpole.B9.codec.bean.ChildBean;
 import net.catchpole.B9.codec.bean.GnarlyBean;
 import org.junit.Test;
 
+import java.util.Arrays;
+
 public class CodecTest {
-    private Codec codec = new Codec();
+    private Codec codec = new CodecOne();
 
     public CodecTest() throws Exception {
         codec.addType('g', GnarlyBean.class);
@@ -16,9 +18,9 @@ public class CodecTest {
     @Test
     public void testCodec() throws Exception {
         test(getBean(-10, true), 25);
-        test(getBean(10, false), 70);
+        test(getBean(10, false), 104);
         test(getBean(-1000000, true), 33);
-        test(getBean(1000000, false), 91);
+        test(getBean(1000000, false), 125);
     }
 
     private void test(GnarlyBean gnarlyBean, int length) throws Exception {
@@ -55,6 +57,8 @@ public class CodecTest {
         if (!useNull) gnarlyBean.maya.f = 1.1f;
         gnarlyBean.lucinda = useNull ? null : new ChildBean(1.2f);
         if (!useNull) gnarlyBean.lucinda.f = 1.2f;
+        if (!useNull) gnarlyBean.objectArray = new Object[] { null, new ChildBean(2.1f), null,  new ChildBean(2.2f) };
+        if (!useNull) gnarlyBean.list = Arrays.asList( new ChildBean(3.1f), null,  new ChildBean(4.2f) );
         return gnarlyBean;
     }
 }

@@ -1,4 +1,4 @@
-package net.catchpole.B9.codec.field;
+package net.catchpole.B9.codec.one;
 
 public interface Flags {
     boolean readFlag();

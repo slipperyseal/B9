@@ -1,16 +1,24 @@
-package net.catchpole.B9.codec.field;
+package net.catchpole.B9.codec.one;
+
+import net.catchpole.B9.codec.CodecOne;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class BaseTypeTranscoder {
-    private Map<String,TypeTranscoder> transcoderMap = new HashMap<String, TypeTranscoder>();
-    private Map<String,Object> defaults = new HashMap<String, Object>();
+    private final Map<String,TypeTranscoder> transcoderMap = new HashMap<String, TypeTranscoder>();
+    private final Map<String,Object> defaults = new HashMap<String, Object>();
+    private final ObjectArrayTranscoder objectArrayTranscoder = new ObjectArrayTranscoder();
+    private final ListTranscoder listTranscoder = new ListTranscoder();
+    private final CodecOne codec;
 
-    public BaseTypeTranscoder() {
+    public BaseTypeTranscoder(CodecOne codec) {
+        this.codec = codec;
         transcoderMap.put(Boolean.class.getName(), new BooleanTranscoder());
         transcoderMap.put(Boolean.TYPE.getName(), new BooleanTranscoder());
         transcoderMap.put(Byte.class.getName(), new ByteTranscoder());
@@ -48,6 +56,12 @@ public class BaseTypeTranscoder {
     }
 
     public TypeTranscoder getTranscoder(Class clazz) {
+        if (clazz.isAssignableFrom(List.class)) {
+            return listTranscoder;
+        }
+        if (clazz.isArray()) {
+            return objectArrayTranscoder;
+        }
         return transcoderMap.get(clazz.getName());
     }
 
@@ -223,6 +237,60 @@ public class BaseTypeTranscoder {
             byte[] data = value.getBytes("utf-8");
             dos.writeInt(data.length);
             dos.write(data);
+        }
+
+        public int getFlagCount() {
+            return 0;
+        }
+    }
+
+    class ObjectArrayTranscoder implements TypeTranscoder<Object[]> {
+        public Object[] read(DataInputStream dis, Flags flags) throws IOException {
+            int len = dis.readInt();
+            BitHeader bitHeader = new BitHeader(dis, len);
+            Object[] objects = new Object[len];
+            for (int x=0;x<len;x++) {
+                if (bitHeader.readFlag()) {
+                    try {
+                        objects[x] = codec.decode(dis);
+                    } catch (Exception e) {
+                        throw new IOException(e);
+                    }
+                }
+            }
+            return objects;
+        }
+
+        public void write(DataOutputStream dos, Object[] value, Flags flags) throws IOException {
+            dos.writeInt(value.length);
+            BitHeader bitHeader = new BitHeader();
+            for (Object o : value) {
+                bitHeader.writeFlag(o != null);
+            }
+            dos.write(bitHeader.toByteArray());
+            for (Object o : value) {
+                if (o != null) {
+                    try {
+                        dos.write(codec.encode(o));
+                    } catch (Exception e) {
+                        throw new IOException(e);
+                    }
+                }
+            }
+        }
+
+        public int getFlagCount() {
+            return 0;
+        }
+    }
+
+    class ListTranscoder implements TypeTranscoder<List>  {
+        public List read(DataInputStream dis, Flags flags) throws IOException {
+            return Arrays.asList(objectArrayTranscoder.read(dis, flags));
+        }
+
+        public void write(DataOutputStream dis, List value, Flags flags) throws IOException {
+            objectArrayTranscoder.write(dis, value.toArray(), flags);
         }
 
         public int getFlagCount() {

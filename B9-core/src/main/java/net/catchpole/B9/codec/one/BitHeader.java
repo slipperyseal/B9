@@ -1,10 +1,18 @@
-package net.catchpole.B9.codec.field;
+package net.catchpole.B9.codec.one;
 
+import java.io.DataInputStream;
+import java.io.IOException;
 import java.util.BitSet;
 
 public class BitHeader implements Flags {
     private final BitSet bitSet;
     private int index = 0;
+
+    public BitHeader(DataInputStream dis, int bits) throws IOException {
+        byte[] data = new byte[expectedLength(bits)];
+        dis.readFully(data);
+        this.bitSet = BitSet.valueOf(data);
+    }
 
     public BitHeader(byte[] bytes) {
         this.bitSet = BitSet.valueOf(bytes);
@@ -36,5 +44,9 @@ public class BitHeader implements Flags {
         } else {
             return bits;
         }
+    }
+
+    public int expectedLength(int bits) {
+        return ((bits+7)/8);
     }
 }
