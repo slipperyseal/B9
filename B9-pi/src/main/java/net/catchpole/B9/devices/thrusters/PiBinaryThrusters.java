@@ -1,6 +1,7 @@
 package net.catchpole.B9.devices.thrusters;
 
 import com.pi4j.io.gpio.*;
+import net.catchpole.B9.devices.esc.BlueESCData;
 
 // binary thrusters are relay driven motors which can only go forward or reverse at one speed (binary - on or off)
 public class PiBinaryThrusters implements Thrusters {
@@ -56,5 +57,13 @@ public class PiBinaryThrusters implements Thrusters {
             rightForward.high();
             rightReverse.high();
         }
+    }
+
+    public BlueESCData getLeftData() {
+        return null;
+    }
+
+    public BlueESCData getRightData() {
+        return null;
     }
 }
