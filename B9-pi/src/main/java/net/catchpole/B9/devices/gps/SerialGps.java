@@ -1,6 +1,10 @@
 package net.catchpole.B9.devices.gps;
 
 import net.catchpole.B9.devices.compass.Compass;
+import net.catchpole.B9.devices.gps.command.ChangeBuad;
+import net.catchpole.B9.devices.gps.command.GpsCommandSender;
+import net.catchpole.B9.devices.gps.command.LineWriter;
+import net.catchpole.B9.devices.gps.command.MessageIntervals;
 import net.catchpole.B9.devices.gps.listener.LocationListener;
 import net.catchpole.B9.devices.gps.listener.MessageListener;
 import net.catchpole.B9.devices.gps.listener.VectorListener;
@@ -18,24 +22,42 @@ public class SerialGps implements Gps, Compass, Speedometer {
     private volatile Location location;
 
     public SerialGps() throws IOException {
-        gpsParser.addListener(new VectorListener() {
+        setBaud();
+        addListeners();
+        this.piCommPort = new PiCommPort(38400, new LineWriter() {
+            public void writeLine(String value) {
+                System.out.println(value);
+                SerialGps.this.gpsParser.parse(value);
+            }
+        });
+        GpsCommandSender gpsCommandSender = new GpsCommandSender(piCommPort);
+        MessageIntervals messageIntervals = new MessageIntervals();
+        messageIntervals.setGPGGAInterval(1);
+        messageIntervals.setGPVTGInterval(1);
+        gpsCommandSender.send(messageIntervals);
+    }
+
+    private void setBaud() {
+        PiCommPort piCommPort = new PiCommPort(9600);
+        piCommPort.writeLine("\r\n");
+        GpsCommandSender gpsCommandSender = new GpsCommandSender(piCommPort);
+        gpsCommandSender.send(new ChangeBuad(38400));
+        gpsCommandSender.delay();
+        piCommPort.close();
+    }
+
+    private void addListeners() {
+        this.gpsParser.addListener(new VectorListener() {
             public void listen(Vector vector) {
                 SerialGps.this.vector = vector;
             }
         });
 
-        gpsParser.addListener(new LocationListener() {
+        this.gpsParser.addListener(new LocationListener() {
             public void listen(Location location) {
                 SerialGps.this.location = location;
             }
         });
-
-        this.piCommPort = new PiCommPort() {
-            @Override
-            public void process(String line) {
-                processLine(line);
-            }
-        };
     }
 
     public void addListener(MessageListener messageListener) {
@@ -43,34 +65,20 @@ public class SerialGps implements Gps, Compass, Speedometer {
     }
 
     public Location getLocation() {
-        while (location == null) {
-            waitForGpsFix();
-        }
-        return location;
+        return this.location;
     }
 
     public Heading getHeading() {
-        while (vector == null) {
-            waitForGpsFix();
-        }
-        return vector.getHeading();
+        Vector vector = this.vector;
+        return vector == null ? null : vector.getHeading();
     }
 
     public double getVelocity() {
-        while (vector == null) {
-            waitForGpsFix();
-        }
-        return vector.getVelocity();
+        Vector vector = this.vector;
+        return vector == null ? 0.0d : vector.getVelocity();
     }
 
-    private void waitForGpsFix() {
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException ie) {
-        }
-    }
-
-    public void processLine(String line) {
-        this.gpsParser.parse(line);
+    public static void main(String[] args) throws Exception {
+        new SerialGps();
     }
 }

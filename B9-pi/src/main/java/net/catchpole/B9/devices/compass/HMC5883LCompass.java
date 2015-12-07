@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-// a work in progress. im getting crazy results from it :/ awkward
 public class HMC5883LCompass implements Compass {
     private static final int HMC5883L_ADDRESS            = 0x1E;
 
@@ -153,13 +152,5 @@ public class HMC5883LCompass implements Compass {
         double gauss;
         int register;
         double scale;
-    }
-
-    public static void main(String[] args) throws Exception {
-        HMC5883LCompass hmc5883LCompass = new HMC5883LCompass();
-        for (;;) {
-            System.out.println("Test: " + hmc5883LCompass.test() + " " + hmc5883LCompass.getHeading());
-            Thread.sleep(200);
-        }
     }
 }

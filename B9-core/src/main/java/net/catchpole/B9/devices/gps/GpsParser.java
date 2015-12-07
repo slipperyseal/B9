@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 public class GpsParser {
+    private Sentence sentence = new Sentence();
     private Map<String,List<GpsMessageParser>> messageParserMap = new HashMap<String, List<GpsMessageParser>>();
     private Map<Class,Class> listenerClasses = new HashMap<Class, Class>();
     private Map<Class,List<MessageListener>> listenerMap = new HashMap<Class, List<MessageListener>>();
@@ -55,7 +56,7 @@ public class GpsParser {
             if (gpsMessageParserList != null) {
                 for (GpsMessageParser gpsMessageParser : gpsMessageParserList) {
                     List<MessageListener> messageListenerList = listenerMap.get(gpsMessageParser.getClass());
-                    if (messageListenerList != null && checkSum(line)) {
+                    if (messageListenerList != null && sentence.isChecksumValid(line)) {
                         if (split == null) {
                             split = line.split(",");
                         }
@@ -72,34 +73,5 @@ public class GpsParser {
                 messageListener.listen(result);
             }
         }
-    }
-
-    public boolean checkSum(String line) {
-        int len = line.length();
-        if (len > 5 && line.charAt(0) == '$') {
-            int value = 0;
-            for (int x=1;x<len;x++) {
-                int c = line.charAt(x);
-                // line may have trailing special characters
-                if (c == '*' && len >= x+2) {
-                    return value == (getHexValue(line.charAt(x+1)) << 4) + getHexValue(line.charAt(x+2));
-                }
-                value ^= c;
-            }
-        }
-        return false;
-    }
-
-    private int getHexValue(char c) {
-        if (c >= '0' && c <= '9') {
-            return c-'0';
-        }
-        if (c >= 'a' && c <= 'f') {
-            return c-'a'+0xa;
-        }
-        if (c >= 'A' && c <= 'F') {
-            return c-'A'+0xa;
-        }
-        return 0;
     }
 }

@@ -1,25 +1,39 @@
 package net.catchpole.B9.devices.serial;
 
 import com.pi4j.io.serial.*;
+import net.catchpole.B9.devices.gps.command.LineWriter;
 
-public abstract class PiCommPort {
+public class PiCommPort implements LineWriter {
     private final Serial serial = SerialFactory.createInstance();
     private final StringBuilder dataBuffer = new StringBuilder();
+    private final DataListener dataListener;
+    private final LineWriter lineWriter;
 
-    public PiCommPort() throws SerialPortException {
-        this(Serial.DEFAULT_COM_PORT, 9600);
+    public PiCommPort(int baud) throws SerialPortException {
+        this(baud, null);
     }
 
-    public PiCommPort(String port, int baud) throws SerialPortException {
-        this.serial.addListener(new DataListener());
-        this.serial.open(port, baud);
+    public PiCommPort(int baud, LineWriter lineWriter) throws SerialPortException {
+        this.lineWriter = lineWriter;
+        if (lineWriter != null) {
+            this.dataListener = new DataListener();
+            this.serial.addListener(dataListener);
+        } else {
+            this.dataListener = null;
+        }
+        this.serial.open(Serial.DEFAULT_COM_PORT, baud);
     }
 
-    public void writeln(String line) {
+    public void close() {
+        if (dataListener != null) {
+            this.serial.removeListener(dataListener);
+        }
+        this.serial.close();
+    }
+
+    public void writeLine(String line) {
         this.serial.writeln(line);
     }
-
-    public abstract void process(String line);
 
     class DataListener implements SerialDataListener {
         // we might not receive entire lines in serial events
@@ -32,7 +46,7 @@ public abstract class PiCommPort {
             while ((cr= dataBuffer.indexOf("\n")) != -1) {
                 String line = dataBuffer.substring(0,cr);
                 dataBuffer.delete(0,cr+1);
-                process(line);
+                lineWriter.writeLine(line);
             }
         }
     }
