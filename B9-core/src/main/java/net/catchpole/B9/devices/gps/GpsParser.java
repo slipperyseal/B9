@@ -34,7 +34,7 @@ public class GpsParser {
         }
     }
 
-    public void addListener(MessageListener messageListener) {
+    public synchronized void addListener(MessageListener messageListener) {
         for (Map.Entry<Class,Class> entry : listenerClasses.entrySet()) {
             if (entry.getKey().isAssignableFrom(messageListener.getClass())) {
                 List<MessageListener> messageListeners = listenerMap.get(entry.getValue());
@@ -48,7 +48,7 @@ public class GpsParser {
         }
     }
 
-    public void parse(String line) {
+    public synchronized void parse(String line) {
         String[] split = null;
         if (line.length() > 6) {
             String messageType = line.substring(0, 6);

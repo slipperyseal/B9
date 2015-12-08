@@ -16,34 +16,39 @@ import net.catchpole.B9.spacial.Vector;
 import java.io.IOException;
 
 public class SerialGps implements Gps, Compass, Speedometer {
-    private final PiCommPort piCommPort;
+    private static final int FACTORY_BAUD = 9600;
+    private static final int ACTIVE_BAUD = 38400;
     private final GpsParser gpsParser = new GpsParser();
+    private final MessageIntervals messageIntervals = new MessageIntervals();
+    private final PiCommPort piCommPort;
     private volatile Vector vector;
     private volatile Location location;
 
     public SerialGps() throws IOException {
-        setBaud();
+        changeBaud();
         addListeners();
-        this.piCommPort = new PiCommPort(38400, new LineWriter() {
+        this.piCommPort = new PiCommPort(ACTIVE_BAUD, new LineWriter() {
             public void writeLine(String value) {
-                System.out.println(value);
                 SerialGps.this.gpsParser.parse(value);
             }
         });
+        // tell the GPS to only send the messages we are interested in
         GpsCommandSender gpsCommandSender = new GpsCommandSender(piCommPort);
-        MessageIntervals messageIntervals = new MessageIntervals();
-        messageIntervals.setGPGGAInterval(1);
-        messageIntervals.setGPVTGInterval(1);
         gpsCommandSender.send(messageIntervals);
     }
 
-    private void setBaud() {
-        PiCommPort piCommPort = new PiCommPort(9600);
+    private void changeBaud() {
+        // switch GPS to higher baud rate. if the device is currently on the higher baud, this should have no effect
+        PiCommPort piCommPort = new PiCommPort(FACTORY_BAUD);
         piCommPort.writeLine("\r\n");
         GpsCommandSender gpsCommandSender = new GpsCommandSender(piCommPort);
-        gpsCommandSender.send(new ChangeBuad(38400));
+        gpsCommandSender.send(new ChangeBuad(ACTIVE_BAUD));
         gpsCommandSender.delay();
         piCommPort.close();
+    }
+
+    public void addListener(MessageListener messageListener) {
+        this.gpsParser.addListener(messageListener);
     }
 
     private void addListeners() {
@@ -52,16 +57,14 @@ public class SerialGps implements Gps, Compass, Speedometer {
                 SerialGps.this.vector = vector;
             }
         });
+        this.messageIntervals.setGPVTGInterval(1);
 
         this.gpsParser.addListener(new LocationListener() {
             public void listen(Location location) {
                 SerialGps.this.location = location;
             }
         });
-    }
-
-    public void addListener(MessageListener messageListener) {
-        this.gpsParser.addListener(messageListener);
+        this.messageIntervals.setGPGGAInterval(1);
     }
 
     public Location getLocation() {
