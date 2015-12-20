@@ -2,33 +2,48 @@ package net.catchpole.B9.tools;
 
 import net.catchpole.B9.devices.esc.BlueESC;
 
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Don't forget to use a a voltage level converter when connecting the BlueESC I2C interface to the Pi.
+ * You will also need to add pull-up resistors to the 5 volt side of the level converts.
+ */
+
 // increments the speed of a BlueESC until it reaches the target speed
 public class BlueESCTest {
     public static void main(String[] args) throws Exception {
-        int device = Integer.parseInt(args[0]);
-        int target = Integer.parseInt(args[1]);
-        int increment = Integer.parseInt(args[2]);
+        int firstDevice = Integer.parseInt(args[0]);
+        int totalDevices = Integer.parseInt(args[1]);
+        int targeThrottle = Integer.parseInt(args[2]);
+        int increment = Integer.parseInt(args[3]);
 
-        BlueESC blueESC0 = new BlueESC(device, false);
-        BlueESC blueESC1 = new BlueESC(device+1, false);
+        List<BlueESC> devices = new ArrayList<>();
+        for (int x=0;x<totalDevices;x++) {
+            devices.add(new BlueESC(firstDevice + x, false));
+        }
 
-        blueESC0.initialize();
-        blueESC1.initialize();
+        for (BlueESC blueESC : devices) {
+            blueESC.initialize();
+        }
         int velocity=0;
         for (;;) {
-            blueESC0.update(velocity);
-            blueESC1.update(velocity);
+            for (BlueESC blueESC : devices) {
+                blueESC.update(velocity);
+            }
+
             System.out.println();
-            System.out.println("0: " + velocity + " " + blueESC0.read());
-            System.out.println("1: " + velocity + " " + blueESC1.read());
+            for (BlueESC blueESC : devices) {
+                System.out.println(blueESC.toString() + '\t' + velocity + '\t' + blueESC.read());
+            }
             Thread.sleep(200);
-            if (target > 0) {
-                if (velocity < target) {
+            if (targeThrottle > 0) {
+                if (velocity < targeThrottle) {
                     velocity += increment;
                 }
             }
-            if (target < 0) {
-                if (velocity > target) {
+            if (targeThrottle < 0) {
+                if (velocity > targeThrottle) {
                     velocity -= increment;
                 }
             }

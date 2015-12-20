@@ -11,7 +11,7 @@ public class BlueESC implements ESC {
     private final byte[] readBuffer = new byte[9];
     private final byte[] writeBuffer = new byte[2];
     private final boolean forwardPropeller;
-    private boolean stopping = false;
+    private volatile boolean stopping = false;
 
     // the Blue Robotics thrusters (T100 etc) can be installed with a forward or reverse propeller
     public BlueESC(int device, boolean forwardPropeller) throws Exception {
@@ -84,8 +84,6 @@ public class BlueESC implements ESC {
 
     @Override
     public String toString() {
-        return "BlueESC " +
-                "device=" + device +
-                ", forwardPropeller=" + forwardPropeller;
+        return "BlueESC " + device + " forwardPropeller=" + forwardPropeller;
     }
 }
