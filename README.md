@@ -14,12 +14,9 @@ Stuff that's in there now..
 * Abstract Time (system time, GPS time, simulated time for running test cases)
 * Wii Classic Controller (I2C)
 * Raspberry Pi camera (via the raspistill executable)
+* Compass Module
 * Compact Binary Symmetric Serialization (for UDP broadcast of telemetry and command packets)
 
-Stuff that's in there but is still in progress..
+This project is part of the [Robotics Mission to Antarctica](http://robotics.catchpole.net/)
 
-* Compass Module
-
-This project is part of the [Robotics Mission to Antarctica](http://www.slipperyseal.net/projects/nyx-robot-mission/)
-
-![Nyx2](http://www.slipperyseal.net/images/nyx2-1.jpg "Nyx2")
+![Nyx2](http://robotics.catchpole.net/images/nyx2-surf.jpg "Nyx2")
