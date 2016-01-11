@@ -1,6 +1,7 @@
 package net.catchpole.B9.codec.two;
 
 import net.catchpole.B9.codec.stream.BitInputStream;
+import net.catchpole.B9.codec.stream.BitMasks;
 import net.catchpole.B9.codec.stream.BitOutputStream;
 
 import java.io.IOException;
@@ -10,24 +11,28 @@ import java.util.List;
 import java.util.Map;
 
 public class BaseTypeTranscoder {
+    private final BitMasks bitMasks = new BitMasks();
     private final Map<String,TypeTranscoder> transcoderMap = new HashMap<String, TypeTranscoder>();
     private final Map<String,Object> defaults = new HashMap<String, Object>();
     private final ObjectArrayTranscoder objectArrayTranscoder = new ObjectArrayTranscoder();
     private final ListTranscoder listTranscoder = new ListTranscoder();
+    private final ByteTranscoder byteTranscoder = new ByteTranscoder();
+    private final IntegerTranscoder integerTranscoder = new IntegerTranscoder();
+    private final FloatTranscoder floatTranscoder = new FloatTranscoder();
     private final CodecStream codecStream;
 
     public BaseTypeTranscoder(CodecStream codecStream) {
         this.codecStream = codecStream;
         transcoderMap.put(Boolean.class.getName(), new BooleanTranscoder());
         transcoderMap.put(Boolean.TYPE.getName(), new BooleanTranscoder());
-        transcoderMap.put(Byte.class.getName(), new ByteTranscoder());
-        transcoderMap.put(Byte.TYPE.getName(), new ByteTranscoder());
+        transcoderMap.put(Byte.class.getName(), byteTranscoder);
+        transcoderMap.put(Byte.TYPE.getName(), byteTranscoder);
         transcoderMap.put(Short.class.getName(), new ShortTranscoder());
         transcoderMap.put(Short.TYPE.getName(), new ShortTranscoder());
         transcoderMap.put(Character.class.getName(), new CharacterTranscoder());
         transcoderMap.put(Character.TYPE.getName(), new CharacterTranscoder());
-        transcoderMap.put(Integer.class.getName(), new IntegerTranscoder());
-        transcoderMap.put(Integer.TYPE.getName(), new IntegerTranscoder());
+        transcoderMap.put(Integer.class.getName(), integerTranscoder);
+        transcoderMap.put(Integer.TYPE.getName(), integerTranscoder);
         transcoderMap.put(Long.class.getName(), new LongTranscoder());
         transcoderMap.put(Long.TYPE.getName(), new LongTranscoder());
         transcoderMap.put(Float.class.getName(), new FloatTranscoder());
@@ -110,11 +115,19 @@ public class BaseTypeTranscoder {
 
     class IntegerTranscoder implements TypeTranscoder<Integer> {
         public Integer read(BitInputStream in) throws IOException {
-            return in.read(32);
+            if (!in.readBoolean()) {
+                return 0;
+            }
+            return in.readBoolean() ? in.readSigned(16) : in.readSigned(32);
         }
 
         public void write(BitOutputStream out, Integer value) throws IOException {
-            out.write(value, 32);
+            out.writeBoolean(value != 0);
+            if (value != 0) {
+                boolean fitsShort = value >= Short.MIN_VALUE && value <= Short.MAX_VALUE;
+                out.writeBoolean(fitsShort);
+                out.write(value, fitsShort ? 16 : 32);
+            }
         }
     }
 
@@ -130,42 +143,115 @@ public class BaseTypeTranscoder {
 
     class FloatTranscoder implements TypeTranscoder<Float> {
         public Float read(BitInputStream in) throws IOException {
+            if (!in.readBoolean()) {
+                return 0.0f;
+            }
             return Float.intBitsToFloat(in.read(32));
         }
 
         public void write(BitOutputStream out, Float value) throws IOException {
-            out.write(Float.floatToIntBits(value), 32);
+            out.writeBoolean(value != 0.0f);
+            if (value != 0.0f) {
+                out.write(Float.floatToIntBits(value), 32);
+            }
         }
     }
 
     class DoubleTranscoder implements TypeTranscoder<Double> {
         public Double read(BitInputStream in) throws IOException {
-            return Double.longBitsToDouble(in.readLong(64));
+            if (!in.readBoolean()) {
+                return 0.0d;
+            }
+            if (in.readBoolean()) {
+                return Double.parseDouble(new Float(Float.intBitsToFloat(in.read(32))).toString());
+            } else {
+                return Double.longBitsToDouble(in.readLong(64));
+            }
         }
 
         public void write(BitOutputStream out, Double value) throws IOException {
-            out.writeLong(Double.doubleToLongBits(value), 64);
+            out.writeBoolean(value != 0.0d);
+            if (value != 0.0d) {
+                Float floatValue = value.floatValue();
+                boolean equalsFloat = value.toString().equals(floatValue.toString());
+                out.writeBoolean(equalsFloat);
+                if (equalsFloat) {
+                    out.write(Float.floatToIntBits(floatValue), 32);
+                } else {
+                    out.writeLong(Double.doubleToLongBits(value), 64);
+                }
+            }
         }
     }
 
     class StringTranscoder implements TypeTranscoder<String> {
         public String read(BitInputStream in) throws IOException {
-            int len = in.read(32);
+            if (!in.readBoolean()) {
+                return "";
+            }
+
+            int len = integerTranscoder.read(in);
             byte[] data = new byte[len];
-            in.readFully(data);
+
+            int bits = byteTranscoder.read(in);
+            int base = byteTranscoder.read(in);
+            if (bits == 0) {
+                for (int x = 0; x < len; x++) {
+                    data[x] = (byte)base;
+                }
+            } else {
+                for (int x = 0; x < len; x++) {
+                    data[x] = (byte) (in.read(bits) + base);
+                }
+            }
             return new String(data, "utf-8");
         }
 
         public void write(BitOutputStream out, String value) throws IOException {
-            byte[] data = value.getBytes("utf-8");
-            out.write(data.length, 32);
-            out.write(data);
+            out.writeBoolean(!value.isEmpty());
+            if (!value.isEmpty()) {
+                byte[] data = value.getBytes("utf-8");
+                integerTranscoder.write(out, data.length);
+
+                int base = min(data);
+                int bits = bitMasks.bitsRequired(max(data) - base);
+                byteTranscoder.write(out, (byte) bits);
+                byteTranscoder.write(out, (byte) base);
+                if (bits != 0) {
+                    for (int b : data) {
+                        out.write((b & 0xff) - base, bits);
+                    }
+                    out.write(data);
+                }
+            }
+        }
+
+        private int min(byte[] data) {
+            int value = 255;
+            for (int b : data) {
+                b &= 0xff;
+                if (b <= value) {
+                    value = b;
+                }
+            }
+            return value;
+        }
+
+        private int max(byte[] data) {
+            int value = 0;
+            for (int b : data) {
+                b &= 0xff;
+                if (b >= value) {
+                    value = b;
+                }
+            }
+            return value;
         }
     }
 
     class ObjectArrayTranscoder implements TypeTranscoder<Object[]> {
         public Object[] read(BitInputStream in) throws IOException {
-            int len = in.read(32);
+            int len = integerTranscoder.read(in);
             Object[] objects = new Object[len];
             for (int x=0;x<len;x++) {
                 try {
@@ -180,7 +266,7 @@ public class BaseTypeTranscoder {
         }
 
         public void write(BitOutputStream out, Object[] value) throws IOException {
-            out.write(value.length, 32);
+            integerTranscoder.write(out, value.length);
             for (Object o : value) {
                 out.writeBoolean(o != null);
                 if (o != null) {

@@ -58,6 +58,47 @@ public class BitStreamTest {
     }
 
     @Test
+    public void testSigned() throws IOException {
+        final ByteArrayOutputStream testBaos = new ByteArrayOutputStream();
+        final BitOutputStream bitOutputStream = new BitOutputStream(testBaos);
+
+        bitOutputStream.write(0xf, 5);
+        bitOutputStream.write(-0xf, 5);
+        bitOutputStream.write(1, 16);
+        bitOutputStream.write(-1, 16);
+        bitOutputStream.write(0x00abcdef, 32);
+        bitOutputStream.write(-0x00abcdef, 32);
+
+        bitOutputStream.writeLong(1L, 63);
+        bitOutputStream.writeLong(-1L, 63);
+        bitOutputStream.writeLong(0xabcdefff99aL, 64);
+        bitOutputStream.writeLong(-0xabcdefff99aL, 64);
+        bitOutputStream.writeLong(0x7863795836bL, 56);
+        bitOutputStream.writeLong(-0x7863795836bL, 56);
+        bitOutputStream.writeLong(0x5678465784cL, 48);
+        bitOutputStream.writeLong(-0x5678465784cL, 48);
+        bitOutputStream.flush();
+
+        final BitInputStream bitInputStream = new BitInputStream(new ByteArrayInputStream(testBaos.toByteArray()));
+
+        TestCase.assertEquals(0xf, bitInputStream.readSigned(5));
+        TestCase.assertEquals(-0xf, bitInputStream.readSigned(5));
+        TestCase.assertEquals(1, bitInputStream.readSigned(16));
+        TestCase.assertEquals(-1, bitInputStream.readSigned(16));
+        TestCase.assertEquals(0x00abcdef, bitInputStream.readSigned(32));
+        TestCase.assertEquals(-0x00abcdef, bitInputStream.readSigned(32));
+
+        TestCase.assertEquals(1L, bitInputStream.readSignedLong(63));
+        TestCase.assertEquals(-1L, bitInputStream.readSignedLong(63));
+        TestCase.assertEquals(0xabcdefff99aL, bitInputStream.readSignedLong(64));
+        TestCase.assertEquals(-0xabcdefff99aL, bitInputStream.readSignedLong(64));
+        TestCase.assertEquals(0x7863795836bL, bitInputStream.readSignedLong(56));
+        TestCase.assertEquals(-0x7863795836bL, bitInputStream.readSignedLong(56));
+        TestCase.assertEquals(0x5678465784cL, bitInputStream.readSignedLong(48));
+        TestCase.assertEquals(-0x5678465784cL, bitInputStream.readSignedLong(48));
+    }
+
+    @Test
     public void testLong() throws IOException {
         final ByteArrayOutputStream testBaos = new ByteArrayOutputStream();
         final BitOutputStream bitOutputStream = new BitOutputStream(testBaos);

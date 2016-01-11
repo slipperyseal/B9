@@ -7,10 +7,10 @@ import org.junit.Test;
 
 import java.util.Arrays;
 
-public class CodecTest {
+public class CodecTestOne {
     private Codec codec = new CodecOne();
 
-    public CodecTest() throws Exception {
+    public CodecTestOne() throws Exception {
         codec.addType('g', GnarlyBean.class);
         codec.addType('c', ChildBean.class);
     }

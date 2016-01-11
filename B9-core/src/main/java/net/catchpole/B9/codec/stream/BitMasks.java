@@ -24,13 +24,29 @@ public class BitMasks {
         return masks;
     }
 
+    public int[] createBitCheckMasks(int total) {
+        int[] masks = new int[total];
+        for (int x=1;x<total;x++) {
+            masks[x] = 1 << x;
+        }
+        return masks;
+    }
+
+    public long[] createBitCheckMasksLong(int total) {
+        long[] masks = new long[total];
+        for (int x=1;x<total;x++) {
+            masks[x] = 1L << x;
+        }
+        return masks;
+    }
+
     public long[] createBitMasksLong(int total) {
         long mask = 0;
         long[] masks = new long[total];
         for (int x=0;x<total;x++) {
             masks[x] = mask;
             mask <<= 1;
-            mask |= 1;
+            mask |= 1L;
         }
         return masks;
     }

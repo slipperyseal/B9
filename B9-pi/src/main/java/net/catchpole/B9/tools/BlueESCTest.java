@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Don't forget to use a a voltage level converter when connecting the BlueESC I2C interface to the Pi.
+ * Don't forget to use a voltage level converter when connecting the BlueESC I2C interface to the Pi.
  * You will also need to add pull-up resistors to the 5 volt side of the level converts.
  */
 
