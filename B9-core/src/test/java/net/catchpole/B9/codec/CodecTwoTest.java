@@ -7,7 +7,10 @@ import org.junit.Test;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
 import java.util.zip.Inflater;
@@ -35,13 +38,26 @@ public class CodecTwoTest {
 
         GnarlyBean gnarlyResult = (GnarlyBean)codec.decode(data);
 
-        System.out.println();
-        System.out.println(gnarlyBean);
-        System.out.println(gnarlyResult);
+        if (!gnarlyBean.equals(gnarlyResult)) {
+            System.out.println(gnarlyBean);
+            System.out.println(gnarlyResult);
+        }
 
         TestCase.assertEquals(gnarlyBean, gnarlyResult);
 //        TestCase.assertEquals(length, data.length);
-        System.out.println("Len: " + data.length + " compressed: " + compress(data).length);
+        byte[] regular = regularSerialize(gnarlyBean);
+        System.out.println("Len: " + data.length +
+                " compressed: " + compress(data).length +
+                " regular: " + regular.length +
+                " regular compressed: " + compress(regular).length);
+    }
+
+    private byte[] regularSerialize(Object object) throws IOException {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
+        objectOutputStream.writeObject(object);
+        objectOutputStream.flush();
+        return byteArrayOutputStream.toByteArray();
     }
 
     private GnarlyBean getBean(long value, boolean useNull) {
@@ -62,13 +78,19 @@ public class CodecTwoTest {
         gnarlyBean.f2 = useNull ? null : ((float)value) + 0.1f;
         gnarlyBean.d1 = ((double)value++) + 0.1d;
         gnarlyBean.d2 = useNull ? null : ((double)value) + 0.1d;
-        gnarlyBean.string = useNull ? null : ("Test Value " + value);
+        gnarlyBean.string = useNull ? null : ("Test Value abcdefZ%(&#^(&4863q" + value);
         gnarlyBean.maya = useNull ? null : new ChildBean(1.1f);
+        gnarlyBean.set = new HashSet<>();
+        gnarlyBean.set.add("aaaa");
+        gnarlyBean.set.add(new ChildBean(0.2f));
+        gnarlyBean.map = new HashMap();
+        gnarlyBean.map.put("Key 1.2",new ChildBean(1.2f));
+        gnarlyBean.map.put("Key 1.1",new ChildBean(1.1f));
         if (!useNull) gnarlyBean.maya.f = 1.1f;
         gnarlyBean.lucinda = useNull ? null : new ChildBean(1.2f);
         if (!useNull) gnarlyBean.lucinda.f = 1.2f;
         if (!useNull) gnarlyBean.objectArray = new Object[] { null, new ChildBean(2.1f), null,  new ChildBean(2.2f) };
-        if (!useNull) gnarlyBean.list = Arrays.asList(new ChildBean(3.1f), null, new ChildBean(4.2f), new ChildBean(4.2f), new ChildBean(4.6f), new ChildBean(4.4f));
+        if (!useNull) gnarlyBean.list = Arrays.asList(new ChildBean(3.1f), new ChildBean(9.1f), null, 1000000, 2000000, 3.0F, new ChildBean(4.2f), new ChildBean(4.2f), new ChildBean(4.6f), new ChildBean(4.4f));
         return gnarlyBean;
     }
 

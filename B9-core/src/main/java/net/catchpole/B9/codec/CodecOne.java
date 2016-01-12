@@ -15,7 +15,6 @@ import java.util.Map;
 // Compact Binary Symmetric Serialization (for UDP broadcast of telemetry and command packets).
 // The codec requires that classes are identical on both peers so that field names need not be transmitted.
 // currently supported types: Strings, all primative types including Object boxed type
-// collections and arrays not yet support (but these 'should not' be in telemetry)
 // nested Object types are supported but all classes must be registered
 public class CodecOne implements Codec {
     private final BaseTypeTranscoder baseTypeTranscoder = new BaseTypeTranscoder(this);

@@ -1,6 +1,8 @@
 package net.catchpole.B9.codec.bean;
 
-public class ChildBean {
+import java.io.Serializable;
+
+public class ChildBean implements Serializable {
     public float f;
 
     public ChildBean(float f) {

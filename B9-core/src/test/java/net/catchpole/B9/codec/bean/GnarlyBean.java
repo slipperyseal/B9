@@ -1,12 +1,15 @@
 package net.catchpole.B9.codec.bean;
 
-import java.util.Arrays;
-import java.util.List;
+import java.io.Serializable;
+import java.util.*;
 
-public class GnarlyBean {
+public class GnarlyBean implements Serializable {
+    public transient int nothing;
     public ChildBean maya;
     public ChildBean lucinda;
     public Object[] objectArray;
+    public Map map = new HashMap();
+    public Set set = new HashSet();
     public List list;
     public boolean b1;
     public Boolean b2;
@@ -33,6 +36,7 @@ public class GnarlyBean {
 
         GnarlyBean that = (GnarlyBean) o;
 
+        if (nothing != that.nothing) return false;
         if (b1 != that.b1) return false;
         if (by1 != that.by1) return false;
         if (c1 != that.c1) return false;
@@ -45,6 +49,8 @@ public class GnarlyBean {
         if (lucinda != null ? !lucinda.equals(that.lucinda) : that.lucinda != null) return false;
         // Probably incorrect - comparing Object[] arrays with Arrays.equals
         if (!Arrays.equals(objectArray, that.objectArray)) return false;
+        //if (map != null ? !map.equals(that.map) : that.map != null) return false;
+        //if (set != null ? !set.equals(that.set) : that.set != null) return false;
         if (list != null ? !list.equals(that.list) : that.list != null) return false;
         if (b2 != null ? !b2.equals(that.b2) : that.b2 != null) return false;
         if (by2 != null ? !by2.equals(that.by2) : that.by2 != null) return false;
@@ -62,9 +68,12 @@ public class GnarlyBean {
     public int hashCode() {
         int result;
         long temp;
-        result = maya != null ? maya.hashCode() : 0;
+        result = nothing;
+        result = 31 * result + (maya != null ? maya.hashCode() : 0);
         result = 31 * result + (lucinda != null ? lucinda.hashCode() : 0);
         result = 31 * result + (objectArray != null ? Arrays.hashCode(objectArray) : 0);
+        result = 31 * result + (map != null ? map.hashCode() : 0);
+        result = 31 * result + (set != null ? set.hashCode() : 0);
         result = 31 * result + (list != null ? list.hashCode() : 0);
         result = 31 * result + (b1 ? 1 : 0);
         result = 31 * result + (b2 != null ? b2.hashCode() : 0);
@@ -90,16 +99,19 @@ public class GnarlyBean {
     @Override
     public String toString() {
         return "GnarlyBean{" +
-                "maya=" + maya +
+                "nothing=" + nothing +
+                ", maya=" + maya +
                 ", lucinda=" + lucinda +
-                ", objectArray=" + (objectArray == null ? null : Arrays.asList(objectArray)) +
+                ", objectArray=" + Arrays.toString(objectArray) +
+                ", map=" + map +
+                ", set=" + set +
                 ", list=" + list +
                 ", b1=" + b1 +
                 ", b2=" + b2 +
                 ", by1=" + by1 +
                 ", by2=" + by2 +
-                ", c1=" + (int)c1 +
-                ", c2=" + (c2 == null ? null : (int)c2) +
+                ", c1=" + c1 +
+                ", c2=" + c2 +
                 ", s1=" + s1 +
                 ", s2=" + s2 +
                 ", i1=" + i1 +

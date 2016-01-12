@@ -25,7 +25,7 @@ public class Types {
 
         List<Field> fieldList = new ArrayList<Field>();
         for (Field field : fields) {
-            if (!Modifier.isStatic(field.getModifiers())) {
+            if (!Modifier.isStatic(field.getModifiers()) && !Modifier.isTransient(field.getModifiers())) {
                 fieldList.add(field);
             }
         }

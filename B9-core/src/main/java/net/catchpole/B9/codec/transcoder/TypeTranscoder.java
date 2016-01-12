@@ -1,4 +1,4 @@
-package net.catchpole.B9.codec.two;
+package net.catchpole.B9.codec.transcoder;
 
 import net.catchpole.B9.codec.stream.BitInputStream;
 import net.catchpole.B9.codec.stream.BitOutputStream;
