@@ -8,7 +8,7 @@ import org.junit.Test;
 public class SerialGpsTest {
     @Test
     public void liveTest() throws Exception {
-        SerialGps serialGps2 = new SerialGps(new TermiosSerialPort(null));
+        SerialGps serialGps = new SerialGps(new TermiosSerialPort(null));
 
         for(;;) {
             Thread.sleep(1000);

@@ -11,41 +11,41 @@ import static jtermios.JTermios.*;
 public class TermiosSerialConnection implements SerialConnection {
     private final int fd;
     private final TimeVal timeVal;
-    private final JTermios.FDSet fdSet = newFDSet();
+    private final JTermios.FDSet fdSet = JTermios.newFDSet();
     private Thread thread = new Thread(new Reader());
     private DataListener dataListener;
 
     public TermiosSerialConnection(String port, int baud, DataListener dataListener) throws IOException {
         this.dataListener = dataListener;
-        this.fd = open(port == null ? "/dev/tty.wchusbserial1410" : port, O_RDWR | O_NOCTTY | O_NONBLOCK);
+        this.fd = JTermios.open(port == null ? "/dev/tty.wchusbserial1410" : port, JTermios.O_RDWR | JTermios.O_NOCTTY | JTermios.O_NONBLOCK);
         if (this.fd == -1) {
             throw new IOException("unable to open " + port + " error " + fd);
         }
-        fcntl(fd, F_SETFL, 0);
+        JTermios.fcntl(fd, JTermios.F_SETFL, 0);
 
         Termios termios = new Termios();
-        tcgetattr(fd, termios);
-        termios.c_lflag &= ~(ICANON | ECHO | ECHOE | ISIG);
-        termios.c_cflag |= (CLOCAL | CREAD);
-        termios.c_cflag &= ~PARENB;
-        termios.c_cflag |= CSTOPB;
-        termios.c_cflag &= ~CSIZE;
-        termios.c_cflag |= CS8;
-        termios.c_oflag &= ~OPOST;
-        termios.c_iflag &= ~INPCK;
-        termios.c_iflag &= ~(IXON | IXOFF | IXANY);
-        termios.c_cc[VMIN] = 0;
-        termios.c_cc[VTIME] = 10;
+        JTermios.tcgetattr(fd, termios);
+        termios.c_lflag &= ~(JTermios.ICANON | JTermios.ECHO | JTermios.ECHOE | JTermios.ISIG);
+        termios.c_cflag |= (JTermios.CLOCAL | JTermios.CREAD);
+        termios.c_cflag &= ~JTermios.PARENB;
+        termios.c_cflag |= JTermios.CSTOPB;
+        termios.c_cflag &= ~JTermios.CSIZE;
+        termios.c_cflag |= JTermios.CS8;
+        termios.c_oflag &= ~JTermios.OPOST;
+        termios.c_iflag &= ~JTermios.INPCK;
+        termios.c_iflag &= ~(JTermios.IXON | JTermios.IXOFF | JTermios.IXANY);
+        termios.c_cc[JTermios.VMIN] = 0;
+        termios.c_cc[JTermios.VTIME] = 10;
 
-        cfsetispeed(termios, baud);
-        cfsetospeed(termios, baud);
+        JTermios.cfsetispeed(termios, baud);
+        JTermios.cfsetospeed(termios, baud);
 
-        tcsetattr(fd, TCSANOW, termios);
+        JTermios.tcsetattr(fd, JTermios.TCSANOW, termios);
 
-        tcflush(fd, TCIOFLUSH);
+        JTermios.tcflush(fd, JTermios.TCIOFLUSH);
 
-        FD_ZERO(fdSet);
-        FD_SET(fd, fdSet);
+        JTermios.FD_ZERO(fdSet);
+        JTermios.FD_SET(fd, fdSet);
 
         this.timeVal = new TimeVal();
         this.timeVal.tv_sec = 10;
@@ -66,7 +66,7 @@ public class TermiosSerialConnection implements SerialConnection {
         public void run() {
             try {
                 byte[] buffer = new byte[1000];
-                int s = select(fd + 1, fdSet, null, null, timeVal);
+                int s = JTermios.select(fd + 1, fdSet, null, null, timeVal);
                 if (s < 0) {
                     throw new IOException("select failed");
                 }
