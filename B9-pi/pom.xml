@@ -28,6 +28,10 @@
                 <!--<updatePolicy>always</updatePolicy>-->
             </snapshots>
         </repository>
+        <repository>
+            <id>www.sparetimelabs.com</id>
+            <url>http://www.sparetimelabs.com/maven2</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -52,10 +56,18 @@
             <artifactId>pi4j-device</artifactId>
             <version>1.0</version>
         </dependency>
+
+        <!-- TEST -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.11</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.sparetimelabs</groupId>
+            <artifactId>purejavacomm</artifactId>
+            <version>0.0.29</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

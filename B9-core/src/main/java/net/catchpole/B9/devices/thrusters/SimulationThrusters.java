@@ -1,5 +1,6 @@
 package net.catchpole.B9.devices.thrusters;
 
+import net.catchpole.B9.devices.clock.Clock;
 import net.catchpole.B9.devices.esc.BlueESCData;
 import net.catchpole.B9.devices.gps.SimulationGps;
 import net.catchpole.B9.math.DistanceCalculator;
@@ -14,6 +15,7 @@ public class SimulationThrusters implements Thrusters {
     private DistanceCalculator distanceCalculator = new DistanceCalculator();
 
     private final Random random = new Random();
+    private final Clock clock;
     private final SimulationGps simulationGps;
     private final double kilometersPerSecond;
     private final int errorDegrees;
@@ -21,12 +23,16 @@ public class SimulationThrusters implements Thrusters {
 
     private double left;
     private double right;
+    private long updateTime;
 
-    public SimulationThrusters(SimulationGps simulationGps, double kilometersPerSecond, int errorDegrees, double steerBias) {
+    public SimulationThrusters(Clock clock, SimulationGps simulationGps, double kilometersPerSecond, int errorDegrees, double steerBias) {
+        this.clock = clock;
         this.simulationGps = simulationGps;
         this.kilometersPerSecond = kilometersPerSecond;
         this.errorDegrees = errorDegrees;
         this.steerBias = steerBias;
+
+        updateTime = clock.getCurrentTime();
     }
 
     public void update(double left, double right) {
@@ -41,11 +47,12 @@ public class SimulationThrusters implements Thrusters {
         Heading heading = new Heading( Normalise.degrees(simulationGps.getHeading().getDegrees() + steerDegrees));
         double error = errorDegrees == 0 ? 0 : random.nextInt(errorDegrees) - (errorDegrees/2);
         simulationGps.setHeading(new Heading(Normalise.degrees(heading.getDegrees() + error)));
-    }
 
-    public void oneSecondTick() {
-        if (left != 0.0 && right != 0.0) {
-            double kps = kilometersPerSecond * ((left + right) / 2.0d);
+        long time = clock.getCurrentTime();
+        long millis = time - updateTime;
+        updateTime = time;
+        if (left != 0.0 && right != 0.0 && millis != 0L) {
+            double kps = (millis/1000) * kilometersPerSecond * ((left + right) / 2.0d);
             simulationGps.setLocation(
                     headingCalculator.getLocation(simulationGps.getLocation(), simulationGps.getHeading(),
                             distanceCalculator.kilometersToDegrees(kps))

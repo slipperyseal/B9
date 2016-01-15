@@ -5,7 +5,9 @@ import net.catchpole.B9.devices.gps.command.*;
 import net.catchpole.B9.devices.gps.listener.LocationListener;
 import net.catchpole.B9.devices.gps.listener.MessageListener;
 import net.catchpole.B9.devices.gps.listener.VectorListener;
-import net.catchpole.B9.devices.serial.PiCommPort;
+import net.catchpole.B9.devices.serial.LineWriterDataListener;
+import net.catchpole.B9.devices.serial.SerialConnection;
+import net.catchpole.B9.devices.serial.SerialPort;
 import net.catchpole.B9.spacial.Heading;
 import net.catchpole.B9.spacial.Location;
 import net.catchpole.B9.spacial.Vector;
@@ -17,34 +19,34 @@ public class SerialGps implements Gps, Compass, Speedometer {
     private static final int ACTIVE_BAUD = 38400;
     private final GpsParser gpsParser = new GpsParser();
     private final MessageIntervals messageIntervals = new MessageIntervals();
-    private final PiCommPort piCommPort;
+    private final SerialConnection serialConnection;
     private volatile Vector vector;
     private volatile Location location;
 
-    public SerialGps() throws IOException {
-        changeBaud();
+    public SerialGps(SerialPort serialPort) throws IOException {
+        changeBaud(serialPort);
         addListeners();
-        this.piCommPort = new PiCommPort(ACTIVE_BAUD, new LineWriter() {
+        this.serialConnection = serialPort.openConnection(ACTIVE_BAUD, new LineWriterDataListener(new LineWriter() {
+            @Override
             public void writeLine(String value) {
                 SerialGps.this.gpsParser.parse(value);
             }
-        });
+        }));
         // tell the GPS to only send the messages we are interested in
-        GpsCommandSender gpsCommandSender = new GpsCommandSender(piCommPort);
+        GpsCommandSender gpsCommandSender = new GpsCommandSender(new ByteLineWriter(this.serialConnection));
         gpsCommandSender.send(messageIntervals);
         gpsCommandSender.send(new FixUpdateRate(500));
         gpsCommandSender.send(new NmeaUpdateRate(500));
     }
 
-    private void changeBaud() {
+    private void changeBaud(SerialPort serialPort) throws IOException {
+        SerialConnection serialConnection = serialPort.openConnection(FACTORY_BAUD, null);
         // switch GPS to higher baud rate. if the device is currently on the higher baud, this should have no effect
-        PiCommPort piCommPort = new PiCommPort(FACTORY_BAUD);
-        // clear any noise
-        piCommPort.writeLine("\r\n");
-        GpsCommandSender gpsCommandSender = new GpsCommandSender(piCommPort);
+        serialConnection.write("\r\n".getBytes());
+        GpsCommandSender gpsCommandSender = new GpsCommandSender(new ByteLineWriter(serialConnection));
         gpsCommandSender.send(new ChangeBuad(ACTIVE_BAUD));
         gpsCommandSender.delay();
-        piCommPort.close();
+        serialConnection.close();
     }
 
     public void addListener(MessageListener messageListener) {
@@ -54,6 +56,7 @@ public class SerialGps implements Gps, Compass, Speedometer {
     private void addListeners() {
         this.gpsParser.addListener(new VectorListener() {
             public void listen(Vector vector) {
+                System.out.println(vector);
                 SerialGps.this.vector = vector;
             }
         });
@@ -61,6 +64,7 @@ public class SerialGps implements Gps, Compass, Speedometer {
 
         this.gpsParser.addListener(new LocationListener() {
             public void listen(Location location) {
+                System.out.println(location);
                 SerialGps.this.location = location;
             }
         });
@@ -79,5 +83,21 @@ public class SerialGps implements Gps, Compass, Speedometer {
     public double getVelocity() {
         Vector vector = this.vector;
         return vector == null ? 0.0d : vector.getVelocity();
+    }
+
+    class ByteLineWriter implements LineWriter {
+        SerialConnection serialConnection;
+
+        public ByteLineWriter(SerialConnection serialConnection) {
+            ByteLineWriter.this.serialConnection = serialConnection;
+        }
+        @Override
+        public void writeLine(String value) {
+            try {
+                ByteLineWriter.this.serialConnection.write(value.getBytes());
+            } catch (IOException ioe) {
+                throw new RuntimeException(ioe);
+            }
+        }
     }
 }
