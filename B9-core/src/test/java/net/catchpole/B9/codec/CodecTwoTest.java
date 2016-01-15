@@ -25,12 +25,12 @@ public class CodecTwoTest {
 
     @Test
     public void testCodec() throws Exception {
-        test(getBean(10, false), 112);
-        test(getBean(-10, true), 104);
-        test(getBean(32766, true), 33);
-        test(getBean(-32766, false), 125);
-        test(getBean(-1000000, true), 33);
-        test(getBean(1000000, false), 125);
+        test(getBean(10, false), 191);
+        test(getBean(-10, true), 70);
+        test(getBean(32766, true), 72);
+        test(getBean(-32766, false), 199);
+        test(getBean(-1000000, true), 74);
+        test(getBean(1000000, false), 204);
     }
 
     private void test(GnarlyBean gnarlyBean, int length) throws Exception {
@@ -44,7 +44,7 @@ public class CodecTwoTest {
         }
 
         TestCase.assertEquals(gnarlyBean, gnarlyResult);
-//        TestCase.assertEquals(length, data.length);
+        TestCase.assertEquals(length, data.length);
         byte[] regular = regularSerialize(gnarlyBean);
         System.out.println("Len: " + data.length +
                 " compressed: " + compress(data).length +

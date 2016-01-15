@@ -1,10 +1,7 @@
 package net.catchpole.B9.devices.gps;
 
 import net.catchpole.B9.devices.compass.Compass;
-import net.catchpole.B9.devices.gps.command.ChangeBuad;
-import net.catchpole.B9.devices.gps.command.GpsCommandSender;
-import net.catchpole.B9.devices.gps.command.LineWriter;
-import net.catchpole.B9.devices.gps.command.MessageIntervals;
+import net.catchpole.B9.devices.gps.command.*;
 import net.catchpole.B9.devices.gps.listener.LocationListener;
 import net.catchpole.B9.devices.gps.listener.MessageListener;
 import net.catchpole.B9.devices.gps.listener.VectorListener;
@@ -35,11 +32,14 @@ public class SerialGps implements Gps, Compass, Speedometer {
         // tell the GPS to only send the messages we are interested in
         GpsCommandSender gpsCommandSender = new GpsCommandSender(piCommPort);
         gpsCommandSender.send(messageIntervals);
+        gpsCommandSender.send(new FixUpdateRate(500));
+        gpsCommandSender.send(new NmeaUpdateRate(500));
     }
 
     private void changeBaud() {
         // switch GPS to higher baud rate. if the device is currently on the higher baud, this should have no effect
         PiCommPort piCommPort = new PiCommPort(FACTORY_BAUD);
+        // clear any noise
         piCommPort.writeLine("\r\n");
         GpsCommandSender gpsCommandSender = new GpsCommandSender(piCommPort);
         gpsCommandSender.send(new ChangeBuad(ACTIVE_BAUD));
@@ -79,9 +79,5 @@ public class SerialGps implements Gps, Compass, Speedometer {
     public double getVelocity() {
         Vector vector = this.vector;
         return vector == null ? 0.0d : vector.getVelocity();
-    }
-
-    public static void main(String[] args) throws Exception {
-        new SerialGps();
     }
 }

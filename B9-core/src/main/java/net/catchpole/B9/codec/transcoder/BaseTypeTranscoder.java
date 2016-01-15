@@ -195,6 +195,7 @@ public class BaseTypeTranscoder {
                 return 0.0d;
             }
             if (in.readBoolean()) {
+                // parse string version of float to reduce conversion errors
                 return Double.parseDouble(new Float(Float.intBitsToFloat(in.read(32))).toString());
             } else {
                 return Double.longBitsToDouble(in.readLong(64));
@@ -225,33 +226,6 @@ public class BaseTypeTranscoder {
         public void write(BitOutputStream out, String value) throws IOException {
             byteArrayTranscoder.write(out, value.getBytes("utf-8"));
         }
-    }
-
-    class SimpleByteArrayTranscoder implements TypeTranscoder<byte[]> {
-        @Override
-        public byte[] read(BitInputStream in) throws IOException {
-            if (!in.readBoolean()) {
-                return new byte[0];
-            }
-            int len = integerTranscoder.read(in);
-            byte[] value = new byte[len];
-            for (int x = 0; x < len; x++) {
-                value[x] = (byte)in.read(8);
-            }
-            return value;
-        }
-
-        @Override
-        public void write(BitOutputStream out, byte[] value) throws IOException {
-            out.writeBoolean(value.length != 0);
-            if (value.length != 0) {
-                integerTranscoder.write(out, value.length);
-                for (int b : value) {
-                    out.write((b & 0xff), 8);
-                }
-            }
-        }
-
     }
 
     class ByteArrayTranscoder implements TypeTranscoder<byte[]> {
