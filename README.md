@@ -23,11 +23,12 @@ B9 currently supports:
 * HMC5883L Compass Module
 * Spacial maths. Decimal degrees, headings - position, target and angle calculations.
 * Binary motor control (forward and reverse 'tank tracks')
-* Compact Binary Symmetric Serialization (for UDP broadcast of telemetry and command packets)
+* Compact Binary Symmetric Serialization - for broadcast and logging of telemetry and command data
+* UDP transceivers for telemetry and command data
 * Abstract Time (system time, GPS time, simulated time for running test cases)
 * Wii Classic Controller (I2C)
 * Raspberry Pi camera (via the raspistill and raspivid executable)
 
 In development:
 
-* RockBLOCK satellite communications
+* [RockBLOCK](http://www.rock7mobile.com/products-rockblock) satellite communications
