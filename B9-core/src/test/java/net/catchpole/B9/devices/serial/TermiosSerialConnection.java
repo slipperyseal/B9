@@ -6,8 +6,6 @@ import jtermios.TimeVal;
 
 import java.io.IOException;
 
-import static jtermios.JTermios.*;
-
 public class TermiosSerialConnection implements SerialConnection {
     private final int fd;
     private final TimeVal timeVal;
@@ -60,6 +58,7 @@ public class TermiosSerialConnection implements SerialConnection {
         if (n < 0) {
             throw new IOException("write failed");
         }
+        //System.out.print("\r\nport write: " + new String(data));
     }
 
     class Reader implements Runnable {
@@ -75,7 +74,10 @@ public class TermiosSerialConnection implements SerialConnection {
                     if (l < 0) {
                         throw new IOException("read failed");
                     }
-                    dataListener.receive(buffer, l);
+                    if (l > 0) {
+                        dataListener.receive(buffer, l);
+                        //System.out.print("\r\nport read: " + new String(buffer,0,l));
+                    }
                 }
             } catch (Throwable t) {
                 t.printStackTrace();

@@ -1,6 +1,7 @@
-package net.catchpole.B9.devices.serial;
+package net.catchpole.B9.devices.serial.binding;
 
 import net.catchpole.B9.devices.gps.command.LineWriter;
+import net.catchpole.B9.devices.serial.DataListener;
 
 public class LineWriterDataListener implements DataListener {
     private StringBuffer dataBuffer = new StringBuffer();

@@ -4,57 +4,63 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.ServerSocket;
+import java.net.InetAddress;
 import java.net.Socket;
 
-// want to use that serial port remotely? connect it to a socket
 public class SocketSerialPort implements SerialPort {
-    private final SerialPort serialPort;
-    private final int baud;
-    private final ServerSocket serverSocket;
+    private String host;
+    private int port;
+    private Thread thread;
 
-    public SocketSerialPort(SerialPort serialPort, int port, int baud) throws IOException {
-        this.baud = baud;
-        this.serialPort = serialPort;
-        this.serverSocket = new ServerSocket(port);
-    }
-
-    public void accept() {
-        for (;;) {
-            final SerialConnection[] serialConnection = new SerialConnection[1];
-            try {
-                final Socket socket = this.serverSocket.accept();
-                final OutputStream outputStream = socket.getOutputStream();
-                serialConnection[0] = openConnection(baud, new DataListener() {
-                    @Override
-                    public void receive(byte[] data, int len) {
-                        try {
-                            outputStream.write(data, 0, len);
-                        } catch (IOException ioe) {
-                            serialConnection[0].close();
-                        }
-                    }
-                });
-
-                final InputStream inputStream = socket.getInputStream();
-                final byte[] data = new byte[512];
-                for (;;) {
-                    int len = inputStream.read(data);
-                    if (len == -1) {
-                        throw new EOFException();
-                    }
-                    byte[] write = new byte[len];
-                    System.arraycopy(data,0,write,0,len);
-                    serialConnection[0].write(write);
-                }
-            } catch (Exception e) {
-                serialConnection[0].close();
-            }
-        }
+    public SocketSerialPort(String host, int port) {
+        this.host = host;
+        this.port = port;
     }
 
     @Override
     public SerialConnection openConnection(int baud, DataListener dataListener) throws IOException {
-        return serialPort.openConnection(baud, dataListener);
+        final Socket socket = new Socket(InetAddress.getByName(host), port);
+        final OutputStream outputStream = socket.getOutputStream();
+        final SerialConnection serialConnection = new SerialConnection() {
+            @Override
+            public void write(byte[] data) throws IOException {
+                outputStream.write(data);
+                outputStream.flush();
+            }
+
+            @Override
+            public void close() {
+                try {
+                    thread.interrupt();
+                    socket.close();
+                } catch (IOException e) {
+                }
+            }
+        };
+
+        this.thread = new Thread() {
+            @Override
+            public void run() {
+                try {
+                    final InputStream inputStream = socket.getInputStream();
+                    final byte[] data = new byte[512];
+                    for (; ; ) {
+                        int len = inputStream.read(data);
+                        if (len == -1) {
+                            throw new EOFException();
+                        }
+                        dataListener.receive(data, len);
+                    }
+                } catch (IOException ioe) {
+                    ioe.printStackTrace();
+                    serialConnection.close();
+                    return;
+                }
+            }
+        };
+        thread.start();
+
+        return serialConnection;
     }
 }
+

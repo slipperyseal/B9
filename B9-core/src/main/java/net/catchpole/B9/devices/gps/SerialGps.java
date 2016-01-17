@@ -5,7 +5,7 @@ import net.catchpole.B9.devices.gps.command.*;
 import net.catchpole.B9.devices.gps.listener.LocationListener;
 import net.catchpole.B9.devices.gps.listener.MessageListener;
 import net.catchpole.B9.devices.gps.listener.VectorListener;
-import net.catchpole.B9.devices.serial.LineWriterDataListener;
+import net.catchpole.B9.devices.serial.binding.LineWriterDataListener;
 import net.catchpole.B9.devices.serial.SerialConnection;
 import net.catchpole.B9.devices.serial.SerialPort;
 import net.catchpole.B9.spacial.Heading;
@@ -56,7 +56,6 @@ public class SerialGps implements Gps, Compass, Speedometer {
     private void addListeners() {
         this.gpsParser.addListener(new VectorListener() {
             public void listen(Vector vector) {
-                System.out.println(vector);
                 SerialGps.this.vector = vector;
             }
         });
@@ -64,7 +63,6 @@ public class SerialGps implements Gps, Compass, Speedometer {
 
         this.gpsParser.addListener(new LocationListener() {
             public void listen(Location location) {
-                System.out.println(location);
                 SerialGps.this.location = location;
             }
         });
