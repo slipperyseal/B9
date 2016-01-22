@@ -21,7 +21,7 @@ public class BlueESCThrusters implements Thrusters {
                 for (; ; ) {
                     try {
                         Thread.sleep(500);
-                        updateAgain();
+                        updateEsc();
                     } catch (Throwable t) {
                         t.printStackTrace();
                     }
@@ -37,7 +37,7 @@ public class BlueESCThrusters implements Thrusters {
         this.blueESCRight.update(this.right);
     }
 
-    public synchronized void updateAgain() {
+    public synchronized void updateEsc() {
         this.blueESCLeft.update(this.left);
         this.blueESCRight.update(this.right);
     }

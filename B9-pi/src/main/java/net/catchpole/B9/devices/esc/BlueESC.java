@@ -4,6 +4,23 @@ import com.pi4j.io.i2c.I2CBus;
 import com.pi4j.io.i2c.I2CDevice;
 import com.pi4j.io.i2c.I2CFactory;
 
+/*
+
+Due to the length of the T100 cables and their possible capasitance problems,
+I recommend changing the I2C speed of the Pi from 100khz down to something like 20khz.
+On newer version of raspbian the way to do this is to edit /boot/config.txt and add this line..
+
+dtparam=i2c1_baudrate=20000
+
+On reboot, you should see the rate has changed from the default.
+
+Keep the leads as short as you can. As the BlueESC I2C is 5 volt and the Pi's I2C is 3.3v
+you will need to use level converters, and put I2C pull up resistors on the 5v side.
+Also, i'm going to put each thruster behind it's own level converter, to isolate the capasitance of each cable
+(that's my theory) and see how that goes.
+
+*/
+
 public class BlueESC implements ESC {
     private final I2CBus bus;
     private final I2CDevice i2CDevice;
@@ -30,6 +47,7 @@ public class BlueESC implements ESC {
     }
 
     public void initialize() {
+        // thrusters wont initialize unless they are set to zero for a few seconds
         for (int x=0;x<2;x++) {
             update(0);
             this.sleep(1000);
@@ -71,6 +89,7 @@ public class BlueESC implements ESC {
             }
             return true;
         } catch (Exception e) {
+            System.out.println(e.getClass().getName() + ' ' + e.getMessage());
             return false;
         }
     }

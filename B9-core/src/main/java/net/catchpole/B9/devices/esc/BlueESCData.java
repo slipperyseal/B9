@@ -72,6 +72,7 @@ public class BlueESCData {
                 ", voltage=" + String.format( "%.2f", voltage ) +
                 ", temperature=" + String.format( "%.2f", temperature ) +
                 ", current=" + String.format( "%.2f", current ) +
-                ", isAlive=" + isAlive();
+                ", isAlive=" + isAlive() +
+                (isAlive() ? "" : " identifier: " + identifier);
     }
 }

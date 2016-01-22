@@ -58,9 +58,11 @@ public class TermiosSerialConnection implements SerialConnection {
         if (n < 0) {
             throw new IOException("write failed");
         }
-        //System.out.print("\r\nport write: " + new String(data));
     }
 
+    // sometimes i get rubbish data from this read. i think it's to do with a Thread blocking on the read
+    // while another thread is performing a write.
+    // this Thread is to support the same model as the PI4J comm port which pushes writes
     class Reader implements Runnable {
         public void run() {
             try {
@@ -76,7 +78,6 @@ public class TermiosSerialConnection implements SerialConnection {
                     }
                     if (l > 0) {
                         dataListener.receive(buffer, l);
-                        //System.out.print("\r\nport read: " + new String(buffer,0,l));
                     }
                 }
             } catch (Throwable t) {
