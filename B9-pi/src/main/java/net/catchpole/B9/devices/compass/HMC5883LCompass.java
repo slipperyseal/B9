@@ -6,6 +6,7 @@ import com.pi4j.io.i2c.I2CFactory;
 import net.catchpole.B9.spacial.Heading;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -74,7 +75,8 @@ public class HMC5883LCompass implements Compass {
 
     private Map<Double,Gauss> gaussMap = new HashMap<Double, Gauss>();
     private final I2CBus bus;
-    private final I2CDevice device;
+    private I2CDevice device;
+    private boolean started;
     private final byte[] bytes = new byte[32];
     private double scale;
 
@@ -86,19 +88,36 @@ public class HMC5883LCompass implements Compass {
         this.addGauss(4.7d, 0x05, 2.56d);
         this.addGauss(5.6d, 0x06, 3.03d);
         this.addGauss(8.1d, 0x07, 4.35);
-
         this.bus = I2CFactory.getInstance(I2CBus.BUS_1);
-        this.device = bus.getDevice(HMC5883L_ADDRESS);
+        init();
+    }
 
-        this.device.write(HMC5883L_RA_CONFIG_A,
-                (byte)( (HMC5883L_AVERAGING_8 << (HMC5883L_CRA_AVERAGE_BIT - HMC5883L_CRA_AVERAGE_LENGTH + 1)) |
-                        (HMC5883L_RATE_15     << (HMC5883L_CRA_RATE_BIT - HMC5883L_CRA_RATE_LENGTH + 1)) |
-                        (HMC5883L_BIAS_NORMAL << (HMC5883L_CRA_BIAS_BIT - HMC5883L_CRA_BIAS_LENGTH + 1)) ));
-        setScale(1.3d);
-//        this.device.write(HMC5883L_RA_CONFIG_B,
-//                (byte)(HMC5883L_GAIN_1090 << (HMC5883L_CRB_GAIN_BIT - HMC5883L_CRB_GAIN_LENGTH + 1)) );
-        this.device.write(HMC5883L_RA_MODE,
-                (byte) (HMC5883L_MODE_CONTINUOUS << (HMC5883L_MODEREG_BIT - HMC5883L_MODEREG_LENGTH + 1)));
+    private void init() {
+        try {
+            if (this.device == null) {
+                this.device = bus.getDevice(HMC5883L_ADDRESS);
+            }
+        } catch (Throwable t) {
+            System.err.println(HMC5883LCompass.class.getName() + " " + t.getClass() + " " + t.getMessage());
+            return;
+        }
+
+        if (!started) {
+            try {
+                this.device.write(HMC5883L_RA_CONFIG_A,
+                        (byte) ((HMC5883L_AVERAGING_8 << (HMC5883L_CRA_AVERAGE_BIT - HMC5883L_CRA_AVERAGE_LENGTH + 1)) |
+                                (HMC5883L_RATE_15 << (HMC5883L_CRA_RATE_BIT - HMC5883L_CRA_RATE_LENGTH + 1)) |
+                                (HMC5883L_BIAS_NORMAL << (HMC5883L_CRA_BIAS_BIT - HMC5883L_CRA_BIAS_LENGTH + 1))));
+                setScale(1.3d);
+                this.device.write(HMC5883L_RA_MODE,
+                        (byte) (HMC5883L_MODE_CONTINUOUS << (HMC5883L_MODEREG_BIT - HMC5883L_MODEREG_LENGTH + 1)));
+                if (test()) {
+                    started = true;
+                }
+            } catch (Throwable t) {
+                System.err.println(HMC5883LCompass.class.getName() + " " + t.getClass() + " " + t.getMessage());
+            }
+        }
     }
 
     public boolean test() throws Exception {
@@ -106,7 +125,9 @@ public class HMC5883LCompass implements Compass {
     }
 
     public Heading getHeading() {
+        init();
         try {
+            Arrays.fill(bytes, (byte)0); // clear buffer
             int r;
             if ((r=device.read(HMC5883L_RA_DATAX_H, bytes, 0, 6)) == 6) {
                 short rx = (short)(((bytes[0] & 0xff) << 8) | (bytes[1] & 0xff));
@@ -119,11 +140,9 @@ public class HMC5883LCompass implements Compass {
 
                 double heading = Math.atan2(y,x) * (180.0d / Math.PI) + 180.0d;
 
-                //System.out.println((int)heading + "\t| rx = " + rx + "\try = " + ry + "\trz =  " + rz + "\t| x =" + (int)x + "\ty = " + (int)y + "\tz = " + (int)z);
-
                 return new Heading(heading);
             } else {
-                System.out.println("ERRRR: " + r);
+                System.err.println("ERRRR: " + r);
             }
         } catch (IOException ioe) {
             ioe.printStackTrace();

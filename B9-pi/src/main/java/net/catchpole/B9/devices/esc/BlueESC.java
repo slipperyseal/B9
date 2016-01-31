@@ -23,7 +23,7 @@ Also, i'm going to put each thruster behind it's own level converter, to isolate
 
 public class BlueESC implements ESC {
     private final I2CBus bus;
-    private final I2CDevice i2CDevice;
+    private I2CDevice i2CDevice;
     private final int device;
     private final byte[] readBuffer = new byte[9];
     private final byte[] writeBuffer = new byte[2];
@@ -35,18 +35,28 @@ public class BlueESC implements ESC {
         this.forwardPropeller = forwardPropeller;
         this.bus = I2CFactory.getInstance(I2CBus.BUS_1);
         this.device = device;
-        this.i2CDevice = bus.getDevice(0x29 + device);
+        this.init();
+    }
 
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-            @Override
-            public void run() {
-                stopping = true;
-                update(0);
+    private void init() {
+        try {
+            if (this.i2CDevice == null) {
+                this.i2CDevice = bus.getDevice(0x29 + device);
+                Runtime.getRuntime().addShutdownHook(new Thread() {
+                    @Override
+                    public void run() {
+                        stopping = true;
+                        update(0);
+                    }
+                });
             }
-        });
+        } catch (Throwable t) {
+            System.err.println(BlueESC.class.getName() + " " + t.getClass() + " " + t.getMessage());
+        }
     }
 
     public void initialize() {
+        init();
         // thrusters wont initialize unless they are set to zero for a few seconds
         for (int x=0;x<2;x++) {
             update(0);
@@ -64,8 +74,8 @@ public class BlueESC implements ESC {
                         getValue(readBuffer, 6),
                         readBuffer[8] & 0xff);
             }
-        } catch (Exception e) {
-            return null;
+        } catch (Throwable t) {
+            System.err.println(BlueESC.class.getName() + " " + t.getClass() + " " + t.getMessage());
         }
         return null;
     }
@@ -88,8 +98,8 @@ public class BlueESC implements ESC {
                 i2CDevice.write(0, writeBuffer, 0, 2);
             }
             return true;
-        } catch (Exception e) {
-            System.out.println(e.getClass().getName() + ' ' + e.getMessage());
+        } catch (Throwable t) {
+            System.err.println(BlueESC.class.getName() + " " + t.getClass() + " " + t.getMessage());
             return false;
         }
     }
