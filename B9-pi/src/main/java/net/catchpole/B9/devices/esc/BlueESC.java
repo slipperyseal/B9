@@ -4,6 +4,8 @@ import com.pi4j.io.i2c.I2CBus;
 import com.pi4j.io.i2c.I2CDevice;
 import com.pi4j.io.i2c.I2CFactory;
 
+import java.util.Arrays;
+
 /*
 
 Due to the length of the T100 cables and their possible capasitance problems,
@@ -66,6 +68,7 @@ public class BlueESC implements ESC {
 
     public BlueESCData read() {
         try {
+            Arrays.fill(readBuffer, (byte) 0); // clear buffer in case data is stale (not sure its possible, but do it anyway)
             if (i2CDevice.read(0x02, readBuffer, 0, readBuffer.length) == readBuffer.length) {
                 return new BlueESCData(
                         getValue(readBuffer, 0),

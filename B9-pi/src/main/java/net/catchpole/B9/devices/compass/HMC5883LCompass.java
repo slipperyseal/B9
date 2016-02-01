@@ -127,9 +127,8 @@ public class HMC5883LCompass implements Compass {
     public Heading getHeading() {
         init();
         try {
-            Arrays.fill(bytes, (byte)0); // clear buffer
-            int r;
-            if ((r=device.read(HMC5883L_RA_DATAX_H, bytes, 0, 6)) == 6) {
+            Arrays.fill(bytes, (byte)0); // clear buffer in case data is stale (not sure its possible, but do it anyway)
+            if (device.read(HMC5883L_RA_DATAX_H, bytes, 0, 6) == 6) {
                 short rx = (short)(((bytes[0] & 0xff) << 8) | (bytes[1] & 0xff));
                 short rz = (short)(((bytes[2] & 0xff) << 8) | (bytes[3] & 0xff));
                 short ry = (short)(((bytes[4] & 0xff) << 8) | (bytes[5] & 0xff));
@@ -142,7 +141,7 @@ public class HMC5883LCompass implements Compass {
 
                 return new Heading(heading);
             } else {
-                System.err.println("ERRRR: " + r);
+                System.err.println(HMC5883LCompass.class.getName() + " read fail");
             }
         } catch (IOException ioe) {
             ioe.printStackTrace();

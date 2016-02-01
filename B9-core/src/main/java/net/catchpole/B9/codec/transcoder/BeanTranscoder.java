@@ -82,8 +82,8 @@ public class BeanTranscoder implements TypeTranscoder<Object> {
             out.write(id, 8);
             for (Field field : beanTypes.getFields(object.getClass())) {
                 Class type = field.getType();
-                Object value = field.get(object);
                 field.setAccessible(true);
+                Object value = field.get(object);
 
                 if (beanTypes.getId(type) != null) {
                     out.writeBoolean(value != null);
@@ -92,10 +92,12 @@ public class BeanTranscoder implements TypeTranscoder<Object> {
                     }
                 } else {
                     TypeTranscoder typeTranscoder = baseTypeTranscoder.getTranscoder(field.getType());
+                    System.out.println(typeTranscoder);
                     if (typeTranscoder == null) {
                         throw new IllegalArgumentException("No transcoder for " + type.getName());
                     }
 
+                    System.out.println("type.isPrimitive() " + type.isPrimitive());
                     if (!type.isPrimitive()) {
                         out.writeBoolean(value != null);
                     }
