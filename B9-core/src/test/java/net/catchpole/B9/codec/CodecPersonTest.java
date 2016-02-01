@@ -27,24 +27,25 @@ public class CodecPersonTest {
              8 bits 'p' = PersonBean.class
 
         Integer age;
-             1 bits - true - is not null?
-             1 bits - true - is not zero?
-             1 bits - true - fits in 16 bits?
-            16 bits - 10
+             1 bit  - true - is not null?
+             1 bit  - true - is not zero?
+             1 bit  - true - fits in 16 bits?
+            16 bits - value 10
 
         boolean isAlive;
 
-            1 true
+             1 bit -  value true
+
+        Integer cats;
+
+             1 bit - false - is not null?
 
         String name;
 
-            1 bit - true - is not null?
-            1 bit - true - not not zero length?
-
-          (length)
-            1 bits - true - is not zero?
-            1 bits - true - fits in 16 bits?
-           16 bits - 10
+            1 bit  - true - is not null?
+            1 bit  - true - is not zero length?
+            1 bit  - true - fits in 16 bits?
+           16 bits - value 5 (length)
 
            3 bits - bits required = 5
            8 bits - base value = 83

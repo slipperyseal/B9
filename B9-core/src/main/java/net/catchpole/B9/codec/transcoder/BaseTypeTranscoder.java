@@ -234,7 +234,7 @@ public class BaseTypeTranscoder {
             if (!in.readBoolean()) {
                 return new byte[0];
             }
-            int len = integerTranscoder.read(in);
+            int len = in.readBoolean() ? in.readSigned(16) : in.readSigned(32);
             byte[] value = new byte[len];
 
             int bits = in.read(3);
@@ -255,7 +255,9 @@ public class BaseTypeTranscoder {
         public void write(BitOutputStream out, byte[] value) throws IOException {
             out.writeBoolean(value.length != 0);
             if (value.length != 0) {
-                integerTranscoder.write(out, value.length);
+                boolean fitsShort = value.length >= Short.MIN_VALUE && value.length <= Short.MAX_VALUE;
+                out.writeBoolean(fitsShort);
+                out.write(value.length, fitsShort ? 16 : 32);
 
                 int base = min(value);
                 int bits = bitMasks.bitsRequired(max(value) - base);
