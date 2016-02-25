@@ -30,7 +30,7 @@ public class CodecTwoTest {
         test(getBean(32766, true), 72);
         test(getBean(-32766, false), 199);
         test(getBean(-1000000, true), 74);
-        test(getBean(1000000, false), 204);
+        test(getBean(1000000, false), 203);
     }
 
     private void test(GnarlyBean gnarlyBean, int length) throws Exception {

@@ -14,12 +14,14 @@ public class CodecPersonTest {
         personBean.setName("Spike");
         personBean.setAge(10);
         personBean.setAlive(true);
+        personBean.setCats(null);
 
         byte[] bytes = codec.encode(personBean);
         System.out.println(bytes.length);
         System.out.println(codec.decode(bytes));
     }
 }
+
 /*
 
         PersonBean.class

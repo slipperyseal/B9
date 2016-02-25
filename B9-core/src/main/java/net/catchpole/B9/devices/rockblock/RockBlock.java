@@ -30,6 +30,10 @@ public class RockBlock {
         atSession.atCommand("AT&K0");   // disable RTS/CTS
     }
 
+    public void sendTestMessage(String text) throws IOException {
+        atSession.atCommand("AT+SBDWT=" + text);
+    }
+
     public ShortBurstDataStatusExtended getStatus() throws IOException {
         return new ShortBurstDataStatusExtended(getData(atSession.atCommand("AT+SBDSX")));
     }

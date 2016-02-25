@@ -10,7 +10,11 @@ public class RockBlockTest {
     public void test() throws Exception {
         RockBlock rockBlock = new RockBlock(new SocketSerialPort("localhost", 4000));
         rockBlock.connect();
-        System.out.println(rockBlock.hasReception());
+        System.out.println(rockBlock.getStatus());
+        if (rockBlock.waitForReception()) {
+            rockBlock.sendTestMessage("oh HAI MelbJVM!");
+            rockBlock.initiateSession();
+        }
         System.out.println(rockBlock.getStatus());
         Thread.sleep(5000);
     }
