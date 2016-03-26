@@ -12,8 +12,10 @@ import java.util.List;
 import java.util.Random;
 
 public class BitStreamTest {
-    // hmhm sometimes fails. i think we have a problem
-    //@Test
+    private Random random = new Random();
+    private BitMasks bitMasks = new BitMasks();
+
+    @Test
     public void testRandom() throws IOException {
         final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         final BitOutputStream bitOutputStream = new BitOutputStream(byteArrayOutputStream);
@@ -119,15 +121,23 @@ public class BitStreamTest {
 
     private List<Value> inventData() {
         List<Value> values = new ArrayList<>();
-        BitMasks bitMasks = new BitMasks();
-        Random random = new Random();
-        for (int x=0;x<10000;x++) {
-            Value value = new Value();
-            value.value = random.nextInt(1280000);
-            value.bits = bitMasks.bitsRequired(value.value);
-            values.add(value);
+        for (int x=0;x<100000;x++) {
+            values.add(getValue(230000));
+            values.add(getValue(320));
+            values.add(getValue(64000));
+            values.add(getValue(10));
         }
         return values;
+    }
+
+    private Value getValue(int range) {
+        Value value = new Value();
+        value.value = random.nextInt(range) - (range / 2);
+        value.bits = bitMasks.bitsRequired(value.value);
+        if (value.bits == 0) {
+            value.bits = 1;
+        }
+        return value;
     }
 
     private String toString(byte[] data) {
@@ -157,5 +167,13 @@ public class BitStreamTest {
     class Value {
         int bits;
         int value;
+
+        @Override
+        public String toString() {
+            return "Value{" +
+                    "bits=" + bits +
+                    ", value=" + value +
+                    '}';
+        }
     }
 }
