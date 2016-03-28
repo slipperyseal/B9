@@ -5,38 +5,16 @@ import net.catchpole.B9.codec.stream.BitInputStream;
 import net.catchpole.B9.codec.stream.BitOutputStream;
 
 import java.io.IOException;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
-import java.util.Map;
 
 public class BeanTranscoder implements TypeTranscoder<Object> {
-    private final Map<String,Object> defaults = new HashMap<String, Object>();
-
+    private final MagicConstructor magicConstructor = new MagicConstructor();
     private final BaseTypeTranscoder baseTypeTranscoder;
     private final Types beanTypes;
 
     public BeanTranscoder(BaseTypeTranscoder baseTypeTranscoder, Types beanTypes) {
         this.baseTypeTranscoder = baseTypeTranscoder;
         this.beanTypes = beanTypes;
-
-        this.defaults.put(Boolean.class.getName(), false);
-        this.defaults.put(Boolean.TYPE.getName(), false);
-        this.defaults.put(Byte.class.getName(), (byte)0);
-        this.defaults.put(Byte.TYPE.getName(), (byte)0);
-        this.defaults.put(Short.class.getName(), (short)0);
-        this.defaults.put(Short.TYPE.getName(), (short)0);
-        this.defaults.put(Character.class.getName(), (char)0);
-        this.defaults.put(Character.TYPE.getName(), (char)0);
-        this.defaults.put(Integer.class.getName(), 0);
-        this.defaults.put(Integer.TYPE.getName(), 0);
-        this.defaults.put(Long.class.getName(), 0l);
-        this.defaults.put(Long.TYPE.getName(), 0l);
-        this.defaults.put(Float.class.getName(), 0.0f);
-        this.defaults.put(Float.TYPE.getName(), 0.0f);
-        this.defaults.put(Double.class.getName(), 0.0d);
-        this.defaults.put(Double.TYPE.getName(), 0.0d);
     }
 
     @Override
@@ -48,7 +26,7 @@ public class BeanTranscoder implements TypeTranscoder<Object> {
                 throw new IllegalArgumentException("No type found for id " + id);
             }
 
-            Object object = construct(clazz);
+            Object object = magicConstructor.construct(clazz);
             for (Field field : beanTypes.getFields(clazz)) {
                 Class type = field.getType();
 
@@ -92,12 +70,10 @@ public class BeanTranscoder implements TypeTranscoder<Object> {
                     }
                 } else {
                     TypeTranscoder typeTranscoder = baseTypeTranscoder.getTranscoder(field.getType());
-                    System.out.println(typeTranscoder);
                     if (typeTranscoder == null) {
                         throw new IllegalArgumentException("No transcoder for " + type.getName());
                     }
 
-                    System.out.println("type.isPrimitive() " + type.isPrimitive());
                     if (!type.isPrimitive()) {
                         out.writeBoolean(value != null);
                     }
@@ -111,24 +87,5 @@ public class BeanTranscoder implements TypeTranscoder<Object> {
         }
     }
 
-    private Object construct(Class clazz) throws InstantiationException, IllegalAccessException, InvocationTargetException {
-        Constructor[] constructors = clazz.getDeclaredConstructors();
-        for (Constructor constructor : constructors) {
-            if (constructor.getParameterTypes().length == 0) {
-                // use default constructor if available
-                return constructor.newInstance();
-            }
-        }
-        // try a constructor and use "default" values which we will write over later
-        Constructor constructor = constructors[0];
-        Class[] paramClasses = constructor.getParameterTypes();
-        Object[] params = new Object[paramClasses.length];
-        for (int x=0;x<paramClasses.length;x++) {
-            Class paramClass = paramClasses[x];
-            if (paramClass.isPrimitive()) {
-                params[x] = defaults.get(paramClass.getName());
-            }
-        }
-        return constructor.newInstance(params);
-    }
+
 }

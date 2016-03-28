@@ -6,12 +6,9 @@ import net.catchpole.B9.codec.stream.BitOutputStream;
 import net.catchpole.B9.codec.transcoder.BaseTypeTranscoder;
 import net.catchpole.B9.codec.transcoder.BeanTranscoder;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
+import java.io.*;
 
-// codec two uses bit streams and will replace codec one. but it's not finished
-public class CodecTwo {
+public class CodecTwo implements Codec {
     private final Types types = new Types();
     private final BaseTypeTranscoder baseTypeTranscoder = new BaseTypeTranscoder();
     private final BeanTranscoder beanTranscoder = new BeanTranscoder(baseTypeTranscoder, types);
@@ -28,15 +25,22 @@ public class CodecTwo {
     }
 
     public byte[] encode(Object object) throws IOException {
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        BitOutputStream bitOutputStream = new BitOutputStream(byteArrayOutputStream);
-        beanTranscoder.write(bitOutputStream, object);
-        bitOutputStream.flush();
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(128);
+        encode(object, byteArrayOutputStream);
         return byteArrayOutputStream.toByteArray();
     }
 
     public Object decode(byte[] bytes) throws IOException {
-        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
-        return beanTranscoder.read(new BitInputStream(byteArrayInputStream));
+        return decode(new ByteArrayInputStream(bytes));
+    }
+
+    public void encode(Object object, OutputStream outputStream) throws IOException {
+        BitOutputStream bitOutputStream = new BitOutputStream(outputStream);
+        beanTranscoder.write(bitOutputStream, object);
+        bitOutputStream.flush();
+    }
+
+    public Object decode(InputStream inputStream) throws IOException {
+        return beanTranscoder.read(new BitInputStream(inputStream));
     }
 }
