@@ -15,10 +15,10 @@ import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
 import java.util.zip.Inflater;
 
-public class CodecTwoTest {
-    private CodecTwo codec = new CodecTwo();
+public class B9CodecComplexTest {
+    private B9Codec codec = new B9Codec();
 
-    public CodecTwoTest() throws Exception {
+    public B9CodecComplexTest() throws Exception {
         codec.addType('g', GnarlyBean.class);
         codec.addType('c', ChildBean.class);
     }
@@ -46,10 +46,10 @@ public class CodecTwoTest {
         TestCase.assertEquals(gnarlyBean, gnarlyResult);
         TestCase.assertEquals(length, data.length);
         byte[] regular = regularSerialize(gnarlyBean);
-        System.out.println("Len: " + data.length +
-                " compressed: " + compress(data).length +
-                " regular: " + regular.length +
-                " regular compressed: " + compress(regular).length);
+        System.out.println("B9: " + data.length +
+                " B9 compressed: " + compress(data).length +
+                " java serialized: " + regular.length +
+                " java serialized compressed: " + compress(regular).length);
     }
 
     private byte[] regularSerialize(Object object) throws IOException {

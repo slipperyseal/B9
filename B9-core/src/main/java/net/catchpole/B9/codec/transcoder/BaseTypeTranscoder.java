@@ -20,17 +20,19 @@ public class BaseTypeTranscoder {
     private final FloatTranscoder floatTranscoder = new FloatTranscoder();
     private final DoubleTranscoder doubleTranscoder = new DoubleTranscoder();
     private final StringTranscoder stringTranscoder = new StringTranscoder();
-    private final TypeTranscoder[] baseTranscoders = new TypeTranscoder[] {
-            booleanTranscoder, byteTranscoder, shortTranscoder,
-            characterTranscoder, integerTranscoder, longTranscoder,
-            floatTranscoder, doubleTranscoder, stringTranscoder
-    };
 
     private final ListTranscoder listTranscoder = new ListTranscoder();
     private final SetTranscoder setTranscoder = new SetTranscoder();
     private final MapTranscoder mapTranscoder = new MapTranscoder();
     private final ByteArrayTranscoder byteArrayTranscoder = new ByteArrayTranscoder();
     private final ObjectArrayTranscoder objectArrayTranscoder = new ObjectArrayTranscoder();
+
+    private final TypeTranscoder[] baseTranscoders = new TypeTranscoder[] {
+            booleanTranscoder, byteTranscoder, shortTranscoder, characterTranscoder,
+            integerTranscoder, longTranscoder, floatTranscoder, doubleTranscoder,
+            stringTranscoder, listTranscoder, setTranscoder, mapTranscoder,
+            byteArrayTranscoder, objectArrayTranscoder
+    };
 
     private BeanTranscoder beanTranscoder;
 
@@ -70,13 +72,13 @@ public class BaseTypeTranscoder {
     }
 
     public TypeTranscoder getTranscoder(Class clazz) {
-        if (clazz.isAssignableFrom(List.class)) {
+        if (List.class.isAssignableFrom(clazz)) {
             return listTranscoder;
         }
-        if (clazz.isAssignableFrom(Set.class)) {
+        if (Set.class.isAssignableFrom(clazz)) {
             return setTranscoder;
         }
-        if (clazz.isAssignableFrom(Map.class)) {
+        if (Map.class.isAssignableFrom(clazz)) {
             return mapTranscoder;
         }
         if (clazz.isArray()) {
@@ -195,7 +197,7 @@ public class BaseTypeTranscoder {
                 return 0.0d;
             }
             if (in.readBoolean()) {
-                // parse string version of float to reduce conversion errors
+                // parse string version to avoid conversion errors
                 return Double.parseDouble(new Float(Float.intBitsToFloat(in.read(32))).toString());
             } else {
                 return Double.longBitsToDouble(in.readLong(64));

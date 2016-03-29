@@ -8,7 +8,7 @@ import net.catchpole.B9.codec.transcoder.BeanTranscoder;
 
 import java.io.*;
 
-public class CodecTwo implements Codec {
+public class B9Codec implements Codec {
     private final Types types = new Types();
     private final BaseTypeTranscoder baseTypeTranscoder = new BaseTypeTranscoder();
     private final BeanTranscoder beanTranscoder = new BeanTranscoder(baseTypeTranscoder, types);

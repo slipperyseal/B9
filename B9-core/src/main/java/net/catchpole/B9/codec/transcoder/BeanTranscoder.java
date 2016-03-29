@@ -20,7 +20,7 @@ public class BeanTranscoder implements TypeTranscoder<Object> {
     @Override
     public Object read(BitInputStream in) throws IOException {
         try {
-            char id = (char)in.read(8);
+            char id = (char)in.read(in.readBoolean() ? 7 : 16);
             Class clazz = beanTypes.getType(id);
             if (clazz == null) {
                 throw new IllegalArgumentException("No type found for id " + id);
@@ -57,7 +57,10 @@ public class BeanTranscoder implements TypeTranscoder<Object> {
             if (id == null) {
                 throw new IllegalArgumentException("No type encoding defined for " + object.getClass().getName());
             }
-            out.write(id, 8);
+            boolean fitsSeven = id <= 127;
+            out.writeBoolean(fitsSeven);
+            out.write(id & 0xffff, fitsSeven ? 7 : 16);
+
             for (Field field : beanTypes.getFields(object.getClass())) {
                 Class type = field.getType();
                 field.setAccessible(true);

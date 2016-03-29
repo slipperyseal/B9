@@ -3,8 +3,8 @@ package net.catchpole.B9.codec;
 import net.catchpole.B9.codec.bean.PersonBean;
 import org.junit.Test;
 
-public class CodecPersonTest {
-    private CodecTwo codec = new CodecTwo();
+public class B9CodecPersonTest {
+    private B9Codec codec = new B9Codec();
 
     @Test
     public void codecPersonTest() throws Exception {
