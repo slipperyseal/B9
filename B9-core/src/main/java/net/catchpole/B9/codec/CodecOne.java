@@ -91,6 +91,14 @@ public class CodecOne implements Codec {
         return decode(new DataInputStream(byteArrayInputStream));
     }
 
+    public void encode(Object object, OutputStream outputStream) throws IOException {
+        outputStream.write(encode(object));
+    }
+
+    public Object decode(InputStream inputStream) throws IOException {
+        return decode(new DataInputStream(inputStream));
+    }
+
     public Object decode(DataInputStream dataInputStream) throws IOException {
         try {
             char id = (char) dataInputStream.read();
