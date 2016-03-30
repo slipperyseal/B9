@@ -45,6 +45,8 @@ public class BeanTranscoder implements TypeTranscoder<Object> {
                 }
             }
             return object;
+        } catch (IOException ioe) {
+            throw ioe;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -85,6 +87,8 @@ public class BeanTranscoder implements TypeTranscoder<Object> {
                     }
                 }
             }
+        } catch (IOException ioe) {
+            throw ioe;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

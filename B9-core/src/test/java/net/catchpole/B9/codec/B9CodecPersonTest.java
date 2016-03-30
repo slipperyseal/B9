@@ -1,7 +1,12 @@
 package net.catchpole.B9.codec;
 
+import junit.framework.TestCase;
 import net.catchpole.B9.codec.bean.PersonBean;
 import org.junit.Test;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 
 public class B9CodecPersonTest {
     private B9Codec codec = new B9Codec();
@@ -19,6 +24,15 @@ public class B9CodecPersonTest {
         byte[] bytes = codec.encode(personBean);
         System.out.println(bytes.length);
         System.out.println(codec.decode(bytes));
+
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        codec.encode(personBean, byteArrayOutputStream);
+        codec.encode(personBean, byteArrayOutputStream);
+        codec.encode(personBean, byteArrayOutputStream);
+        InputStream inputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
+        TestCase.assertEquals(personBean, codec.decode(inputStream));
+        TestCase.assertEquals(personBean, codec.decode(inputStream));
+        TestCase.assertEquals(personBean, codec.decode(inputStream));
     }
 }
 
