@@ -18,7 +18,7 @@ public class BlueESCTest {
         int targeThrottle = Integer.parseInt(args[2]);
         int increment = Integer.parseInt(args[3]);
 
-        List<BlueESC> devices = new ArrayList<>();
+        List<BlueESC> devices = new ArrayList<BlueESC>();
         for (int x=0;x<totalDevices;x++) {
             devices.add(new BlueESC(firstDevice + x, false));
         }

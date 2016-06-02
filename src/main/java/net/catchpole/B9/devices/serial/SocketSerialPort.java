@@ -18,7 +18,7 @@ public class SocketSerialPort implements SerialPort {
     }
 
     @Override
-    public SerialConnection openConnection(int baud, DataListener dataListener) throws IOException {
+    public SerialConnection openConnection(int baud, final DataListener dataListener) throws IOException {
         final Socket socket = new Socket(InetAddress.getByName(host), port);
         final OutputStream outputStream = socket.getOutputStream();
         final SerialConnection serialConnection = new SerialConnection() {

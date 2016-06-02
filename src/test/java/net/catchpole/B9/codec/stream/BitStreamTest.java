@@ -120,7 +120,7 @@ public class BitStreamTest {
     }
 
     private List<Value> inventData() {
-        List<Value> values = new ArrayList<>();
+        List<Value> values = new ArrayList<Value>();
         for (int x=0;x<100000;x++) {
             values.add(getValue(230000));
             values.add(getValue(320));

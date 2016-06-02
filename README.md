@@ -9,11 +9,6 @@ This project is part of the [Robotics Mission to Antarctica](http://robotics.cat
 
 ![Nyx2](http://robotics.catchpole.net/images/nyx2-surf.jpg "Nyx2")
 
-B9 is split into two modules:
-
-* B9-core
-* B9-pi
-
 B9-pi contains classes which have a direct dependency on Pi4J, while the B9-core can be built and run in any environment.
 
 B9 currently supports:

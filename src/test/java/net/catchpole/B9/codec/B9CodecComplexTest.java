@@ -80,7 +80,7 @@ public class B9CodecComplexTest {
         gnarlyBean.d2 = useNull ? null : ((double)value) + 0.1d;
         gnarlyBean.string = useNull ? null : ("Test Value abcdefZ%(&#^(&4863q" + value);
         gnarlyBean.maya = useNull ? null : new ChildBean(1.1f);
-        gnarlyBean.set = new HashSet<>();
+        gnarlyBean.set = new HashSet();
         gnarlyBean.set.add("aaaa");
         gnarlyBean.set.add(new ChildBean(0.2f));
         gnarlyBean.map = new HashMap();
