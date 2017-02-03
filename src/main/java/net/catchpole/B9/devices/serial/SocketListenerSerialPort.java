@@ -25,14 +25,19 @@ public class SocketListenerSerialPort implements SerialPort {
             try {
                 final Socket socket = this.serverSocket.accept();
                 final OutputStream outputStream = socket.getOutputStream();
-                serialConnection[0] = openConnection(baud, new DataListener() {
+                serialConnection[0] = openConnection(baud);
+                serialConnection[0].setDataListener(new DataListener() {
                     @Override
                     public void receive(byte[] data, int len) {
                         try {
                             outputStream.write(data, 0, len);
                             outputStream.flush();
                         } catch (IOException ioe) {
-                            serialConnection[0].close();
+                            try {
+                                serialConnection[0].close();
+                            } catch (IOException ioeClose) {
+                                ioeClose.printStackTrace();
+                            }
                         }
                     }
                 });
@@ -44,19 +49,27 @@ public class SocketListenerSerialPort implements SerialPort {
                     if (len == -1) {
                         throw new EOFException();
                     }
-                    byte[] write = new byte[len];
-                    System.arraycopy(data,0,write,0,len);
-                    serialConnection[0].write(write);
+                    if (len == data.length) {
+                        serialConnection[0].write(data);
+                    } else {
+                        byte[] write = new byte[len];
+                        System.arraycopy(data, 0, write, 0, len);
+                        serialConnection[0].write(write);
+                    }
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                serialConnection[0].close();
+                try {
+                    serialConnection[0].close();
+                } catch (IOException ioeClose) {
+                    ioeClose.printStackTrace();
+                }
             }
         }
     }
 
     @Override
-    public SerialConnection openConnection(int baud, DataListener dataListener) throws IOException {
-        return serialPort.openConnection(baud, dataListener);
+    public SerialConnection openConnection(int baud) throws IOException, InterruptedException {
+        return serialPort.openConnection(baud);
     }
 }

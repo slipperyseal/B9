@@ -5,9 +5,9 @@ import net.catchpole.B9.devices.gps.command.*;
 import net.catchpole.B9.devices.gps.listener.LocationListener;
 import net.catchpole.B9.devices.gps.listener.MessageListener;
 import net.catchpole.B9.devices.gps.listener.VectorListener;
-import net.catchpole.B9.devices.serial.binding.LineWriterDataListener;
 import net.catchpole.B9.devices.serial.SerialConnection;
 import net.catchpole.B9.devices.serial.SerialPort;
+import net.catchpole.B9.devices.serial.binding.LineWriterDataListener;
 import net.catchpole.B9.spacial.Heading;
 import net.catchpole.B9.spacial.Location;
 import net.catchpole.B9.spacial.Vector;
@@ -23,10 +23,11 @@ public class SerialGps implements Gps, Compass, Speedometer {
     private volatile Vector vector;
     private volatile Location location;
 
-    public SerialGps(SerialPort serialPort) throws IOException {
+    public SerialGps(SerialPort serialPort) throws IOException, InterruptedException {
         changeBaud(serialPort);
         addListeners();
-        this.serialConnection = serialPort.openConnection(ACTIVE_BAUD, new LineWriterDataListener(new LineWriter() {
+        this.serialConnection = serialPort.openConnection(ACTIVE_BAUD);
+        this.serialConnection.setDataListener(new LineWriterDataListener(new LineWriter() {
             @Override
             public void writeLine(String value) {
                 SerialGps.this.gpsParser.parse(value);
@@ -39,12 +40,12 @@ public class SerialGps implements Gps, Compass, Speedometer {
         gpsCommandSender.send(new NmeaUpdateRate(500));
     }
 
-    private void changeBaud(SerialPort serialPort) throws IOException {
-        SerialConnection serialConnection = serialPort.openConnection(FACTORY_BAUD, null);
+    private void changeBaud(SerialPort serialPort) throws IOException, InterruptedException {
+        SerialConnection serialConnection = serialPort.openConnection(FACTORY_BAUD);
         // switch GPS to higher baud rate. if the device is currently on the higher baud, this should have no effect
         serialConnection.write("\r\n".getBytes());
         GpsCommandSender gpsCommandSender = new GpsCommandSender(new ByteLineWriter(serialConnection));
-        gpsCommandSender.send(new ChangeBuad(ACTIVE_BAUD));
+        gpsCommandSender.send(new ChangeBuad(38400));
         gpsCommandSender.delay();
         serialConnection.close();
     }

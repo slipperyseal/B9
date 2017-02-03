@@ -11,6 +11,7 @@ public class DistanceCalculatorTest {
     public void testDistance() {
         TestCase.assertTrue(Almost.equals(0.1414, 0.0001, distanceCalculator.degreesDistance(new Location(-37.5, 145.4), new Location(-37.6, 145.5))));
         TestCase.assertTrue(Almost.equals(0.4242, 0.0001, distanceCalculator.degreesDistance(new Location(-37.5, 145.4), new Location(-37.2, 145.1))));
+        TestCase.assertTrue(Almost.equals(2.8284, 0.0001, distanceCalculator.degreesDistance(new Location(-179.0, -179.0), new Location(179.0, 179.0))));
     }
 
     @Test

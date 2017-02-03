@@ -2,24 +2,29 @@ package net.catchpole.B9.devices.serial;
 
 import com.pi4j.io.serial.*;
 
+import java.io.DataInputStream;
 import java.io.IOException;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
 
 public class PiSerialConnection implements SerialConnection {
     private final Serial serial = SerialFactory.createInstance();
-    private final PiSerialDataListener piSerialDataListener = new PiSerialDataListener();
-    private final DataListener dataListener;
+    private SerialDataEventListener serialDataEventListener;
 
-    public PiSerialConnection(String port, int baud, DataListener dataListener) throws SerialPortException {
-        this.dataListener = dataListener;
-        if (dataListener != null) {
-            this.serial.addListener(piSerialDataListener);
-        }
-        this.serial.open(port == null ? Serial.DEFAULT_COM_PORT : port, baud);
+    public PiSerialConnection(String port, int baud) throws SerialPortException, InterruptedException, IOException  {
+        SerialConfig config = new SerialConfig();
+        config.device(port != null ? port : com.pi4j.io.serial.SerialPort.getDefaultPort())
+                .baud(Baud.getInstance(baud))
+                .dataBits(DataBits._8)
+                .parity(Parity.NONE)
+                .stopBits(StopBits._1)
+                .flowControl(FlowControl.NONE);
+        this.serial.open(config);
     }
 
-    public void close() {
-        if (piSerialDataListener != null) {
-            this.serial.removeListener(piSerialDataListener);
+    public void close() throws IOException {
+        if (serialDataEventListener != null) {
+            this.serial.removeListener(serialDataEventListener);
         }
         this.serial.close();
     }
@@ -28,10 +33,31 @@ public class PiSerialConnection implements SerialConnection {
         this.serial.write(data);
     }
 
-    class PiSerialDataListener implements SerialDataListener {
-        public void dataReceived(SerialDataEvent event) {
-            byte[] data = event.getData().getBytes();
-            dataListener.receive(data, data.length);
-        }
+    public DataInputStream getDataInputStream() throws IOException {
+        final PipedOutputStream pipedOutputStream = new PipedOutputStream();
+        PipedInputStream pipedInputStream = new PipedInputStream(pipedOutputStream, 8192);
+        this.serial.addListener(this.serialDataEventListener = new SerialDataEventListener() {
+            public void dataReceived(SerialDataEvent event) {
+                try {
+                    pipedOutputStream.write(event.getBytes());
+                } catch (IOException ioe) {
+                    ioe.printStackTrace();
+                }
+            }
+        });
+        return new DataInputStream(pipedInputStream);
+    }
+
+    public void setDataListener(final DataListener dataListener) {
+        this.serial.addListener(this.serialDataEventListener = new SerialDataEventListener() {
+            public void dataReceived(SerialDataEvent event) {
+                try {
+                    byte[] data = event.getBytes();
+                    dataListener.receive(data, data.length);
+                } catch (IOException ioe) {
+                    ioe.printStackTrace();
+                }
+            }
+        });
     }
 }

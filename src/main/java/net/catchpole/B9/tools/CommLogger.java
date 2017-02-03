@@ -2,13 +2,15 @@ package net.catchpole.B9.tools;
 
 import net.catchpole.B9.devices.serial.DataListener;
 import net.catchpole.B9.devices.serial.PiSerialPort;
+import net.catchpole.B9.devices.serial.SerialConnection;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
 public class CommLogger {
-    public CommLogger(int baud) throws IOException {
-        new PiSerialPort().openConnection(baud, new DataListener() {
+    public CommLogger(int baud) throws IOException, InterruptedException {
+        SerialConnection serialConnection = new PiSerialPort().openConnection(baud);
+        serialConnection.setDataListener(new DataListener() {
             @Override
             public void receive(byte[] data, int len) {
                 try {

@@ -26,11 +26,17 @@ public class HeadingCalculatorTest {
         TestCase.assertTrue(Almost.equals(0.4000, 0.0001, headingCalculator.getSwivel(new Heading(180), otherHeading)));
         TestCase.assertTrue(Almost.equals(0.1500, 0.0001, headingCalculator.getSwivel(new Heading(270), otherHeading)));
 
-
         Heading zeroHeading = headingCalculator.getExpectedHeading(
                 new Location(-37.5, 145.4),
                 new Location(-37.5, 145.4));
         TestCase.assertEquals(0.0d, zeroHeading.getDegrees());
+
+        Heading wrapHeading = headingCalculator.getExpectedHeading(
+                new Location(-179.0, -179.0),
+                new Location(179.0, 179.0));
+        System.out.println(wrapHeading);
+//        TestCase.assertTrue(Almost.equals(141.6482, 0.0001, wrapHeading.getDegrees()));
+
     }
 
     @Test

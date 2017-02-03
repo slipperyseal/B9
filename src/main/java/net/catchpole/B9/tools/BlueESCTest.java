@@ -15,7 +15,7 @@ public class BlueESCTest {
     public static void main(String[] args) throws Exception {
         int firstDevice = Integer.parseInt(args[0]);
         int totalDevices = Integer.parseInt(args[1]);
-        int targeThrottle = Integer.parseInt(args[2]);
+        int targetThrottle = Integer.parseInt(args[2]);
         int increment = Integer.parseInt(args[3]);
 
         List<BlueESC> devices = new ArrayList<BlueESC>();
@@ -37,13 +37,13 @@ public class BlueESCTest {
                 System.out.println(blueESC.toString() + '\t' + velocity + '\t' + blueESC.read());
             }
             Thread.sleep(200);
-            if (targeThrottle > 0) {
-                if (velocity < targeThrottle) {
+            if (targetThrottle > 0) {
+                if (velocity < targetThrottle) {
                     velocity += increment;
                 }
             }
-            if (targeThrottle < 0) {
-                if (velocity > targeThrottle) {
+            if (targetThrottle < 0) {
+                if (velocity > targetThrottle) {
                     velocity -= increment;
                 }
             }

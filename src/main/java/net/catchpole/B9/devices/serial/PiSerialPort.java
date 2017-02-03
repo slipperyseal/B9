@@ -13,7 +13,7 @@ public class PiSerialPort implements SerialPort {
     }
 
     @Override
-    public SerialConnection openConnection(int baud, DataListener dataListener) throws IOException {
-        return new PiSerialConnection(port, baud, dataListener);
+    public SerialConnection openConnection(int baud) throws IOException, InterruptedException {
+        return new PiSerialConnection(port, baud);
     }
 }

@@ -3,8 +3,8 @@ package net.catchpole.B9.devices.rockblock;
 import net.catchpole.B9.devices.rockblock.message.Reception;
 import net.catchpole.B9.devices.rockblock.message.ShortBurstDataInitiateSession;
 import net.catchpole.B9.devices.rockblock.message.ShortBurstDataStatusExtended;
+import net.catchpole.B9.devices.serial.SerialConnection;
 import net.catchpole.B9.devices.serial.SerialPort;
-import net.catchpole.B9.devices.serial.binding.ResponseDataListener;
 
 import java.io.IOException;
 
@@ -17,8 +17,8 @@ public class RockBlock {
     }
 
     public void connect() throws Exception {
-        ResponseDataListener responseDataListener = new ResponseDataListener();
-        this.atSession = new AtSession(responseDataListener, serialPort.openConnection(19200,responseDataListener));
+        SerialConnection serialConnection = serialPort.openConnection(19200);
+        this.atSession = new AtSession(serialConnection.getDataInputStream(), serialConnection);
 
         // a simple AT to clear any serial buffers
         try {
@@ -35,7 +35,7 @@ public class RockBlock {
     }
 
     public ShortBurstDataStatusExtended getStatus() throws IOException {
-        return new ShortBurstDataStatusExtended(getData(atSession.atCommand("AT+SBDSX")));
+        return new ShortBurstDataStatusExtended(getData(atSession.atCommandResult("AT+SBDSX")));
     }
 
     public boolean waitForReception() throws IOException {
@@ -49,13 +49,17 @@ public class RockBlock {
     }
 
     public ShortBurstDataInitiateSession initiateSession() throws IOException {
-        return new ShortBurstDataInitiateSession(getData(atSession.atCommand("AT+SBDIX")));
+        return new ShortBurstDataInitiateSession(getData(atSession.atCommandResult("AT+SBDIX")));
     }
 
     public boolean hasReception() throws IOException {
-        Reception reception = new Reception(getData(atSession.atCommand("AT+CSQ")));
+        return hasReception(2);
+    }
+
+    public boolean hasReception(int minimumReception) throws IOException {
+        Reception reception = new Reception(getData(atSession.atCommandResult("AT+CSQ")));
         System.out.println(reception);
-        return reception.getReception() >= 2;
+        return reception.getReception() >= minimumReception;
     }
 
     private String[] getData(String response) {
