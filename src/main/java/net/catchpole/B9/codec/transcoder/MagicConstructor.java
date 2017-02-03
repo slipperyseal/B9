@@ -36,15 +36,20 @@ public class MagicConstructor {
             }
         }
         // try a constructor and use "default" values
-        Constructor constructor = constructors[0];
-        Class[] paramClasses = constructor.getParameterTypes();
-        Object[] params = new Object[paramClasses.length];
-        for (int x=0;x<paramClasses.length;x++) {
-            Class paramClass = paramClasses[x];
-            if (paramClass.isPrimitive()) {
-                params[x] = defaults.get(paramClass.getName());
+        for (Constructor constructor : constructors) {
+            try {
+                Class[] paramClasses = constructor.getParameterTypes();
+                Object[] params = new Object[paramClasses.length];
+                for (int x = 0; x < paramClasses.length; x++) {
+                    Class paramClass = paramClasses[x];
+                    if (paramClass.isPrimitive()) {
+                        params[x] = defaults.get(paramClass.getName());
+                    }
+                }
+                return constructor.newInstance(params);
+            } catch (Exception e) {
             }
         }
-        return constructor.newInstance(params);
+        throw new InstantiationError(clazz.getName());
     }
 }

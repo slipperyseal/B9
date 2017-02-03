@@ -18,7 +18,7 @@ public class RockBlock {
 
     public void connect() throws Exception {
         SerialConnection serialConnection = serialPort.openConnection(19200);
-        this.atSession = new AtSession(serialConnection.getDataInputStream(), serialConnection);
+        this.atSession = new AtSession(serialConnection);
 
         // a simple AT to clear any serial buffers
         try {

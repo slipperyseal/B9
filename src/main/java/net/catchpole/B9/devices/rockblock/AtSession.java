@@ -9,9 +9,9 @@ public class AtSession {
     private DataInputStream dataInputStream;
     private SerialConnection serialConnection;
 
-    public AtSession(DataInputStream dataInputStream, SerialConnection serialConnection) {
-        this.dataInputStream = dataInputStream;
+    public AtSession(SerialConnection serialConnection) throws IOException {
         this.serialConnection = serialConnection;
+        this.dataInputStream = new DataInputStream(serialConnection.getInputStream());
     }
 
     public void atCommand(String command) throws IOException {

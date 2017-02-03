@@ -34,8 +34,8 @@ public class SocketSerialPort implements SerialPort {
                 }
             }
 
-            public DataInputStream getDataInputStream() throws IOException {
-                return new DataInputStream(socket.getInputStream());
+            public InputStream getInputStream() throws IOException {
+                return socket.getInputStream();
             }
 
             @Override

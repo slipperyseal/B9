@@ -2,10 +2,8 @@ package net.catchpole.B9.devices.serial;
 
 import com.pi4j.io.serial.*;
 
-import java.io.DataInputStream;
 import java.io.IOException;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
+import java.io.InputStream;
 
 public class PiSerialConnection implements SerialConnection {
     private final Serial serial = SerialFactory.createInstance();
@@ -23,8 +21,9 @@ public class PiSerialConnection implements SerialConnection {
     }
 
     public void close() throws IOException {
-        if (serialDataEventListener != null) {
+        if (this.serialDataEventListener != null) {
             this.serial.removeListener(serialDataEventListener);
+            this.serialDataEventListener = null;
         }
         this.serial.close();
     }
@@ -33,19 +32,8 @@ public class PiSerialConnection implements SerialConnection {
         this.serial.write(data);
     }
 
-    public DataInputStream getDataInputStream() throws IOException {
-        final PipedOutputStream pipedOutputStream = new PipedOutputStream();
-        PipedInputStream pipedInputStream = new PipedInputStream(pipedOutputStream, 8192);
-        this.serial.addListener(this.serialDataEventListener = new SerialDataEventListener() {
-            public void dataReceived(SerialDataEvent event) {
-                try {
-                    pipedOutputStream.write(event.getBytes());
-                } catch (IOException ioe) {
-                    ioe.printStackTrace();
-                }
-            }
-        });
-        return new DataInputStream(pipedInputStream);
+    public InputStream getInputStream() throws IOException {
+        return serial.getInputStream();
     }
 
     public void setDataListener(final DataListener dataListener) {
