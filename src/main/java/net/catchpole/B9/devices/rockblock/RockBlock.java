@@ -13,7 +13,6 @@ public class RockBlock {
     private SerialPort serialPort;
     private AtSession atSession;
     private SerialConnection serialConnection;
-    private boolean sending;
     private DataListener dataListener;
 
     public RockBlock(SerialPort serialPort) {
@@ -40,12 +39,10 @@ public class RockBlock {
 
     public void sendTestMessage(String text) throws IOException {
         atSession.atCommand("AT+SBDWT=" + text);
-        sending = true;
     }
 
     public void sendBinaryMessage(byte[] data) throws IOException {
         atSession.atCommandWriteBinary("AT+SBDWB=" + data.length, data);
-        sending = true;
     }
 
     public void sendAndReceive() throws IOException {
@@ -94,7 +91,6 @@ public class RockBlock {
     public ShortBurstDataInitiateSession initiateSession() throws IOException {
         ShortBurstDataInitiateSession shortBurstDataInitiateSession = new ShortBurstDataInitiateSession(
                 getData(atSession.atCommandResult("AT+SBDIX")));
-        sending = false;
         clearSendingBuffer();
         return shortBurstDataInitiateSession;
     }

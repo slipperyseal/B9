@@ -21,8 +21,22 @@ public class AtSession {
         this.dataInputStream.readLine();
         String ok = this.dataInputStream.readLine();
         if (!ok.equals("OK")) {
-            throw new IOException("Expected OK");
+            throw new IOException("Expected OK: '" + ok + "'");
         }
+    }
+
+    public String atCommandResult(String command) throws IOException {
+        this.serialConnection.write((command + '\r').getBytes());
+        this.dataInputStream.readLine();
+        this.dataInputStream.readLine();
+        String result = this.dataInputStream.readLine();
+        this.dataInputStream.readLine();
+        String ok = this.dataInputStream.readLine();
+        if (!ok.equals("OK")) {
+            throw new IOException("Expected OK: '" + ok + "'");
+        }
+        System.out.println("RESULT: " + result);
+        return result;
     }
 
     public void atCommandWriteBinary(String command, byte[] data) throws IOException {
@@ -31,7 +45,7 @@ public class AtSession {
         this.dataInputStream.readLine();
         String ready = this.dataInputStream.readLine();
         if (!ready.equals("READY")) {
-            throw new IOException("Expected READY");
+            throw new IOException("Expected READY: '" + ready + "'");
         }
         BinaryMessage binaryMessage = new BinaryMessage(data);
         serialConnection.write(binaryMessage.getEncoded());
@@ -43,7 +57,7 @@ public class AtSession {
         this.dataInputStream.readLine();
         String ok = this.dataInputStream.readLine();
         if (!ok.equals("OK")) {
-            throw new IOException("Expected OK");
+            throw new IOException("Expected OK: '" + ok + "'");
         }
     }
 
@@ -65,22 +79,9 @@ public class AtSession {
         this.dataInputStream.readLine();
         String ok = this.dataInputStream.readLine();
         if (!ok.equals("OK")) {
-            throw new IOException("Expected OK");
+            throw new IOException("Expected OK: '" + ok + "'");
         }
         return data;
-    }
-
-    public String atCommandResult(String command) throws IOException {
-        this.serialConnection.write((command + '\r').getBytes());
-        this.dataInputStream.readLine();
-        this.dataInputStream.readLine();
-        String result = this.dataInputStream.readLine();
-        this.dataInputStream.readLine();
-        String ok = this.dataInputStream.readLine();
-        if (!ok.equals("OK")) {
-            throw new IOException("Expected OK");
-        }
-        return result;
     }
 
     private void debugData() throws IOException {

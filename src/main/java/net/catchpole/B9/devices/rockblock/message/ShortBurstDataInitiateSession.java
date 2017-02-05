@@ -2,6 +2,7 @@ package net.catchpole.B9.devices.rockblock.message;
 
 public class ShortBurstDataInitiateSession {
     private int originatingStatus;
+    private int originatingSequence;
     private int terminatedStatus;
     private int terminatedSequence;
     private int terminatedLength;
@@ -9,14 +10,19 @@ public class ShortBurstDataInitiateSession {
 
     public ShortBurstDataInitiateSession(String[] data) {
         this.originatingStatus = Integer.parseInt(data[0]);
-        this.terminatedStatus = Integer.parseInt(data[1]);
-        this.terminatedSequence = Integer.parseInt(data[2]);
-        this.terminatedLength = Integer.parseInt(data[3]);
-        this.gatewayQueuedCount = Integer.parseInt(data[4]);
+        this.originatingSequence = Integer.parseInt(data[1]);
+        this.terminatedStatus = Integer.parseInt(data[2]);
+        this.terminatedSequence = Integer.parseInt(data[3]);
+        this.terminatedLength = Integer.parseInt(data[4]);
+        this.gatewayQueuedCount = Integer.parseInt(data[5]);
     }
 
     public int getOriginatingStatus() {
         return originatingStatus;
+    }
+
+    public int getOriginatingSequence() {
+        return originatingSequence;
     }
 
     public int getTerminatedStatus() {
@@ -39,6 +45,7 @@ public class ShortBurstDataInitiateSession {
     public String toString() {
         return "ShortBurstDataInitiateSession{" +
                 "originatingStatus=" + originatingStatus +
+                ". originatingSequence=" + originatingSequence +
                 ", terminatedStatus=" + terminatedStatus +
                 ", terminatedSequence=" + terminatedSequence +
                 ", terminatedLength=" + terminatedLength +

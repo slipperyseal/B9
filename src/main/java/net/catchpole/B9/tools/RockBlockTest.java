@@ -21,7 +21,7 @@ public class RockBlockTest {
         });
         try {
             rockBlock.connect();
-            rockBlock.sendBinaryMessage(("Star date " + new Date()).getBytes());
+            rockBlock.sendBinaryMessage(("SLPSLPSLPS " + new Date()).getBytes());
             rockBlock.sendAndReceive();
             System.out.println(rockBlock.getStatus());
         } finally {
