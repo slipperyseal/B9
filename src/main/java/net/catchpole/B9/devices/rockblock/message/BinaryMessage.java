@@ -3,6 +3,7 @@ package net.catchpole.B9.devices.rockblock.message;
 public class BinaryMessage {
     private byte[] data;
     private byte[] encoded;
+    private int checkSum;
 
     public BinaryMessage(byte[] data) {
         this.data = data;
@@ -14,6 +15,7 @@ public class BinaryMessage {
             encoded[i] = data[i];
             i++;
         }
+        this.checkSum = checksum;
         this.encoded[this.encoded.length-2] = (byte)(checksum >> 8);
         this.encoded[this.encoded.length-1] = (byte)checksum;
     }
@@ -24,6 +26,10 @@ public class BinaryMessage {
 
     public byte[] getEncoded() {
         return this.encoded;
+    }
+
+    public int getCheckSum() {
+        return this.checkSum;
     }
 
     public String toString() {

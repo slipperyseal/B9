@@ -1,5 +1,6 @@
 package net.catchpole.B9.devices.rockblock;
 
+import net.catchpole.B9.devices.rockblock.message.BinaryMessage;
 import net.catchpole.B9.devices.serial.SerialConnection;
 
 import java.io.DataInputStream;
@@ -20,8 +21,53 @@ public class AtSession {
         this.dataInputStream.readLine();
         String ok = this.dataInputStream.readLine();
         if (!ok.equals("OK")) {
-            throw new IOException("ERROR");
+            throw new IOException("Expected OK");
         }
+    }
+
+    public void atCommandWriteBinary(String command, byte[] data) throws IOException {
+        this.serialConnection.write((command + '\r').getBytes());
+        this.dataInputStream.readLine();
+        this.dataInputStream.readLine();
+        String ready = this.dataInputStream.readLine();
+        if (!ready.equals("READY")) {
+            throw new IOException("Expected READY");
+        }
+        BinaryMessage binaryMessage = new BinaryMessage(data);
+        serialConnection.write(binaryMessage.getEncoded());
+        this.dataInputStream.readLine();
+        String result = this.dataInputStream.readLine();
+        if (!result.equals("0")) {
+            throw new IOException("Write binary error code: " + result);
+        }
+        this.dataInputStream.readLine();
+        String ok = this.dataInputStream.readLine();
+        if (!ok.equals("OK")) {
+            throw new IOException("Expected OK");
+        }
+    }
+
+    public byte[] atCommandReadBinary(String command) throws IOException {
+        this.serialConnection.write((command + '\r').getBytes());
+        this.dataInputStream.readLine();
+
+        int len = dataInputStream.readShort() & 0xffff;
+        if (len > 1024) {
+            throw new IOException("Invalid message length " + len);
+        }
+        byte[] data = new byte[len];
+        dataInputStream.readFully(data);
+        BinaryMessage binaryMessage = new BinaryMessage(data);
+        if (binaryMessage.getCheckSum() != (dataInputStream.readShort() & 0xffff)) {
+            throw new IOException("Checksum error");
+        }
+
+        this.dataInputStream.readLine();
+        String ok = this.dataInputStream.readLine();
+        if (!ok.equals("OK")) {
+            throw new IOException("Expected OK");
+        }
+        return data;
     }
 
     public String atCommandResult(String command) throws IOException {
@@ -32,8 +78,15 @@ public class AtSession {
         this.dataInputStream.readLine();
         String ok = this.dataInputStream.readLine();
         if (!ok.equals("OK")) {
-            throw new IOException("ERROR");
+            throw new IOException("Expected OK");
         }
         return result;
+    }
+
+    private void debugData() throws IOException {
+        int b;
+        while ((b=dataInputStream.read()) != -1) {
+            System.out.println(" " + b + " '" + (char)((b >= ' ' && b <= '~') ? b : '.') + "'");
+        }
     }
 }

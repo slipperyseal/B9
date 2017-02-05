@@ -3,6 +3,7 @@ package net.catchpole.B9.devices.rockblock;
 import net.catchpole.B9.devices.rockblock.message.Reception;
 import net.catchpole.B9.devices.rockblock.message.ShortBurstDataInitiateSession;
 import net.catchpole.B9.devices.rockblock.message.ShortBurstDataStatusExtended;
+import net.catchpole.B9.devices.serial.DataListener;
 import net.catchpole.B9.devices.serial.SerialConnection;
 import net.catchpole.B9.devices.serial.SerialPort;
 
@@ -11,13 +12,20 @@ import java.io.IOException;
 public class RockBlock {
     private SerialPort serialPort;
     private AtSession atSession;
+    private SerialConnection serialConnection;
+    private boolean sending;
+    private DataListener dataListener;
 
     public RockBlock(SerialPort serialPort) {
         this.serialPort = serialPort;
     }
 
+    public void setDataListener(DataListener dataListener) {
+        this.dataListener = dataListener;
+    }
+
     public void connect() throws Exception {
-        SerialConnection serialConnection = serialPort.openConnection(19200);
+        this.serialConnection = serialPort.openConnection(19200);
         this.atSession = new AtSession(serialConnection);
 
         // a simple AT to clear any serial buffers
@@ -32,6 +40,36 @@ public class RockBlock {
 
     public void sendTestMessage(String text) throws IOException {
         atSession.atCommand("AT+SBDWT=" + text);
+        sending = true;
+    }
+
+    public void sendBinaryMessage(byte[] data) throws IOException {
+        atSession.atCommandWriteBinary("AT+SBDWB=" + data.length, data);
+        sending = true;
+    }
+
+    public void sendAndReceive() throws IOException {
+        waitForReception();
+
+        ShortBurstDataInitiateSession shortBurstDataInitiateSession = null;
+        do {
+            waitForReception();
+            shortBurstDataInitiateSession = this.initiateSession();
+            System.out.println(shortBurstDataInitiateSession);
+
+            if (shortBurstDataInitiateSession.getTerminatedStatus() == 1) {
+                byte[] data = this.readBinaryMessage();
+                if (data.length > 0 && dataListener != null) {
+                    dataListener.receive(data, data.length);
+                }
+            }
+        } while (shortBurstDataInitiateSession.getGatewayQueuedCount() > 0);
+    }
+
+    public byte[] readBinaryMessage() throws IOException {
+        byte[] data = atSession.atCommandReadBinary("AT+SBDRB");
+        clearReceivingBuffer();
+        return data;
     }
 
     public ShortBurstDataStatusExtended getStatus() throws IOException {
@@ -39,17 +77,34 @@ public class RockBlock {
     }
 
     public boolean waitForReception() throws IOException {
-        for (int x=0;x<6*5;x++) {
-            if (hasReception()) {
+        return waitForReception(1000 * 60 * 3, 2);
+    }
+
+    public boolean waitForReception(long timeout, int minimumReception) throws IOException {
+        long testUntil = System.currentTimeMillis() + timeout;
+        do {
+            if (hasReception(minimumReception)) {
                 return true;
             }
-            sleep(10000);
-        }
+            sleep(2000);
+        } while (System.currentTimeMillis() < testUntil);
         return false;
     }
 
     public ShortBurstDataInitiateSession initiateSession() throws IOException {
-        return new ShortBurstDataInitiateSession(getData(atSession.atCommandResult("AT+SBDIX")));
+        ShortBurstDataInitiateSession shortBurstDataInitiateSession = new ShortBurstDataInitiateSession(
+                getData(atSession.atCommandResult("AT+SBDIX")));
+        sending = false;
+        clearSendingBuffer();
+        return shortBurstDataInitiateSession;
+    }
+
+    private void clearSendingBuffer() throws IOException {
+        atSession.atCommandResult("AT+SBDD0");
+    }
+
+    private void clearReceivingBuffer() throws IOException {
+        atSession.atCommandResult("AT+SBDD1");
     }
 
     public boolean hasReception() throws IOException {
@@ -76,5 +131,9 @@ public class RockBlock {
             Thread.sleep(millis);
         } catch (InterruptedException i) {
         }
+    }
+
+    public void close() throws IOException {
+        this.serialConnection.close();
     }
 }

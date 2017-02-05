@@ -1,7 +1,10 @@
 package net.catchpole.B9.tools;
 
 import net.catchpole.B9.devices.rockblock.RockBlock;
+import net.catchpole.B9.devices.serial.DataListener;
 import net.catchpole.B9.devices.serial.PiSerialPort;
+
+import java.util.Date;
 
 public class RockBlockTest {
     public static void main(String[] args) throws Exception {
@@ -10,9 +13,20 @@ public class RockBlockTest {
 
     public RockBlockTest() throws Exception {
         RockBlock rockBlock = new RockBlock(new PiSerialPort());
-        rockBlock.connect();
-        System.out.println(rockBlock.getStatus());
-        rockBlock.waitForReception();
-        System.out.println(rockBlock.getStatus());
+        rockBlock.setDataListener(new DataListener() {
+            @Override
+            public void receive(byte[] data, int len) {
+                System.out.println("Received: " + new String(data, 0, len));
+            }
+        });
+        try {
+            rockBlock.connect();
+            rockBlock.sendBinaryMessage(("Star date " + new Date()).getBytes());
+            rockBlock.sendAndReceive();
+            System.out.println(rockBlock.getStatus());
+        } finally {
+            rockBlock.close();
+        }
+        System.exit(0);
     }
 }
