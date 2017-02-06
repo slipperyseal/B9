@@ -13,6 +13,15 @@ public class AtSession {
     public AtSession(SerialConnection serialConnection) throws IOException {
         this.serialConnection = serialConnection;
         this.dataInputStream = new DataInputStream(serialConnection.getInputStream());
+        eatNoise();
+    }
+
+    public void eatNoise() throws IOException {
+        int avail = this.dataInputStream.available();
+        if (avail > 0) {
+            // consume any noise, ring alerts etc.
+            this.dataInputStream.skipBytes(avail);
+        }
     }
 
     public void atCommand(String command) throws IOException {

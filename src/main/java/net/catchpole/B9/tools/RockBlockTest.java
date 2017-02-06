@@ -4,8 +4,6 @@ import net.catchpole.B9.devices.rockblock.RockBlock;
 import net.catchpole.B9.devices.serial.DataListener;
 import net.catchpole.B9.devices.serial.PiSerialPort;
 
-import java.util.Date;
-
 public class RockBlockTest {
     public static void main(String[] args) throws Exception {
         new RockBlockTest();
@@ -21,7 +19,8 @@ public class RockBlockTest {
         });
         try {
             rockBlock.connect();
-            rockBlock.sendBinaryMessage(("SLPSLPSLPS " + new Date()).getBytes());
+            rockBlock.clearSendingBuffer();
+//            rockBlock.sendBinaryMessage(("SLPSLPSLPS " + new Date()).getBytes());
             rockBlock.sendAndReceive();
             System.out.println(rockBlock.getStatus());
         } finally {
