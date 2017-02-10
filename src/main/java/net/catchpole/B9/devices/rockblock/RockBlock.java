@@ -27,35 +27,27 @@ public class RockBlock {
         this.serialConnection = serialPort.openConnection(19200);
         this.atSession = new AtSession(serialConnection);
 
-        // a simple AT to clear any serial buffers
+        atSession.eatNoise();
         try {
-            atSession.atCommand("AT");
+            atSession.atCommand("ATE0");
         } catch (IOException e) {
-            atSession.atCommand("AT");
+            atSession.atCommand("ATE0");
         }
 //        atSession.atCommand("AT+SBDMTA0");   // disable unsolicited SBDRING alerts to the serial
         atSession.atCommand("AT&D0");   // ignore DTR
         atSession.atCommand("AT&K0");   // disable RTS/CTS
     }
 
-    public String getRealtimeClock() throws IOException {
-        return atSession.atCommandResult("AT+CCLK");
-    }
-
     public String getManufacturer() throws IOException {
-        return atSession.atCommandResult("AT+CGMI");
+        return atSession.atCommand("AT+CGMI");
     }
 
     public String getModel() throws IOException {
-        return atSession.atCommandResult("AT+CGMM");
+        return atSession.atCommand("AT+CGMM");
     }
 
     public String getRevision() throws IOException {
-        return atSession.atCommandResult("AT+CGMR");
-    }
-
-    public String getSerialNumber() throws IOException {
-        return atSession.atCommandResult("AT+CGSN");
+        return atSession.atCommand("AT+CGMR");
     }
 
     public void sendTestMessage(String text) throws IOException {
@@ -91,7 +83,7 @@ public class RockBlock {
     }
 
     public ShortBurstDataStatusExtended getStatus() throws IOException {
-        return new ShortBurstDataStatusExtended(splitResponseValues(atSession.atCommandResult("AT+SBDSX")));
+        return new ShortBurstDataStatusExtended(splitResponseValues(atSession.atCommand("AT+SBDSX")));
     }
 
     public boolean waitForReception() throws IOException {
@@ -111,17 +103,17 @@ public class RockBlock {
 
     public ShortBurstDataInitiateSession initiateSession() throws IOException {
         ShortBurstDataInitiateSession shortBurstDataInitiateSession = new ShortBurstDataInitiateSession(
-                splitResponseValues(atSession.atCommandResult("AT+SBDIX")));
+                splitResponseValues(atSession.atCommand("AT+SBDIX")));
         clearSendingBuffer();
         return shortBurstDataInitiateSession;
     }
 
     public void clearSendingBuffer() throws IOException {
-        atSession.atCommandResult("AT+SBDD0");
+        atSession.atCommand("AT+SBDD0");
     }
 
     public void clearReceivingBuffer() throws IOException {
-        atSession.atCommandResult("AT+SBDD1");
+        atSession.atCommand("AT+SBDD1");
     }
 
     public boolean hasReception() throws IOException {
@@ -129,7 +121,7 @@ public class RockBlock {
     }
 
     public boolean hasReception(int minimumReception) throws IOException {
-        Reception reception = new Reception(splitResponseValues(atSession.atCommandResult("AT+CSQ")));
+        Reception reception = new Reception(splitResponseValues(atSession.atCommand("AT+CSQ")));
         System.out.println(reception);
         return reception.getReception() >= minimumReception;
     }

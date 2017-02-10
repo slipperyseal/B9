@@ -4,13 +4,15 @@ import net.catchpole.B9.devices.rockblock.RockBlock;
 import net.catchpole.B9.devices.serial.DataListener;
 import net.catchpole.B9.devices.serial.PiSerialPort;
 
+import java.util.Date;
+
 public class RockBlockTest {
     public static void main(String[] args) throws Exception {
-        new RockBlockTest();
+        new RockBlockTest(args[0]);
     }
 
-    public RockBlockTest() throws Exception {
-        RockBlock rockBlock = new RockBlock(new PiSerialPort());
+    public RockBlockTest(String port) throws Exception {
+        RockBlock rockBlock = new RockBlock(new PiSerialPort(port));
         rockBlock.setDataListener(new DataListener() {
             @Override
             public void receive(byte[] data, int len) {
@@ -20,8 +22,16 @@ public class RockBlockTest {
         try {
             rockBlock.connect();
             rockBlock.clearSendingBuffer();
-//            rockBlock.sendBinaryMessage(("SLPSLPSLPS " + new Date()).getBytes());
-            rockBlock.sendAndReceive();
+
+            rockBlock.sendBinaryMessage(("SLPSLPSLPS " + new Date()).getBytes());
+            System.out.println(new String(rockBlock.readBinaryMessage()));
+
+            System.out.println(rockBlock.getManufacturer());
+            System.out.println(rockBlock.getModel());
+            System.out.println(rockBlock.getRevision());
+
+            rockBlock.waitForReception();
+//            rockBlock.sendAndReceive();
             System.out.println(rockBlock.getStatus());
         } finally {
             rockBlock.close();
