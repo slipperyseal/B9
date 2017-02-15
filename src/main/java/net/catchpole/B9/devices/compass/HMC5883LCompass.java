@@ -3,14 +3,14 @@ package net.catchpole.B9.devices.compass;
 import com.pi4j.io.i2c.I2CBus;
 import com.pi4j.io.i2c.I2CDevice;
 import com.pi4j.io.i2c.I2CFactory;
+import net.catchpole.B9.devices.Device;
 import net.catchpole.B9.spacial.Heading;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-public class HMC5883LCompass implements Compass {
+public class HMC5883LCompass implements Compass, Device {
     private static final int HMC5883L_ADDRESS            = 0x1E;
 
     private static final int HMC5883L_RA_CONFIG_A        = 0x00;
@@ -74,10 +74,8 @@ public class HMC5883LCompass implements Compass {
     private static final int HMC5883L_STATUS_READY_BIT   = 0;
 
     private Map<Double,Gauss> gaussMap = new HashMap<Double, Gauss>();
-    private final I2CBus bus;
+    private I2CBus bus;
     private I2CDevice device;
-    private boolean started;
-    private final byte[] bytes = new byte[32];
     private double scale;
 
     public HMC5883LCompass() throws Exception {
@@ -88,65 +86,58 @@ public class HMC5883LCompass implements Compass {
         this.addGauss(4.7d, 0x05, 2.56d);
         this.addGauss(5.6d, 0x06, 3.03d);
         this.addGauss(8.1d, 0x07, 4.35);
-        this.bus = I2CFactory.getInstance(I2CBus.BUS_1);
-        init();
     }
 
-    private void init() {
-        try {
-            if (this.device == null) {
-                this.device = bus.getDevice(HMC5883L_ADDRESS);
-            }
-        } catch (Throwable t) {
-            System.err.println(HMC5883LCompass.class.getName() + " " + t.getClass() + " " + t.getMessage());
-            return;
+    public void initialize() throws Exception {
+        if (this.bus == null) {
+            this.bus = I2CFactory.getInstance(I2CBus.BUS_1);
         }
+        if (this.device == null) {
+            this.device = bus.getDevice(HMC5883L_ADDRESS);
+        }
+        this.device.write(HMC5883L_RA_CONFIG_A,
+                (byte) ((HMC5883L_AVERAGING_8 << (HMC5883L_CRA_AVERAGE_BIT - HMC5883L_CRA_AVERAGE_LENGTH + 1)) |
+                        (HMC5883L_RATE_15 << (HMC5883L_CRA_RATE_BIT - HMC5883L_CRA_RATE_LENGTH + 1)) |
+                        (HMC5883L_BIAS_NORMAL << (HMC5883L_CRA_BIAS_BIT - HMC5883L_CRA_BIAS_LENGTH + 1))));
+        setScale(1.3d);
+        this.device.write(HMC5883L_RA_MODE,
+                (byte) (HMC5883L_MODE_CONTINUOUS << (HMC5883L_MODEREG_BIT - HMC5883L_MODEREG_LENGTH + 1)));
+    }
 
-        if (!started) {
-            try {
-                this.device.write(HMC5883L_RA_CONFIG_A,
-                        (byte) ((HMC5883L_AVERAGING_8 << (HMC5883L_CRA_AVERAGE_BIT - HMC5883L_CRA_AVERAGE_LENGTH + 1)) |
-                                (HMC5883L_RATE_15 << (HMC5883L_CRA_RATE_BIT - HMC5883L_CRA_RATE_LENGTH + 1)) |
-                                (HMC5883L_BIAS_NORMAL << (HMC5883L_CRA_BIAS_BIT - HMC5883L_CRA_BIAS_LENGTH + 1))));
-                setScale(1.3d);
-                this.device.write(HMC5883L_RA_MODE,
-                        (byte) (HMC5883L_MODE_CONTINUOUS << (HMC5883L_MODEREG_BIT - HMC5883L_MODEREG_LENGTH + 1)));
-                if (test()) {
-                    started = true;
-                }
-            } catch (Throwable t) {
-                System.err.println(HMC5883LCompass.class.getName() + " " + t.getClass() + " " + t.getMessage());
-            }
+    public boolean isHealthy() throws Exception {
+        byte[] bytes = new byte[3];
+        synchronized (this.bus) {
+            return device.read(HMC5883L_RA_ID_A, bytes, 0, 3) == 3 && bytes[0] == 'H' && bytes[1] == '4' && bytes[2] == '3';
         }
     }
 
-    public boolean test() throws Exception {
-        return device.read(HMC5883L_RA_ID_A, bytes, 0, 3) == 3 && bytes[0] == 'H' && bytes[1] == '4' && bytes[2] == '3';
+    public void close() throws Exception {
+        this.bus = null;
+        this.device = null;
     }
 
     public Heading getHeading() {
-        init();
         try {
-            Arrays.fill(bytes, (byte)0); // clear buffer in case data is stale (not sure its possible, but do it anyway)
-            if (device.read(HMC5883L_RA_DATAX_H, bytes, 0, 6) == 6) {
-                short rx = (short)(((bytes[0] & 0xff) << 8) | (bytes[1] & 0xff));
-                short rz = (short)(((bytes[2] & 0xff) << 8) | (bytes[3] & 0xff));
-                short ry = (short)(((bytes[4] & 0xff) << 8) | (bytes[5] & 0xff));
-
-                double x = rx * scale;
-                double y = ry * scale;
-                double z = rz * scale;
-
-                double heading = Math.atan2(y,x) * (180.0d / Math.PI) + 180.0d;
-
-                return new Heading(heading);
-            } else {
-                System.err.println(HMC5883LCompass.class.getName() + " read fail");
+            byte[] bytes = new byte[6];
+            synchronized (this.bus) {
+                if (device.read(HMC5883L_RA_DATAX_H, bytes, 0, 6) != 6) {
+                    throw new IOException(HMC5883LCompass.class.getName() + " read fail");
+                }
             }
+            short rx = (short)(((bytes[0] & 0xff) << 8) | (bytes[1] & 0xff));
+            short rz = (short)(((bytes[2] & 0xff) << 8) | (bytes[3] & 0xff));
+            short ry = (short)(((bytes[4] & 0xff) << 8) | (bytes[5] & 0xff));
+
+            double x = rx * scale;
+            double y = ry * scale;
+            double z = rz * scale;
+
+            double heading = Math.atan2(y,x) * (180.0d / Math.PI) + 180.0d;
+
+            return new Heading(heading);
         } catch (IOException ioe) {
-            ioe.printStackTrace();
+            throw new RuntimeException(ioe);
         }
-        return new Heading(0.0);
     }
 
     private void addGauss(double gauss, int register, double scale) {

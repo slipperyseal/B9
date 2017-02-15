@@ -1,5 +1,6 @@
 package net.catchpole.B9.devices.rockblock;
 
+import net.catchpole.B9.devices.Device;
 import net.catchpole.B9.devices.rockblock.message.Reception;
 import net.catchpole.B9.devices.rockblock.message.ShortBurstDataInitiateSession;
 import net.catchpole.B9.devices.rockblock.message.ShortBurstDataStatusExtended;
@@ -9,7 +10,7 @@ import net.catchpole.B9.devices.serial.SerialPort;
 
 import java.io.IOException;
 
-public class RockBlock {
+public class RockBlock implements Device {
     private SerialPort serialPort;
     private AtSession atSession;
     private SerialConnection serialConnection;
@@ -23,8 +24,12 @@ public class RockBlock {
         this.dataListener = dataListener;
     }
 
-    public void connect() throws Exception {
-        this.serialConnection = serialPort.openConnection(19200);
+    public void initialize() throws IOException {
+        try {
+            this.serialConnection = serialPort.openConnection(19200);
+        } catch (Exception e) {
+            throw new IOException(e);
+        }
         this.atSession = new AtSession(serialConnection);
 
         atSession.eatNoise();
@@ -36,6 +41,10 @@ public class RockBlock {
 //        atSession.atCommand("AT+SBDMTA0");   // disable unsolicited SBDRING alerts to the serial
         atSession.atCommand("AT&D0");   // ignore DTR
         atSession.atCommand("AT&K0");   // disable RTS/CTS
+    }
+
+    public boolean isHealthy() throws Exception {
+        return true;
     }
 
     public String getManufacturer() throws IOException {

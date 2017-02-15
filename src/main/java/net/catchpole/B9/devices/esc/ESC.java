@@ -1,7 +1,7 @@
 package net.catchpole.B9.devices.esc;
 
-public interface ESC {
-    void initialize();
+import java.io.IOException;
 
-    boolean update(int throttle);
+public interface ESC {
+    void update(int throttle) throws IOException;
 }

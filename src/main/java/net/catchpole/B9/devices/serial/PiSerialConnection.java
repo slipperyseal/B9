@@ -9,7 +9,7 @@ public class PiSerialConnection implements SerialConnection {
     private final Serial serial = SerialFactory.createInstance();
     private SerialDataEventListener serialDataEventListener;
 
-    public PiSerialConnection(String port, int baud) throws SerialPortException, InterruptedException, IOException  {
+    public PiSerialConnection(String port, int baud) throws SerialPortException, InterruptedException, IOException {
         SerialConfig config = new SerialConfig();
         config.device(port != null ? port : com.pi4j.io.serial.SerialPort.getDefaultPort())
                 .baud(Baud.getInstance(baud))

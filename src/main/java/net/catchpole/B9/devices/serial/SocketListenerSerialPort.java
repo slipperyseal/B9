@@ -69,7 +69,7 @@ public class SocketListenerSerialPort implements SerialPort {
     }
 
     @Override
-    public SerialConnection openConnection(int baud) throws IOException, InterruptedException {
+    public SerialConnection openConnection(int baud) throws IOException {
         return serialPort.openConnection(baud);
     }
 }

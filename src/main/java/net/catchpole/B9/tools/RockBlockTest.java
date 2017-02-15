@@ -20,7 +20,7 @@ public class RockBlockTest {
             }
         });
         try {
-            rockBlock.connect();
+            rockBlock.initialize();
             rockBlock.clearSendingBuffer();
 
             rockBlock.sendBinaryMessage(("SLPSLPSLPS " + new Date()).getBytes());

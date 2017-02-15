@@ -1,5 +1,7 @@
 package net.catchpole.B9.devices.serial;
 
+import com.pi4j.io.serial.SerialPortException;
+
 import java.io.IOException;
 
 public class PiSerialPort implements SerialPort {
@@ -13,7 +15,13 @@ public class PiSerialPort implements SerialPort {
     }
 
     @Override
-    public SerialConnection openConnection(int baud) throws IOException, InterruptedException {
-        return new PiSerialConnection(port, baud);
+    public SerialConnection openConnection(int baud) throws IOException {
+        try {
+            return new PiSerialConnection(port, baud);
+        } catch (SerialPortException serialPortException) {
+            throw new IOException(serialPortException);
+        } catch (InterruptedException interruptedException) {
+            throw new IOException(interruptedException);
+        }
     }
 }

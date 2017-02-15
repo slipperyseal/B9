@@ -3,50 +3,36 @@ package net.catchpole.B9.devices.thrusters;
 import net.catchpole.B9.devices.esc.BlueESC;
 import net.catchpole.B9.devices.esc.BlueESCData;
 
+import java.io.IOException;
+
 public class BlueESCThrusters implements Thrusters {
     private BlueESC blueESCLeft;
     private BlueESC blueESCRight;
     private int left;
     private int right;
 
-    public BlueESCThrusters() throws Exception {
-        this.blueESCLeft = new BlueESC(0, false);
-        this.blueESCRight = new BlueESC(1, false);
-        this.blueESCLeft.initialize();
-        this.blueESCRight.initialize();
-
-        // the blueesc will shut down if it hasn't received an update in a while
-        new Thread() {
-            public void run() {
-                for (; ; ) {
-                    try {
-                        Thread.sleep(500);
-                        updateEsc();
-                    } catch (Throwable t) {
-                        t.printStackTrace();
-                    }
-                }
-            }
-        }.start();
+    public BlueESCThrusters(BlueESC blueESCLeft, BlueESC blueESCRight) throws Exception {
+        this.blueESCLeft = blueESCLeft;
+        this.blueESCRight = blueESCRight;
     }
 
-    public synchronized void update(double leftFraction, double rightFraction) {
+    public synchronized void update(double leftFraction, double rightFraction) throws IOException {
         this.left = (int)(32768*leftFraction);
         this.right = ((int)(32768*rightFraction));
         this.blueESCLeft.update(this.left);
         this.blueESCRight.update(this.right);
     }
 
-    public synchronized void updateEsc() {
+    public synchronized void updateEsc() throws IOException {
         this.blueESCLeft.update(this.left);
         this.blueESCRight.update(this.right);
     }
 
-    public synchronized BlueESCData getLeftData() {
+    public synchronized BlueESCData getLeftData() throws IOException {
         return blueESCLeft.read();
     }
 
-    public synchronized BlueESCData getRightData() {
+    public synchronized BlueESCData getRightData() throws IOException {
         return blueESCRight.read();
     }
 }

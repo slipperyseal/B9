@@ -3,10 +3,11 @@ package net.catchpole.B9.devices.controlpad;
 import com.pi4j.io.i2c.I2CBus;
 import com.pi4j.io.i2c.I2CDevice;
 import com.pi4j.io.i2c.I2CFactory;
+import net.catchpole.B9.devices.Device;
 import net.catchpole.B9.math.TrackedInt;
 
 // Nintendo Wii Classic Controller - tested with a cheap un-official controller
-public class ClassicController {
+public class ClassicController implements Device {
     public static final int BUTTON_ZR = 1<<1;
     public static final int BUTTON_START = 1<<2;
     public static final int BUTTON_HOME = 1<<3;
@@ -23,24 +24,39 @@ public class ClassicController {
     public static final int BUTTON_B = 1<<14;
     public static final int BUTTON_LEFT = 1<<15;
 
-    private final I2CBus bus;
-    private final I2CDevice device;
+    private I2CBus bus;
+    private I2CDevice device;
     private final TrackedInt buttons = new TrackedInt();
     private final TrackedInt leftHorizontal = new TrackedInt();
     private final TrackedInt leftVertical = new TrackedInt();
     private final TrackedInt rightHorizontal = new TrackedInt();
     private final TrackedInt rightVertical = new TrackedInt();
+    private volatile boolean stop = false;
 
     private ClassicControllerListener classicControllerListener;
 
-    public ClassicController() throws Exception {
+    public ClassicController() {
+    }
+
+    @Override
+    public void initialize() throws Exception {
         this.bus = I2CFactory.getInstance(I2CBus.BUS_1);
         this.device = bus.getDevice(0x52);
     }
 
+    @Override
+    public boolean isHealthy() throws Exception {
+        return true;
+    }
+
+    @Override
+    public void close() throws Exception {
+        this.stop = true;
+    }
+
     public void oblivion() {
         byte[] bytes = new byte[6];
-        for (;;) {
+        while (!stop) {
             try {
                 int len = device.read(0x00, bytes, 0, bytes.length);
                 if (len == 6) {
