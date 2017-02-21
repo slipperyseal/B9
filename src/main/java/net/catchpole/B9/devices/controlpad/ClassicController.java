@@ -7,6 +7,7 @@ import net.catchpole.B9.devices.Device;
 import net.catchpole.B9.math.TrackedInt;
 
 // Nintendo Wii Classic Controller - tested with a cheap un-official controller
+// I believe offical controllers use encryption so im not sure how well this would work with one
 public class ClassicController implements Device {
     public static final int BUTTON_ZR = 1<<1;
     public static final int BUTTON_START = 1<<2;

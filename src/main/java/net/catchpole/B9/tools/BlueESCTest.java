@@ -1,6 +1,7 @@
 package net.catchpole.B9.tools;
 
 import net.catchpole.B9.devices.esc.BlueESC;
+import net.catchpole.B9.lang.Arguments;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,10 +14,11 @@ import java.util.List;
 // increments the speed of a BlueESC until it reaches the target speed
 public class BlueESCTest {
     public static void main(String[] args) throws Exception {
-        int firstDevice = Integer.parseInt(args[0]);
-        int totalDevices = Integer.parseInt(args[1]);
-        int targetThrottle = Integer.parseInt(args[2]);
-        int increment = Integer.parseInt(args[3]);
+        Arguments arguments = new Arguments(args);
+        int firstDevice = arguments.getArgumentProperty("firstDevice", 0);
+        int totalDevices = arguments.getArgumentProperty("totalDevices", 1);
+        int targetThrottle = arguments.getArgumentProperty("targetThrottle", 2000);
+        int increment = arguments.getArgumentProperty("increment", 100);
 
         List<BlueESC> devices = new ArrayList<BlueESC>();
         for (int x=0;x<totalDevices;x++) {

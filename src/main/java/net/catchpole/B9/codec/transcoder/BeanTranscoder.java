@@ -3,6 +3,7 @@ package net.catchpole.B9.codec.transcoder;
 import net.catchpole.B9.codec.one.Types;
 import net.catchpole.B9.codec.stream.BitInputStream;
 import net.catchpole.B9.codec.stream.BitOutputStream;
+import net.catchpole.B9.lang.Throw;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -21,34 +22,32 @@ public class BeanTranscoder implements TypeTranscoder<Object> {
     public Object read(BitInputStream in) throws IOException {
         try {
             char id = (char)in.read(in.readBoolean() ? 7 : 16);
-            Class clazz = beanTypes.getType(id);
-            if (clazz == null) {
+            Class type = beanTypes.getType(id);
+            if (type == null) {
                 throw new IllegalArgumentException("No type found for id " + id);
             }
 
-            Object object = magicConstructor.construct(clazz);
-            for (Field field : beanTypes.getFields(clazz)) {
-                Class type = field.getType();
+            Object object = magicConstructor.construct(type);
+            for (Field field : beanTypes.getFields(type)) {
+                Class fieldType = field.getType();
 
-                if (beanTypes.getId(type) != null) {
+                if (beanTypes.getId(fieldType) != null) {
                     if (in.readBoolean()) {
                         field.setAccessible(true);
                         field.set(object, read(in));
                     }
                 } else {
-                    TypeTranscoder typeTranscoder = baseTypeTranscoder.getTranscoder(field.getType());
+                    TypeTranscoder typeTranscoder = baseTypeTranscoder.getTranscoder(fieldType);
                     if (typeTranscoder == null) {
-                        throw new IllegalArgumentException("No transcoder for " + field.getType());
+                        throw new IllegalArgumentException("No transcoder for " + fieldType);
                     }
                     field.setAccessible(true);
-                    field.set(object, type.isPrimitive() || in.readBoolean() ? typeTranscoder.read(in) : null);
+                    field.set(object, fieldType.isPrimitive() || in.readBoolean() ? typeTranscoder.read(in) : null);
                 }
             }
             return object;
-        } catch (IOException ioe) {
-            throw ioe;
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw Throw.unchecked(e);
         }
     }
 
@@ -64,22 +63,21 @@ public class BeanTranscoder implements TypeTranscoder<Object> {
             out.write(id & 0xffff, fitsSeven ? 7 : 16);
 
             for (Field field : beanTypes.getFields(object.getClass())) {
-                Class type = field.getType();
+                Class fieldType = field.getType();
                 field.setAccessible(true);
                 Object value = field.get(object);
 
-                if (beanTypes.getId(type) != null) {
+                if (beanTypes.getId(fieldType) != null) {
                     out.writeBoolean(value != null);
                     if (value != null) {
                         write(out, value);
                     }
                 } else {
-                    TypeTranscoder typeTranscoder = baseTypeTranscoder.getTranscoder(field.getType());
+                    TypeTranscoder typeTranscoder = baseTypeTranscoder.getTranscoder(fieldType);
                     if (typeTranscoder == null) {
-                        throw new IllegalArgumentException("No transcoder for " + type.getName());
+                        throw new IllegalArgumentException("No transcoder for " + fieldType.getName());
                     }
-
-                    if (!type.isPrimitive()) {
+                    if (!fieldType.isPrimitive()) {
                         out.writeBoolean(value != null);
                     }
                     if (value != null) {
@@ -87,12 +85,8 @@ public class BeanTranscoder implements TypeTranscoder<Object> {
                     }
                 }
             }
-        } catch (IOException ioe) {
-            throw ioe;
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw Throw.unchecked(e);
         }
     }
-
-
 }

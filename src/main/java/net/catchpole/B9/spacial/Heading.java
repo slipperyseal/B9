@@ -24,7 +24,6 @@ public class Heading {
         Heading heading = (Heading) o;
 
         return Double.compare(heading.degrees, degrees) == 0;
-
     }
 
     @Override

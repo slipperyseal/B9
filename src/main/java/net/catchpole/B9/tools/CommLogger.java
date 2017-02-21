@@ -3,6 +3,7 @@ package net.catchpole.B9.tools;
 import net.catchpole.B9.devices.serial.DataListener;
 import net.catchpole.B9.devices.serial.PiSerialPort;
 import net.catchpole.B9.devices.serial.SerialConnection;
+import net.catchpole.B9.lang.Arguments;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -22,7 +23,10 @@ public class CommLogger {
     }
 
     public static void main(String[] args) throws Exception {
-        CommLogger commLogger = new CommLogger(9600);
+        Arguments arguments = new Arguments(args);
+        int baud = arguments.getArgumentProperty("baud", 9600);
+
+        CommLogger commLogger = new CommLogger(baud);
 
         for (;;) {
             Thread.sleep(Long.MAX_VALUE);

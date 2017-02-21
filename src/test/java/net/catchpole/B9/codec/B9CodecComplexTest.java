@@ -47,9 +47,9 @@ public class B9CodecComplexTest {
         TestCase.assertEquals(length, data.length);
         byte[] regular = regularSerialize(gnarlyBean);
         System.out.println("B9: " + data.length +
-                " B9 compressed: " + compress(data).length +
+                " + compressed: " + compress(data).length +
                 " java serialized: " + regular.length +
-                " java serialized compressed: " + compress(regular).length);
+                " + compressed: " + compress(regular).length);
     }
 
     private byte[] regularSerialize(Object object) throws IOException {

@@ -2,6 +2,7 @@ package net.catchpole.B9.tools;
 
 import net.catchpole.B9.devices.serial.PiSerialPort;
 import net.catchpole.B9.devices.serial.SocketListenerSerialPort;
+import net.catchpole.B9.lang.Arguments;
 
 // want to use a serial device remotely?
 // you can even do remote development by using the SocketSerialPort
@@ -12,8 +13,9 @@ import net.catchpole.B9.devices.serial.SocketListenerSerialPort;
 //   new SocketSerialPort("localhost", 4000)
 public class PiSerialProxy {
     public static void main(String[] args) throws Exception {
-        int tcpPort = Integer.parseInt(args[0]);
-        int baud = Integer.parseInt(args[1]);
+        Arguments arguments = new Arguments(args);
+        int tcpPort = arguments.getArgumentProperty("port", 8000);
+        int baud = arguments.getArgumentProperty("baud", 9600);
         SocketListenerSerialPort socketListenerSerialPort = new SocketListenerSerialPort(
                 new PiSerialPort(), tcpPort, baud);
         socketListenerSerialPort.accept();
