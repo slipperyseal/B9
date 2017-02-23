@@ -8,8 +8,8 @@ public class GnarlyBean implements Serializable {
     public ChildBean maya;
     public ChildBean lucinda;
     public Object[] objectArray;
-    public Map map = new HashMap();
-    public Set set = new HashSet();
+    public Map map = new TreeMap<>();
+    public Set set;
     public List list;
     public boolean b1;
     public Boolean b2;

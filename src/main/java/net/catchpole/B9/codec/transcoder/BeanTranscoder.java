@@ -21,7 +21,11 @@ public class BeanTranscoder implements TypeTranscoder<Object> {
     @Override
     public Object read(BitInputStream in) throws IOException {
         try {
-            char id = (char)in.read(in.readBoolean() ? 7 : 16);
+            boolean fitsSeven = in.readBoolean();
+            char id = (char)in.read(fitsSeven ? 7 : 16);
+            if (fitsSeven) {
+                id &= 0x7f;
+            }
             Class type = beanTypes.getType(id);
             if (type == null) {
                 throw new IllegalArgumentException("No type found for id " + id);
@@ -41,8 +45,14 @@ public class BeanTranscoder implements TypeTranscoder<Object> {
                     if (typeTranscoder == null) {
                         throw new IllegalArgumentException("No transcoder for " + fieldType);
                     }
-                    field.setAccessible(true);
-                    field.set(object, fieldType.isPrimitive() || in.readBoolean() ? typeTranscoder.read(in) : null);
+                    if (fieldType.isPrimitive() || in.readBoolean()) {
+                        Object value = typeTranscoder.read(in);
+                        field.setAccessible(true);
+                        if (typeTranscoder instanceof FieldInterceptor) {
+                            value = ((FieldInterceptor)typeTranscoder).intercept(field.get(object), value);
+                        }
+                        field.set(object, value);
+                    }
                 }
             }
             return object;

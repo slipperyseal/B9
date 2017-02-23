@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-class MapTranscoder implements TypeTranscoder<Map>  {
+class MapTranscoder implements TypeTranscoder<Map>, FieldInterceptor<Map>  {
     private ObjectArrayTranscoder objectArrayTranscoder;
 
     public MapTranscoder(ObjectArrayTranscoder objectArrayTranscoder) {
@@ -33,5 +33,14 @@ class MapTranscoder implements TypeTranscoder<Map>  {
             values[x++] = entry.getValue();
         }
         objectArrayTranscoder.write(out, values);
+    }
+
+    public Map intercept(Map currentValue, Map newValue) {
+        if (currentValue != null && currentValue.isEmpty()) {
+            currentValue.putAll(newValue);
+            return currentValue;
+        } else {
+            return newValue;
+        }
     }
 }

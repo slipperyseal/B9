@@ -12,10 +12,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 
-// Compact Binary Symmetric Serialization (for UDP broadcast of telemetry and command packets).
-// The codec requires that classes are identical on both peers so that field names need not be transmitted.
-// currently supported types: Strings, all primative types including Object boxed type
-// nested Object types are supported but all classes must be registered
+// CodecOne and the 'one' package is a legacy codec. It's not as cool as B9Codec
+// It's currently in the code base as we still have some implementations using it.
+// Once it is removed from those implementations it will be removed.
 public class CodecOne implements Codec {
     private final BaseTypeTranscoder baseTypeTranscoder = new BaseTypeTranscoder(this);
     private final Types types = new Types();

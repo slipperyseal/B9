@@ -8,6 +8,12 @@ import net.catchpole.B9.codec.transcoder.BeanTranscoder;
 
 import java.io.*;
 
+/**
+ Compact Binary Symmetric Serialization (for UDP broadcast of telemetry and command packets).
+ The codec requires that classes are identical on both peers so that field names need not be transmitted.
+ currently supported types: Strings, all primitive types including Object boxed types
+ nested Object types are supported but all classes must be registered
+ */
 public class B9Codec implements Codec {
     private final Types types = new Types();
     private final BaseTypeTranscoder baseTypeTranscoder = new BaseTypeTranscoder();

@@ -20,6 +20,11 @@ public class ChildBean implements Serializable {
     }
 
     @Override
+    public int hashCode() {
+        return (f != +0.0f ? Float.floatToIntBits(f) : 0);
+    }
+
+    @Override
     public String toString() {
         return "ChildBean{" +
                 "f=" + f +

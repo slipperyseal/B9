@@ -12,7 +12,7 @@ This project is part of the [Robotics Mission to Antarctica](http://robotics.cat
 Devices supported:
 
 - ![#1589F0](http://placehold.it/15/1589F0/000000?text=+) [Blue Robotics BlueESC](https://www.bluerobotics.com/store/thrusters/t100-thruster/) T100/T200 Marine Thrusters
-- ![#1589F0](http://placehold.it/15/1589F0/000000?text=+) [RockBLOCK](http://www.rock7mobile.com/products-rockblock) Iridium 9602 Satellite Modem support
+- ![#1589F0](http://placehold.it/15/1589F0/000000?text=+) [RockBLOCK](http://www.rock7mobile.com/products-rockblock) Iridium 9602 Satellite Modem
 - ![#1589F0](http://placehold.it/15/1589F0/000000?text=+) GPS parsing and integration via the Pi's onboard serial
 - ![#1589F0](http://placehold.it/15/1589F0/000000?text=+) HMC5883L Compass Module (I2C)
 - ![#1589F0](http://placehold.it/15/1589F0/000000?text=+) Wii Classic Controller (I2C)
@@ -24,7 +24,7 @@ Library features:
 - ![#33ff15](http://placehold.it/15/33ff15/000000?text=+) Spacial maths, decimal degrees, headings, position, target and angle calculations.
 - ![#33ff15](http://placehold.it/15/33ff15/000000?text=+) Compact Binary Symmetric Serialization - for broadcast and logging of telemetry and command data
 - ![#33ff15](http://placehold.it/15/33ff15/000000?text=+) UDP transceivers for telemetry and command data
-- ![#33ff15](http://placehold.it/15/33ff15/000000?text=+) Abstract System Time - simulated time for running simulations in non-realtime
+- ![#33ff15](http://placehold.it/15/33ff15/000000?text=+) Abstract System Time - supports simulated time for running simulations in non-realtime
 
 B9 uses the excellent [Pi4J](https://github.com/Pi4J) library.
 
@@ -33,7 +33,7 @@ B9 uses the excellent [Pi4J](https://github.com/Pi4J) library.
 The net.catchpole.B9.tools package contains utilities and tools to get you started.
 
 To use B9, begin by [installing Pi4J](http://pi4j.com/install.html#EasyPreferred) on your Raspberry Pi.
-Pi4J will automatically link in it's native libraries, so it's important Pi4J is actaully installed rather than just trying to use the jar files on their own.
+Pi4J will automatically link in it's native libraries, so it's important Pi4J is actually installed rather than just trying to use the jar files on their own.
 
 Check out B9 either on your Raspberry Pi or on another machine which has a Java 8 installed and Maven. Change directory into B9 and then build the project...
 

@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-class ListTranscoder implements TypeTranscoder<List>  {
+class ListTranscoder implements TypeTranscoder<List>, FieldInterceptor<List>  {
     private ObjectArrayTranscoder objectArrayTranscoder;
 
     public ListTranscoder(ObjectArrayTranscoder objectArrayTranscoder) {
@@ -20,5 +20,14 @@ class ListTranscoder implements TypeTranscoder<List>  {
 
     public void write(BitOutputStream out, List value) throws IOException {
         objectArrayTranscoder.write(out, value.toArray());
+    }
+
+    public List intercept(List currentValue, List newValue) {
+        if (currentValue != null && currentValue.isEmpty()) {
+            currentValue.addAll(newValue);
+            return currentValue;
+        } else {
+            return newValue;
+        }
     }
 }

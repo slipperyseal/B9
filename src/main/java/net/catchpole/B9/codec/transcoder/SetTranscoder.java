@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-class SetTranscoder implements TypeTranscoder<Set>  {
+class SetTranscoder implements TypeTranscoder<Set>, FieldInterceptor<Set>  {
     private ObjectArrayTranscoder objectArrayTranscoder;
 
     public SetTranscoder(ObjectArrayTranscoder objectArrayTranscoder) {
@@ -21,5 +21,14 @@ class SetTranscoder implements TypeTranscoder<Set>  {
 
     public void write(BitOutputStream out, Set value) throws IOException {
         objectArrayTranscoder.write(out, value.toArray());
+    }
+
+    public Set intercept(Set currentValue, Set newValue) {
+        if (currentValue != null && currentValue.isEmpty()) {
+            currentValue.addAll(newValue);
+            return currentValue;
+        } else {
+            return newValue;
+        }
     }
 }
