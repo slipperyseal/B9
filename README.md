@@ -11,17 +11,17 @@ This project is part of the [Robotics Mission to Antarctica](http://robotics.cat
 
 Devices supported:
 
-- ![#1589F0](http://placehold.it/15/1589F0/000000?text=+) Controller for Blue Robotics BlueESC (T100/T200) marine thrusters
+- ![#1589F0](http://placehold.it/15/1589F0/000000?text=+) [Blue Robotics BlueESC](https://www.bluerobotics.com/store/thrusters/t100-thruster/) T100/T200 Marine Thrusters
 - ![#1589F0](http://placehold.it/15/1589F0/000000?text=+) [RockBLOCK](http://www.rock7mobile.com/products-rockblock) Iridium 9602 Satellite Modem support
 - ![#1589F0](http://placehold.it/15/1589F0/000000?text=+) GPS parsing and integration via the Pi's onboard serial
-- ![#1589F0](http://placehold.it/15/1589F0/000000?text=+) HMC5883L Compass Module
+- ![#1589F0](http://placehold.it/15/1589F0/000000?text=+) HMC5883L Compass Module (I2C)
 - ![#1589F0](http://placehold.it/15/1589F0/000000?text=+) Wii Classic Controller (I2C)
 - ![#1589F0](http://placehold.it/15/1589F0/000000?text=+) Raspberry Pi camera - via the raspistill and raspivid executable
-- ![#1589F0](http://placehold.it/15/1589F0/000000?text=+) Binary Motor Control - forward and reverse 'tank tracks'
+- ![#1589F0](http://placehold.it/15/1589F0/000000?text=+) Binary Motor Control - forward and reverse 'tank tracks' via GPIO
 
 Library features:
 
-- ![#33ff15](http://placehold.it/15/33ff15/000000?text=+) Spacial maths. Decimal degrees, headings - position, target and angle calculations.
+- ![#33ff15](http://placehold.it/15/33ff15/000000?text=+) Spacial maths, decimal degrees, headings, position, target and angle calculations.
 - ![#33ff15](http://placehold.it/15/33ff15/000000?text=+) Compact Binary Symmetric Serialization - for broadcast and logging of telemetry and command data
 - ![#33ff15](http://placehold.it/15/33ff15/000000?text=+) UDP transceivers for telemetry and command data
 - ![#33ff15](http://placehold.it/15/33ff15/000000?text=+) Abstract System Time - simulated time for running simulations in non-realtime
@@ -33,6 +33,7 @@ B9 uses the excellent [Pi4J](https://github.com/Pi4J) library.
 The net.catchpole.B9.tools package contains utilities and tools to get you started.
 
 To use B9, begin by [installing Pi4J](http://pi4j.com/install.html#EasyPreferred) on your Raspberry Pi.
+Pi4J will automatically link in it's native libraries, so it's important Pi4J is actaully installed rather than just trying to use the jar files on their own.
 
 Check out B9 either on your Raspberry Pi or on another machine which has a Java 8 installed and Maven. Change directory into B9 and then build the project...
 
@@ -44,9 +45,10 @@ If you've built the project on the pi you should be able to run one of the tools
 
         java -cp "target/*" net.catchpole.B9.tools.HMC5883LCompassTest
 
-Pi4J will automatically link in it's native libraries, so it's important Pi4J is actaully installed on the pi rather than just trying to use the jar files on their own.
+Some GPIO device access may require 'sudo' root access. Raspbian seems to be allowing more of these to be accessed by non-root users.
+There are also ways to add devices to the "non-root" list.
 
-Some device access may require 'sudo' access. Also, by default, many devices such as serial and I2C are disabled in Raspbian.
+Also, by default, many devices such as serial and I2C are disabled in Raspbian.
 You'll need to enabled them as needed. The serial port is often allocated to a TTY session.
 There are various ways to disable this depending on the Raspbian version you re using.
 
