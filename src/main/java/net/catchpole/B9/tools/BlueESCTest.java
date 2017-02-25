@@ -15,10 +15,11 @@ import java.util.List;
 public class BlueESCTest {
     public static void main(String[] args) throws Exception {
         Arguments arguments = new Arguments(args);
-        int firstDevice = arguments.getArgumentProperty("firstDevice", 0);
-        int totalDevices = arguments.getArgumentProperty("totalDevices", 1);
-        int targetThrottle = arguments.getArgumentProperty("targetThrottle", 2000);
-        int increment = arguments.getArgumentProperty("increment", 100);
+        int firstDevice = arguments.getArgumentProperty("-firstDevice", 0);
+        int totalDevices = arguments.getArgumentProperty("-totalDevices", 1);
+        int targetThrottle = arguments.getArgumentProperty("-targetThrottle", 1000);
+        int increment = arguments.getArgumentProperty("-increment", 100);
+        boolean statusOnly = arguments.hasArgument("-statusonly");
 
         List<BlueESC> devices = new ArrayList<BlueESC>();
         for (int x=0;x<totalDevices;x++) {
@@ -28,6 +29,17 @@ public class BlueESCTest {
         for (BlueESC blueESC : devices) {
             blueESC.initialize();
         }
+
+        if (statusOnly) {
+            for (;;) {
+                for (BlueESC blueESC : devices) {
+                    blueESC.update(0);
+                    System.out.println(blueESC.toString() + '\t' + blueESC.read());
+                }
+                Thread.sleep(500);
+            }
+        }
+
         int velocity=0;
         for (;;) {
             for (BlueESC blueESC : devices) {

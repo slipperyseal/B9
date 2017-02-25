@@ -10,7 +10,7 @@ import java.util.Date;
 public class RockBlockTest {
     public static void main(String[] args) throws Exception {
         Arguments arguments = new Arguments(args);
-        new RockBlockTest(arguments.getArgument("device"));
+        new RockBlockTest(arguments.getArgument("-device"));
     }
 
     public RockBlockTest(String device) throws Exception {

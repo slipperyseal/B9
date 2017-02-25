@@ -14,8 +14,8 @@ import net.catchpole.B9.lang.Arguments;
 public class PiSerialProxy {
     public static void main(String[] args) throws Exception {
         Arguments arguments = new Arguments(args);
-        int tcpPort = arguments.getArgumentProperty("port", 8000);
-        int baud = arguments.getArgumentProperty("baud", 9600);
+        int tcpPort = arguments.getArgumentProperty("-port", 8000);
+        int baud = arguments.getArgumentProperty("-baud", 9600);
         SocketListenerSerialPort socketListenerSerialPort = new SocketListenerSerialPort(
                 new PiSerialPort(), tcpPort, baud);
         socketListenerSerialPort.accept();

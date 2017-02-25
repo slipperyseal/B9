@@ -49,8 +49,8 @@ public class GnarlyBean implements Serializable {
         if (lucinda != null ? !lucinda.equals(that.lucinda) : that.lucinda != null) return false;
         // Probably incorrect - comparing Object[] arrays with Arrays.equals
         if (!Arrays.equals(objectArray, that.objectArray)) return false;
-        //if (map != null ? !map.equals(that.map) : that.map != null) return false;
-        //if (set != null ? !set.equals(that.set) : that.set != null) return false;
+        if (map != null ? !map.equals(that.map) : that.map != null) return false;
+        if (set != null ? !set.equals(that.set) : that.set != null) return false;
         if (list != null ? !list.equals(that.list) : that.list != null) return false;
         if (b2 != null ? !b2.equals(that.b2) : that.b2 != null) return false;
         if (by2 != null ? !by2.equals(that.by2) : that.by2 != null) return false;
