@@ -11,7 +11,7 @@ import java.io.IOException;
 
 Due to the length of the T100 cables and their possible capasitance problems,
 I recommend changing the I2C speed of the Pi from 100khz down to something like 20khz.
-On newer version of raspbian the way to do this is to edit /boot/config.txt and add this line..
+On newer version of raspbian the way to do this is to edit /boot/config.txt and add/change this line..
 
 dtparam=i2c1_baudrate=20000
 
@@ -27,17 +27,35 @@ public class BlueESC implements ESC, Device {
 
     private final int device;
     private final boolean forwardPropeller;
-    private volatile boolean stopping = false;
     private I2CBus bus;
     private I2CDevice i2CDevice;
+    private volatile boolean stopping = false;
     private volatile int lastThrottle = 0;
-    private Thread updateThread;
+    private volatile long lastUpdate = 0;
+    private Thread keepAliveThread;
+    private boolean keepAlive = true;
 
-    // the Blue Robotics thrusters (T100 etc) can be installed with a forward or reverse propeller
+    /**
+     * @param device I2C device offset, beginning at 0. The actual I2C device used is 0x29 + device.
+     * @param forwardPropeller Blue Robotics thrusters (T100 etc) can be installed with a forward or reverse propeller.
+     * @throws Exception
+     */
     public BlueESC(int device, boolean forwardPropeller) throws Exception {
         this.forwardPropeller = forwardPropeller;
         this.bus = I2CFactory.getInstance(I2CBus.BUS_1);
         this.device = device;
+    }
+
+    /**
+     * If true a thread will be created to ensure throttle updates are periodically sent to the thruster to
+     * prevent it from stopping.
+     * The default is true.
+     * Must be called before initialize()
+     *
+     * @param keepAlive
+     */
+    public void setKeepAlive(boolean keepAlive) {
+        this.keepAlive = keepAlive;
     }
 
     public void initialize() throws Exception {
@@ -46,42 +64,24 @@ public class BlueESC implements ESC, Device {
         }
         if (this.i2CDevice == null) {
             this.i2CDevice = bus.getDevice(BLUEESC_ADDRESS + device);
-            Runtime.getRuntime().addShutdownHook(new Thread() {
-                @Override
-                public void run() {
-                    stopping = true;
-                    try {
-                        update(0);
-                    } catch (IOException ioe) {
-                    }
-                }
-            });
 
-            this.updateThread = new Thread() {
-                public void run() {
-                    for (; ; ) {
-                        try {
-                            Thread.sleep(500);
-                            update(lastThrottle);
-                        } catch (InterruptedException ioe) {
-                            // closing
-                            return;
-                        } catch (Throwable t) {
-                        }
-                    }
-                }
-            };
-            this.updateThread.start();
+            resetEsc();
+
+            Runtime.getRuntime().addShutdownHook(new ShutdownThread());
+
+            if (this.keepAlive) {
+                this.keepAliveThread = new KeepAliveThread();
+                this.keepAliveThread.start();
+            }
         }
-        resetEsc();
     }
 
     public void close() throws Exception {
         this.bus = null;
         this.i2CDevice = null;
-        if (this.updateThread != null) {
-            updateThread.interrupt();
-            updateThread = null;
+        if (this.keepAliveThread != null) {
+            keepAliveThread.interrupt();
+            keepAliveThread = null;
         }
     }
 
@@ -120,18 +120,46 @@ public class BlueESC implements ESC, Device {
         return ((bytes[offset] & 0xff) << 8) | (bytes[offset+1] & 0xff);
     }
 
-    public void update(int throttle) throws IOException {
+    public void update(final int throttle) throws IOException {
         if (stopping) {
             return;
         }
-        if (!this.forwardPropeller) {
-            throttle = 0-throttle;
-        }
+        int appliedThrottle = this.forwardPropeller ? throttle : 0-throttle;
         byte[] writeBuffer = new byte[2];
-        writeBuffer[0] = (byte) (throttle >> 8);
-        writeBuffer[1] = (byte) throttle;
+        writeBuffer[0] = (byte) (appliedThrottle >> 8);
+        writeBuffer[1] = (byte) appliedThrottle;
         synchronized (this.bus) {
+            this.lastThrottle = throttle;
+            this.lastUpdate =  System.currentTimeMillis();
             i2CDevice.write(0, writeBuffer, 0, 2);
+        }
+    }
+
+    class KeepAliveThread extends Thread {
+        public void run() {
+            for (; ; ) {
+                try {
+                    Thread.sleep(500);
+                    if (System.currentTimeMillis() > (lastUpdate + 500)) {
+                        update(lastThrottle);
+                    }
+                } catch (InterruptedException ioe) {
+                    // closing
+                    return;
+                } catch (Throwable t) {
+                }
+            }
+        }
+    }
+
+    class ShutdownThread extends Thread {
+        @Override
+        public void run() {
+            stopping = true;
+            try {
+                update(0);
+            } catch (IOException ioe) {
+            }
         }
     }
 

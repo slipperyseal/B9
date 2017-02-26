@@ -1,5 +1,6 @@
 package net.catchpole.B9.tools;
 
+import net.catchpole.B9.devices.ConcurrentDeviceInitializer;
 import net.catchpole.B9.devices.esc.BlueESC;
 import net.catchpole.B9.lang.Arguments;
 
@@ -19,16 +20,20 @@ public class BlueESCTest {
         int totalDevices = arguments.getArgumentProperty("-totalDevices", 1);
         int targetThrottle = arguments.getArgumentProperty("-targetThrottle", 1000);
         int increment = arguments.getArgumentProperty("-increment", 100);
+        int wait = arguments.getArgumentProperty("-wait", 200);
         boolean statusOnly = arguments.hasArgument("-statusonly");
 
-        List<BlueESC> devices = new ArrayList<BlueESC>();
+        List<BlueESC> devices = new ArrayList<>();
         for (int x=0;x<totalDevices;x++) {
-            devices.add(new BlueESC(firstDevice + x, false));
+            BlueESC blueESC = new BlueESC(firstDevice + x, false);
+            devices.add(blueESC);
         }
 
-        for (BlueESC blueESC : devices) {
-            blueESC.initialize();
-        }
+        // thrusters take a few seconds to initialize, so let's start them at the same time.
+        // they can shut down when they don't get data in a while so this also limits "dead time" while
+        // other thrusters would be initializing if initialized sequentially
+        ConcurrentDeviceInitializer<BlueESC> concurrentDeviceInitializer = new ConcurrentDeviceInitializer<>(devices);
+        concurrentDeviceInitializer.initialize();
 
         if (statusOnly) {
             for (;;) {
@@ -50,7 +55,7 @@ public class BlueESCTest {
             for (BlueESC blueESC : devices) {
                 System.out.println(blueESC.toString() + '\t' + velocity + '\t' + blueESC.read());
             }
-            Thread.sleep(200);
+            Thread.sleep(wait);
             if (targetThrottle > 0) {
                 if (velocity < targetThrottle) {
                     velocity += increment;
