@@ -139,7 +139,7 @@ public class BlueESC implements ESC, Device {
         public void run() {
             for (; ; ) {
                 try {
-                    Thread.sleep(500);
+                    Thread.sleep(750);
                     if (System.currentTimeMillis() > (lastUpdate + 500)) {
                         update(lastThrottle);
                     }

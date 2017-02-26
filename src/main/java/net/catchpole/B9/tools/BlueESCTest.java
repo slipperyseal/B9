@@ -38,7 +38,6 @@ public class BlueESCTest {
         if (statusOnly) {
             for (;;) {
                 for (BlueESC blueESC : devices) {
-                    blueESC.update(0);
                     System.out.println(blueESC.toString() + '\t' + blueESC.read());
                 }
                 Thread.sleep(500);
