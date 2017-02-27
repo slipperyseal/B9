@@ -1,4 +1,4 @@
-package net.catchpole.B9.codec.one;
+package net.catchpole.B9.codec.type;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;

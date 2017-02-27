@@ -1,6 +1,6 @@
 package net.catchpole.B9.codec.transcoder;
 
-import net.catchpole.B9.codec.one.Types;
+import net.catchpole.B9.codec.type.Types;
 import net.catchpole.B9.codec.stream.BitInputStream;
 import net.catchpole.B9.codec.stream.BitOutputStream;
 import net.catchpole.B9.lang.Throw;
