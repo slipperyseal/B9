@@ -9,7 +9,7 @@ import java.io.IOException;
 
 /*
 
-Due to the length of the T100 cables and their possible capasitance problems,
+Due to the length of the T100 cables and their possible capacitance problems,
 I recommend changing the I2C speed of the Pi from 100khz down to something like 20khz.
 On newer version of raspbian the way to do this is to edit /boot/config.txt and add/change this line..
 
@@ -19,6 +19,10 @@ On reboot, you should see the rate has changed from the default (it appears in t
 
 Keep the leads as short as you can. As the BlueESC I2C is 5 volt and the Pi's I2C is 3.3v
 you will need to use a level converter, and put I2C pull up resistors on the 5v side.
+47K resistors seem to work well for this.
+
+It is also very important to connect the PWM lead of the Thruster to ground.
+Bad things can happen if you don't. Don't ask me how I know.
 
 */
 
@@ -69,7 +73,7 @@ public class BlueESC implements ESC, Device {
 
             Runtime.getRuntime().addShutdownHook(new ShutdownThread());
 
-            if (this.keepAlive) {
+            if (this.keepAlive && keepAliveThread == null) {
                 this.keepAliveThread = new KeepAliveThread();
                 this.keepAliveThread.start();
             }
