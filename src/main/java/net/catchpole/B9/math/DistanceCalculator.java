@@ -14,13 +14,11 @@ public class DistanceCalculator {
     }
 
     public double metersToDegreesLatitude(double meters, Location location) {
-        double metersPerDegree = distanceMeters(location, new Location(location.getLatitude()+1.0D, location.getLongitude()));
-        return 1.0D / (metersPerDegree / meters);
+        return 1.0D / (distanceMeters(location, new Location(location.getLatitude()+1.0D, location.getLongitude())) / meters);
     }
 
-    public double metersToDegreesLongituse(double meters, Location location) {
-        double metersPerDegree = distanceMeters(location, new Location(location.getLatitude(), location.getLongitude() + 1.0D));
-        return 1.0D / (metersPerDegree / meters);
+    public double metersToDegreesLongitude(double meters, Location location) {
+        return 1.0D / (distanceMeters(location, new Location(location.getLatitude(), location.getLongitude() + 1.0D)) / meters);
     }
 
     public double distanceMeters(Location location1, Location location2) {

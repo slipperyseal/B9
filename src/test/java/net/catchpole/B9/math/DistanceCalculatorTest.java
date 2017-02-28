@@ -20,9 +20,9 @@ public class DistanceCalculatorTest {
         TestCase.assertTrue(Almost.equals(1.0D, 0.0001, distanceCalculator.metersToDegreesLatitude(111194.92664455873, new Location(-37.5, 145.4))));
         TestCase.assertTrue(Almost.equals(0.5D, 0.0001, distanceCalculator.metersToDegreesLatitude(111194.92664455873 / 2, new Location(-37.5, 145.4))));
 
-        TestCase.assertTrue(Almost.equals(2.0D, 0.0001, distanceCalculator.metersToDegreesLongituse(88216.45152563702 * 2, new Location(-37.5, 145.4))));
-        TestCase.assertTrue(Almost.equals(1.0D, 0.0001, distanceCalculator.metersToDegreesLongituse(88216.45152563702, new Location(-37.5, 145.4))));
-        TestCase.assertTrue(Almost.equals(0.5D, 0.0001, distanceCalculator.metersToDegreesLongituse(88216.45152563702 / 2, new Location(-37.5, 145.4))));
+        TestCase.assertTrue(Almost.equals(2.0D, 0.0001, distanceCalculator.metersToDegreesLongitude(88216.45152563702 * 2, new Location(-37.5, 145.4))));
+        TestCase.assertTrue(Almost.equals(1.0D, 0.0001, distanceCalculator.metersToDegreesLongitude(88216.45152563702, new Location(-37.5, 145.4))));
+        TestCase.assertTrue(Almost.equals(0.5D, 0.0001, distanceCalculator.metersToDegreesLongitude(88216.45152563702 / 2, new Location(-37.5, 145.4))));
     }
 
     @Test
