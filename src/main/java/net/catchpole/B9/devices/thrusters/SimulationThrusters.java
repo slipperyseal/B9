@@ -17,7 +17,7 @@ public class SimulationThrusters implements Thrusters {
     private final Random random = new Random();
     private final Clock clock;
     private final SimulationGps simulationGps;
-    private final double kilometersPerSecond;
+    private final double metersPerSecond;
     private final int errorDegrees;
     private final double steerBias;
 
@@ -25,10 +25,10 @@ public class SimulationThrusters implements Thrusters {
     private double right;
     private long updateTime;
 
-    public SimulationThrusters(Clock clock, SimulationGps simulationGps, double kilometersPerSecond, int errorDegrees, double steerBias) {
+    public SimulationThrusters(Clock clock, SimulationGps simulationGps, double metersPerSecond, int errorDegrees, double steerBias) {
         this.clock = clock;
         this.simulationGps = simulationGps;
-        this.kilometersPerSecond = kilometersPerSecond;
+        this.metersPerSecond = metersPerSecond;
         this.errorDegrees = errorDegrees;
         this.steerBias = steerBias;
 
@@ -52,10 +52,10 @@ public class SimulationThrusters implements Thrusters {
         long millis = time - updateTime;
         updateTime = time;
         if (left != 0.0 && right != 0.0 && millis != 0L) {
-            double kps = (millis/1000) * kilometersPerSecond * ((left + right) / 2.0d);
+            double mps = (millis/1000) * this.metersPerSecond * ((left + right) / 2.0d);
             simulationGps.setLocation(
                     headingCalculator.getLocation(simulationGps.getLocation(), simulationGps.getHeading(),
-                            distanceCalculator.kilometersToDegrees(kps))
+                            distanceCalculator.metersToDegreesLatitude(mps, simulationGps.getLocation()))
             );
         }
     }

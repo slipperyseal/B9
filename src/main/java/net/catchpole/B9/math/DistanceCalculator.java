@@ -9,16 +9,38 @@ public class DistanceCalculator {
                 Math.pow((location.getLongitude() - target.getLongitude()), 2.0));
     }
 
-    public boolean isWithinDistance(Location location, Location target, double kilometers) {
-        return degreesToKilometers( degreesDistance(location, target) ) <= kilometers;
+    public boolean isWithinDistance(Location location, Location target, double meters) {
+        return distanceMeters(location, target) <= meters;
     }
 
-    public double kilometersToDegrees(double kilometers) {
-        return kilometers / 111.0d;
+    public double metersToDegreesLatitude(double meters, Location location) {
+        double metersPerDegree = distanceMeters(location, new Location(location.getLatitude()+1.0D, location.getLongitude()));
+        return 1.0D / (metersPerDegree / meters);
     }
 
-    public double degreesToKilometers(double degrees) {
-        return degrees * 111.0d;
+    public double metersToDegreesLongituse(double meters, Location location) {
+        double metersPerDegree = distanceMeters(location, new Location(location.getLatitude(), location.getLongitude() + 1.0D));
+        return 1.0D / (metersPerDegree / meters);
+    }
+
+    public double distanceMeters(Location location1, Location location2) {
+        double latitude1 = location1.getLatitude();
+        double latitude2 = location2.getLatitude();
+        double longitude1 = location1.getLongitude();
+        double longitude2 = location2.getLongitude();
+        double elevation1 = location1.getAltitude();
+        double elevation2 = location2.getAltitude();
+
+        Double latDistance = Math.toRadians(latitude2 - latitude1);
+        Double lonDistance = Math.toRadians(longitude2 - longitude1);
+        Double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
+                + Math.cos(Math.toRadians(latitude1)) * Math.cos(Math.toRadians(latitude2))
+                * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
+        Double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        double distanceMeters = HeadingCalculator.EARTH_RADIUS * c * 1000;
+        double height = elevation1 - elevation2;
+        distanceMeters = Math.pow(distanceMeters, 2) + Math.pow(height, 2);
+        return Math.sqrt(distanceMeters);
     }
 
     public Location getWrappedLocation(Location location, Location target) {

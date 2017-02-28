@@ -15,9 +15,25 @@ public class DistanceCalculatorTest {
     }
 
     @Test
-    public void isWithin() {
+    public void testMetersToDegrees() {
+        TestCase.assertTrue(Almost.equals(2.0D, 0.0001, distanceCalculator.metersToDegreesLatitude(111194.92664455873 * 2, new Location(-37.5, 145.4))));
+        TestCase.assertTrue(Almost.equals(1.0D, 0.0001, distanceCalculator.metersToDegreesLatitude(111194.92664455873, new Location(-37.5, 145.4))));
+        TestCase.assertTrue(Almost.equals(0.5D, 0.0001, distanceCalculator.metersToDegreesLatitude(111194.92664455873 / 2, new Location(-37.5, 145.4))));
+
+        TestCase.assertTrue(Almost.equals(2.0D, 0.0001, distanceCalculator.metersToDegreesLongituse(88216.45152563702 * 2, new Location(-37.5, 145.4))));
+        TestCase.assertTrue(Almost.equals(1.0D, 0.0001, distanceCalculator.metersToDegreesLongituse(88216.45152563702, new Location(-37.5, 145.4))));
+        TestCase.assertTrue(Almost.equals(0.5D, 0.0001, distanceCalculator.metersToDegreesLongituse(88216.45152563702 / 2, new Location(-37.5, 145.4))));
+    }
+
+    @Test
+    public void testIsWithin() {
         Location home = new Location(-37.321353, 145.5164683);
-        TestCase.assertFalse(distanceCalculator.isWithinDistance(new Location(-37.322534, 145.527165), home, 1.0));
-        TestCase.assertTrue(distanceCalculator.isWithinDistance(new Location(-37.320544, 145.517042), home, 1.0));
+        TestCase.assertFalse(distanceCalculator.isWithinDistance(new Location(-37.322534, 145.529165), home, 1000));
+        TestCase.assertTrue(distanceCalculator.isWithinDistance(new Location(-37.320544, 145.517042), home, 1000));
+    }
+
+    @Test
+    public void testDistanceMeters() {
+        TestCase.assertEquals(76541, (int) distanceCalculator.distanceMeters(new Location(-37.8136428, 144.9558319), new Location(-38.5012549, 144.9152961)));
     }
 }
