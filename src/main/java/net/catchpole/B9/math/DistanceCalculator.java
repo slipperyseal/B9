@@ -29,16 +29,15 @@ public class DistanceCalculator {
         double elevation1 = location1.getAltitude();
         double elevation2 = location2.getAltitude();
 
-        Double latDistance = Math.toRadians(latitude2 - latitude1);
-        Double lonDistance = Math.toRadians(longitude2 - longitude1);
-        Double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
+        double latDistance = Math.toRadians(latitude2 - latitude1);
+        double lonDistance = Math.toRadians(longitude2 - longitude1);
+        double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
                 + Math.cos(Math.toRadians(latitude1)) * Math.cos(Math.toRadians(latitude2))
                 * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
-        Double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         double distanceMeters = HeadingCalculator.EARTH_RADIUS * c * 1000;
         double height = elevation1 - elevation2;
-        distanceMeters = Math.pow(distanceMeters, 2) + Math.pow(height, 2);
-        return Math.sqrt(distanceMeters);
+        return Math.sqrt(Math.pow(distanceMeters, 2) + Math.pow(height, 2));
     }
 
     public Location getWrappedLocation(Location location, Location target) {
