@@ -41,10 +41,10 @@ public class HeadingCalculatorTest {
 
     @Test
     public void testGetLocation() {
-        TestCase.assertEquals("Location -37.455034 145.400000 0.0 m", headingCalculator.getLocation(new Location(-37.5, 145.4), new Heading(0.0), 5.0d).toString());
-        TestCase.assertEquals("Location -37.455034 145.400247 0.0 m", headingCalculator.getLocation(new Location(-37.5, 145.4), new Heading(0.25), 5.0d).toString());
-        TestCase.assertEquals("Location -37.455036 145.400494 0.0 m", headingCalculator.getLocation(new Location(-37.5, 145.4), new Heading(0.5), 5.0d).toString());
-        TestCase.assertEquals("Location -37.455038 145.400741 0.0 m", headingCalculator.getLocation(new Location(-37.5, 145.4), new Heading(0.75), 5.0d).toString());
+        TestCase.assertEquals("Location -37.455034 145.400000 0.0 m", headingCalculator.getLocation(new Location(-37.5, 145.4), new Heading(0.0), 5000.0d).toString());
+        TestCase.assertEquals("Location -37.455034 145.400247 0.0 m", headingCalculator.getLocation(new Location(-37.5, 145.4), new Heading(0.25), 5000.0d).toString());
+        TestCase.assertEquals("Location -37.455036 145.400494 0.0 m", headingCalculator.getLocation(new Location(-37.5, 145.4), new Heading(0.5), 5000.0d).toString());
+        TestCase.assertEquals("Location -37.455038 145.400741 0.0 m", headingCalculator.getLocation(new Location(-37.5, 145.4), new Heading(0.75), 5000.0d).toString());
 
         TestCase.assertTrue(Almost.equals(10.12345, 0.0001, Normalise.degrees(10.1234567)));
         TestCase.assertTrue(Almost.equals(10.12345, 0.0001, Normalise.degrees(-349.8765432)));

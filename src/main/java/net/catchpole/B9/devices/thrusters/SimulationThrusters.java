@@ -52,10 +52,9 @@ public class SimulationThrusters implements Thrusters {
         long millis = time - updateTime;
         updateTime = time;
         if (left != 0.0 && right != 0.0 && millis != 0L) {
-            double mps = (millis/1000) * this.metersPerSecond * ((left + right) / 2.0d);
+            double metersTravelled = ((double)millis/1000.0D) * this.metersPerSecond * ((left + right) / 2.0d);
             simulationGps.setLocation(
-                    headingCalculator.getLocation(simulationGps.getLocation(), simulationGps.getHeading(),
-                            distanceCalculator.metersToDegreesLatitude(mps, simulationGps.getLocation()))
+                    headingCalculator.getLocation(simulationGps.getLocation(), simulationGps.getHeading(), metersTravelled)
             );
         }
     }
