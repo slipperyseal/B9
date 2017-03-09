@@ -34,9 +34,6 @@ public class HeadingCalculatorTest {
         Heading wrapHeading = headingCalculator.getExpectedHeading(
                 new Location(-179.0, -179.0),
                 new Location(179.0, 179.0));
-        System.out.println(wrapHeading);
-//        TestCase.assertTrue(Almost.equals(141.6482, 0.0001, wrapHeading.getDegrees()));
-
     }
 
     @Test

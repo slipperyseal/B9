@@ -2,10 +2,12 @@ package net.catchpole.B9.devices.gps;
 
 import net.catchpole.B9.devices.Device;
 import net.catchpole.B9.devices.compass.Compass;
+import net.catchpole.B9.math.HeadingCalculator;
 import net.catchpole.B9.spacial.Heading;
 import net.catchpole.B9.spacial.Location;
 
 public class SimulationGps implements Gps, Compass, Speedometer, Device {
+    private HeadingCalculator headingCalculator = new HeadingCalculator();
     private Location location;
     private Heading heading;
     private double velocity;
@@ -32,6 +34,10 @@ public class SimulationGps implements Gps, Compass, Speedometer, Device {
 
     public void setVelocity(double velocity) {
         this.velocity = velocity;
+    }
+
+    public void drift(Heading heading, double meters) {
+        this.location = headingCalculator.getLocation(location, heading, meters);
     }
 
     @Override
