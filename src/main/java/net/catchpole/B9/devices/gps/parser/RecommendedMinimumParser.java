@@ -4,8 +4,6 @@ import net.catchpole.B9.devices.gps.message.RecommendedMinimum;
 import net.catchpole.B9.math.DecimalCoordinates;
 
 public class RecommendedMinimumParser implements GpsMessageParser<RecommendedMinimum> {
-    private DecimalCoordinates decimalCoordinates = new DecimalCoordinates();
-
     public RecommendedMinimum parse(String[] line) {
         if (line[2].length() == 1) {
             RecommendedMinimum recommendedMinimum = new RecommendedMinimum();
@@ -26,7 +24,7 @@ public class RecommendedMinimumParser implements GpsMessageParser<RecommendedMin
             recommendedMinimum.setSpeedOverGroundKnots(parseDouble(line[7]));
             recommendedMinimum.setTrackAngle(parseDouble(line[8]));
             if (!line[10].isEmpty() && !line[11].isEmpty()) {
-                recommendedMinimum.setMagneticVariation(decimalCoordinates.longitudeFromDegreesMinutes(line[10], line[11]));
+                recommendedMinimum.setMagneticVariation(DecimalCoordinates.longitudeFromDegreesMinutes(line[10], line[11]));
             }
             return recommendedMinimum;
         }

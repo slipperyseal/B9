@@ -1,19 +1,18 @@
 package net.catchpole.B9.devices.thrusters;
 
 import net.catchpole.B9.devices.clock.Clock;
+import net.catchpole.B9.devices.clock.TimeTracking;
 import net.catchpole.B9.devices.esc.BlueESCData;
 import net.catchpole.B9.devices.gps.SimulationGps;
-import net.catchpole.B9.math.HeadingCalculator;
+import net.catchpole.B9.math.Geo;
 import net.catchpole.B9.math.Normalise;
 import net.catchpole.B9.spacial.Heading;
 
 import java.util.Random;
 
 public class SimulationThrusters implements Thrusters {
-    private HeadingCalculator headingCalculator = new HeadingCalculator();
-
     private final Random random = new Random();
-    private final Clock clock;
+    private final TimeTracking timeTracking;
     private final SimulationGps simulationGps;
     private final double metersPerSecond;
     private final int errorDegrees;
@@ -21,37 +20,33 @@ public class SimulationThrusters implements Thrusters {
 
     private double left;
     private double right;
-    private long updateTime;
 
     public SimulationThrusters(Clock clock, SimulationGps simulationGps, double metersPerSecond, int errorDegrees, double steerBias) {
-        this.clock = clock;
+        this.timeTracking = new TimeTracking(clock);
         this.simulationGps = simulationGps;
         this.metersPerSecond = metersPerSecond;
         this.errorDegrees = errorDegrees;
         this.steerBias = steerBias;
-        this.updateTime = clock.getCurrentTime();
     }
 
     public void update(double left, double right) {
         this.left = left;
         this.right = right;
-        adviseNewHeading();
+        update();
     }
 
-    private void adviseNewHeading() {
+    public void update() {
         double steer = left - right;
         double steerDegrees = steer * steerBias;
         Heading heading = new Heading( Normalise.degrees(simulationGps.getHeading().getDegrees() + steerDegrees));
         double error = errorDegrees == 0 ? 0 : random.nextInt(errorDegrees) - (errorDegrees/2);
         simulationGps.setHeading(new Heading(Normalise.degrees(heading.getDegrees() + error)));
 
-        long time = clock.getCurrentTime();
-        long millis = time - updateTime;
-        updateTime = time;
-        if (left != 0.0 && right != 0.0 && millis != 0L) {
-            double metersTravelled = ((double)millis/1000.0D) * this.metersPerSecond * ((left + right) / 2.0d);
+        long timePassed = timeTracking.getTimePassed();
+        if (left != 0.0 || right != 0.0 || timePassed != 0L) {
+            double metersTravelled = ((double)timePassed/1000.0D) * this.metersPerSecond * ((left + right) / 2.0d);
             simulationGps.setLocation(
-                    headingCalculator.getLocation(simulationGps.getLocation(), simulationGps.getHeading(), metersTravelled)
+                    Geo.getLocation(simulationGps.getLocation(), simulationGps.getHeading(), metersTravelled)
             );
         }
     }
