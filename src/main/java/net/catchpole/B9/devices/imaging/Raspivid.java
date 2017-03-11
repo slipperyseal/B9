@@ -8,11 +8,13 @@ public class Raspivid {
     private Integer width;
     private Integer height;
     private Integer bitrate;
+    private int rotation;
 
-    public Raspivid(Integer width, Integer height, Integer bitrate) {
+    public Raspivid(Integer width, Integer height, Integer bitrate, int rotation) {
         this.width = width;
         this.height = height;
         this.bitrate = bitrate;
+        this.rotation = rotation;
     }
 
     //raspivid -t 30000 -b 1000000 -w 1280 -h 720 -o test.h264
@@ -33,6 +35,10 @@ public class Raspivid {
             if (bitrate != null) {
                 args.add("-b");
                 args.add(Integer.toString(bitrate));
+            }
+            if (rotation != 0) {
+                args.add("-rot");
+                args.add(Integer.toString(rotation));
             }
             args.add("-t");
             args.add(Integer.toString(millis));

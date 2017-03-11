@@ -10,11 +10,13 @@ public class Raspistill implements Camera {
     private Integer width;
     private Integer height;
     private Integer qualityPercent;
+    private Integer rotate;
 
-    public Raspistill(Integer width, Integer height, Integer qualityPercent) {
+    public Raspistill(Integer width, Integer height, Integer qualityPercent, int rotate) {
         this.width = width;
         this.height = height;
         this.qualityPercent = qualityPercent;
+        this.rotate = rotate;
     }
 
     public synchronized void snap(File file) {
@@ -34,6 +36,10 @@ public class Raspistill implements Camera {
             if (qualityPercent != null) {
                 args.add("-q");
                 args.add(Integer.toString(qualityPercent));
+            }
+            if (rotate != 0) {
+                args.add("-rot");
+                args.add(Integer.toString(rotate));
             }
             ProcessBuilder processBuilder = new ProcessBuilder(args);
             Process process = processBuilder.start();

@@ -13,11 +13,13 @@ class LongTranscoder implements TypeTranscoder<Long> {
     }
 
     public Long read(BitInputStream in) throws IOException {
-        return integerTranscoder.read(in) | (((long) integerTranscoder.read(in)) << 32);
+        long lower = ((long)integerTranscoder.read(in)) & 0xffffffffL;
+        long upper = ((long)integerTranscoder.read(in)) & 0xffffffffL;
+        return lower | (upper<<32);
     }
 
     public void write(BitOutputStream out, Long value) throws IOException {
-        integerTranscoder.write(out, value.intValue());
+        integerTranscoder.write(out, (int) (long) value);
         integerTranscoder.write(out, (int) (value >> 32));
     }
 }
