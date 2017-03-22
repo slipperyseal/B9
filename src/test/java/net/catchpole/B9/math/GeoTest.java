@@ -27,13 +27,14 @@ public class GeoTest {
     @Test
     public void testIsWithin() {
         Location home = new Location(-37.321353, 145.5164683);
-        TestCase.assertFalse(Geo.isWithinDistance(new Location(-37.322534, 145.529165), home, 1000));
-        TestCase.assertTrue(Geo.isWithinDistance(new Location(-37.320544, 145.517042), home, 1000));
+        TestCase.assertFalse(Geo.isWithinDistance(new Location(-37.322534, 145.529165), home, 1000, false));
+        TestCase.assertTrue(Geo.isWithinDistance(new Location(-37.320544, 145.517042), home, 1000, false));
     }
 
     @Test
     public void testDistanceMeters() {
-        TestCase.assertEquals(76541, (int) Geo.distanceMeters(new Location(-37.8136428, 144.9558319), new Location(-38.5012549, 144.9152961)));
+        TestCase.assertEquals(76541, (int) Geo.distanceMeters(new Location(-37.8136428, 144.9558319), new Location(-38.5012549, 144.9152961, 2000), false));
+        TestCase.assertEquals(76567, (int) Geo.distanceMeters(new Location(-37.8136428, 144.9558319), new Location(-38.5012549, 144.9152961, 2000), true));
     }
 
     @Test

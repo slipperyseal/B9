@@ -17,25 +17,25 @@ public class Geo {
                 Math.pow((location.getLongitude() - target.getLongitude()), 2.0));
     }
 
-    public static boolean isWithinDistance(Location location, Location target, double meters) {
-        return distanceMeters(location, target) <= meters;
+    public static boolean isWithinDistance(Location location, Location target, double meters, boolean includeElevtion) {
+        return distanceMeters(location, target, includeElevtion) <= meters;
     }
 
     public static double metersToDegreesLatitude(double meters, Location location) {
-        return 1.0D / (distanceMeters(location, new Location(location.getLatitude()+1.0D, location.getLongitude())) / meters);
+        return 1.0D / (distanceMeters(location, new Location(location.getLatitude()+1.0D, location.getLongitude()), false) / meters);
     }
 
     public static double metersToDegreesLongitude(double meters, Location location) {
-        return 1.0D / (distanceMeters(location, new Location(location.getLatitude(), location.getLongitude() + 1.0D)) / meters);
+        return 1.0D / (distanceMeters(location, new Location(location.getLatitude(), location.getLongitude() + 1.0D), false) / meters);
     }
 
-    public static double distanceMeters(Location location1, Location location2) {
+    public static double distanceMeters(Location location1, Location location2, boolean includeElevation) {
         double latitude1 = location1.getLatitude();
         double latitude2 = location2.getLatitude();
         double longitude1 = location1.getLongitude();
         double longitude2 = location2.getLongitude();
-        double elevation1 = location1.getAltitude();
-        double elevation2 = location2.getAltitude();
+        double elevation1 = includeElevation ? location1.getAltitude() : 0.0D;
+        double elevation2 = includeElevation ? location2.getAltitude() : 0.0D;
 
         double latDistance = Math.toRadians(latitude2 - latitude1);
         double lonDistance = Math.toRadians(longitude2 - longitude1);
