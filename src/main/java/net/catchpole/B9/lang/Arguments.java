@@ -26,6 +26,15 @@ public class Arguments {
         return false;
     }
 
+    public int getIntArgument(String key, int defaultValue) {
+        for (int x = 0; x < args.length - 1; x++) {
+            if (args[x].equalsIgnoreCase(key)) {
+                return Integer.parseInt(args[x + 1]);
+            }
+        }
+        return defaultValue;
+    }
+
     /**
      * Returns the String following the specified key.
      *

@@ -5,15 +5,18 @@ import net.catchpole.B9.devices.serial.DataListener;
 import net.catchpole.B9.devices.serial.PiSerialPort;
 import net.catchpole.B9.lang.Arguments;
 
-import java.util.Date;
-
 public class RockBlockTest {
     public static void main(String[] args) throws Exception {
-        Arguments arguments = new Arguments(args);
-        new RockBlockTest(arguments.getArgument("-device"));
+        new RockBlockTest(args);
     }
 
-    public RockBlockTest(String device) throws Exception {
+    public RockBlockTest(String[] args) throws Exception {
+        Arguments arguments = new Arguments(args);
+        String device = arguments.getArgument("-device");
+        String message = arguments.getArgument("-message", null);
+        int minimumReception = arguments.getIntArgument("-minimumreception", 2);
+        int waitForReception = arguments.getIntArgument("-waitforreception", 60 * 3);
+
         RockBlock rockBlock = new RockBlock(new PiSerialPort(device));
         rockBlock.setDataListener(new DataListener() {
             @Override
@@ -25,15 +28,19 @@ public class RockBlockTest {
             rockBlock.initialize();
             rockBlock.clearSendingBuffer();
 
-            rockBlock.sendBinaryMessage(("SLPSLPSLPS " + new Date()).getBytes());
+            if (message != null) {
+                rockBlock.sendBinaryMessage(message.getBytes());
+            }
             System.out.println(new String(rockBlock.readBinaryMessage()));
 
             System.out.println(rockBlock.getManufacturer());
             System.out.println(rockBlock.getModel());
             System.out.println(rockBlock.getRevision());
 
-            rockBlock.waitForReception();
-//            rockBlock.sendAndReceive();
+            rockBlock.waitForReception(waitForReception*1000, minimumReception);
+            if (message != null) {
+                rockBlock.sendAndReceive();
+            }
             System.out.println(rockBlock.getStatus());
         } finally {
             rockBlock.close();
