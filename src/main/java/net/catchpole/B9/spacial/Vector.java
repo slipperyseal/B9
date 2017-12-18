@@ -4,6 +4,9 @@ public class Vector {
     private Heading heading;
     private double velocity;
 
+    private Vector() {
+    }
+
     public Vector(Heading heading, double velocity) {
         this.heading = heading;
         this.velocity = velocity;

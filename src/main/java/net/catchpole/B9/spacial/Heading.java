@@ -3,6 +3,9 @@ package net.catchpole.B9.spacial;
 public class Heading {
     private double degrees;
 
+    private Heading() {
+    }
+
     public Heading(double degrees) {
         this.degrees = degrees;
     }
