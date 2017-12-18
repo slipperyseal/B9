@@ -16,8 +16,12 @@ public class OffsetCompass implements Compass {
         this.offset = offset;
     }
 
-    public void setOffset(double offset) {
-        this.offset = offset;
+    public void setOffset(Heading offsetHeading) {
+        this.offset = offsetHeading.getDegrees();
+    }
+
+    public Heading getOffset() {
+        return new Heading(normalize(this.offset));
     }
 
     public void setNorth() {
