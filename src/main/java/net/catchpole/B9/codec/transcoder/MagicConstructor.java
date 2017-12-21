@@ -30,6 +30,7 @@ public class MagicConstructor {
     public Object construct(Class clazz) throws InstantiationException, IllegalAccessException, InvocationTargetException {
         Constructor[] constructors = clazz.getDeclaredConstructors();
         for (Constructor constructor : constructors) {
+            constructor.setAccessible(true);
             if (constructor.getParameterTypes().length == 0) {
                 // use default constructor if available
                 return constructor.newInstance();
@@ -37,6 +38,7 @@ public class MagicConstructor {
         }
         // try a constructor and use "default" values
         for (Constructor constructor : constructors) {
+            constructor.setAccessible(true);
             try {
                 Class[] paramClasses = constructor.getParameterTypes();
                 Object[] params = new Object[paramClasses.length];
