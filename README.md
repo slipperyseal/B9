@@ -19,6 +19,8 @@ Devices supported:
 - ![#1589F0](http://placehold.it/15/1589F0/000000?text=+) Raspberry Pi camera - via the raspistill and raspivid executable
 - ![#1589F0](http://placehold.it/15/1589F0/000000?text=+) Binary Motor Control - forward and reverse 'tank tracks' via GPIO
 
+*Update: Blue Robotics have suspended production of the BlueESC (internal and external) due to failure issues. The BlueESC should not be used in mission critical situations.*
+
 Library features:
 
 - ![#33ff15](http://placehold.it/15/33ff15/000000?text=+) Spacial maths, decimal degrees, headings, position, target and angle calculations.

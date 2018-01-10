@@ -9,6 +9,8 @@ import java.io.IOException;
 
 /*
 
+Update: Blue Robotics have suspended production of the BlueESC (internal and external) due to failure issues. The BlueESC should not be used in mission critical situations.
+
 Due to the length of the T100 cables and their possible capacitance problems,
 I recommend changing the I2C speed of the Pi from 100khz down to something like 20khz.
 On newer version of raspbian the way to do this is to edit /boot/config.txt and add/change this line..
