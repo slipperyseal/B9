@@ -34,7 +34,7 @@ public class BlueESC implements ESC, Device {
     private I2CBus bus;
     private I2CDevice i2CDevice;
     private volatile boolean stopping = false;
-    private volatile int lastThrottle = 0;
+    private volatile double lastThrottle = 0;
     private volatile long lastUpdate = 0;
     private Thread keepAliveThread;
     private boolean keepAlive = true;
@@ -124,16 +124,17 @@ public class BlueESC implements ESC, Device {
         return ((bytes[offset] & 0xff) << 8) | (bytes[offset+1] & 0xff);
     }
 
-    public void update(final int throttle) throws IOException {
+    public void update(final double throttle) throws IOException {
         if (stopping) {
             return;
         }
-        int appliedThrottle = this.forwardPropeller ? throttle : 0-throttle;
+        int shortValue = (int)(32768*throttle);
+        int appliedThrottle = this.forwardPropeller ? shortValue : 0-shortValue;
         byte[] writeBuffer = new byte[2];
         writeBuffer[0] = (byte) (appliedThrottle >> 8);
         writeBuffer[1] = (byte) appliedThrottle;
         synchronized (this.bus) {
-            this.lastThrottle = throttle;
+            this.lastThrottle = shortValue;
             this.lastUpdate =  System.currentTimeMillis();
             i2CDevice.write(0, writeBuffer, 0, 2);
         }

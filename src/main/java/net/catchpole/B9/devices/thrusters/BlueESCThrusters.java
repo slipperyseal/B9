@@ -8,8 +8,8 @@ import java.io.IOException;
 public class BlueESCThrusters implements Thrusters {
     private BlueESC blueESCLeft;
     private BlueESC blueESCRight;
-    private int left;
-    private int right;
+    private double left;
+    private double right;
 
     public BlueESCThrusters(BlueESC blueESCLeft, BlueESC blueESCRight) throws Exception {
         this.blueESCLeft = blueESCLeft;
@@ -17,8 +17,8 @@ public class BlueESCThrusters implements Thrusters {
     }
 
     public synchronized void update(double leftFraction, double rightFraction) throws IOException {
-        this.left = (int)(32768*leftFraction);
-        this.right = ((int)(32768*rightFraction));
+        this.left = leftFraction;
+        this.right = rightFraction;
         this.blueESCLeft.update(this.left);
         this.blueESCRight.update(this.right);
     }
