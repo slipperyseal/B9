@@ -12,7 +12,7 @@ This project is part of the [Robotics Mission to Antarctica](http://robotics.cat
 Devices supported:
 
 - ![#1589F0](http://placehold.it/15/1589F0/000000?text=+) [Blue Robotics BlueESC](https://www.bluerobotics.com/store/thrusters/t100-thruster/) T100/T200 Marine Thrusters
-- ![#1589F0](http://placehold.it/15/1589F0/000000?text=+) [Blue Robotics BasicESC](https://www.bluerobotics.com/store/electronics/besc30-r3/) (or similar) via a [PCA9685 PWM servvo driver](https://www.adafruit.com/product/815)
+- ![#1589F0](http://placehold.it/15/1589F0/000000?text=+) [Blue Robotics BasicESC](https://www.bluerobotics.com/store/electronics/besc30-r3/) (or similar) via a [PCA9685 PWM servo driver](https://www.adafruit.com/product/815)
 - ![#1589F0](http://placehold.it/15/1589F0/000000?text=+) [RockBLOCK](http://www.rock7mobile.com/products-rockblock) Iridium 9602 Satellite Modem
 - ![#1589F0](http://placehold.it/15/1589F0/000000?text=+) GPS parsing and integration via the Pi's onboard serial
 - ![#1589F0](http://placehold.it/15/1589F0/000000?text=+) HMC5883L Compass Module (I2C)

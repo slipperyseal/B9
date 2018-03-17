@@ -125,8 +125,10 @@ public class PCA9685BasicESC {
 
     private void setPWM(int channel, int on, int off) throws IllegalArgumentException {
         try {
-            byte[] data = new byte[] { (byte) on, (byte) (on >> 8), (byte) off, (byte) (off >> 8) };
-            i2CDevice.write( (4 * channel) + ON_L, data, 0, data.length);
+            i2CDevice.write( (4 * channel) + ON_L, (byte) on );
+            i2CDevice.write( (4 * channel) + ON_H, (byte) (on >> 8) );
+            i2CDevice.write( (4 * channel) + OFF_L, (byte) off );
+            i2CDevice.write( (4 * channel) + OFF_H, (byte) (off >> 8) );
         } catch (IOException ioe) {
             Throw.unchecked(ioe);
         }
