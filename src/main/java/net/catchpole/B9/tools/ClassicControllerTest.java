@@ -4,7 +4,7 @@ import net.catchpole.B9.devices.controlpad.ClassicController;
 import net.catchpole.B9.devices.controlpad.ClassicControllerListener;
 
 public class ClassicControllerTest {
-    public ClassicControllerTest() {
+    public ClassicControllerTest() throws Exception {
         ClassicController classicController = new ClassicController();
         classicController.setClassicControllerListener(new ClassicControllerListener() {
             public void buttonDown(int button) {
@@ -23,11 +23,12 @@ public class ClassicControllerTest {
                 System.out.println("Right joystick " + horizontal + " " + vertical);
             }
         });
+        classicController.initialize();
+        System.out.println("Let's go..");
         classicController.oblivion();
-
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         new ClassicControllerTest();
     }
 }

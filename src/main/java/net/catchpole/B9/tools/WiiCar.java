@@ -51,6 +51,7 @@ public class WiiCar {
             public void rightJoystick(int horizontal, int vertical) {
             }
         });
+        classicController.initialize();
         classicController.oblivion();
     }
 
