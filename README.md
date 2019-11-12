@@ -7,7 +7,7 @@ B9 is a Java library which provides robotics devices support and other cool stuf
 
 This project is part of the [Robotics Mission to Antarctica](http://robotics.catchpole.net/)
 
-![Nyx2](http://robotics.catchpole.net/images/nyx2-surf.jpg "Nyx2")
+![Nyx](http://kamome.slipperyseal.net/nyx-float1.jpg "Nyx")
 
 Devices supported:
 
