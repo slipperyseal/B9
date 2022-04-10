@@ -29,6 +29,19 @@ public class GeoTest {
         Location home = new Location(-37.321353, 145.5164683);
         TestCase.assertFalse(Geo.isWithinDistance(new Location(-37.322534, 145.529165), home, 1000, false));
         TestCase.assertTrue(Geo.isWithinDistance(new Location(-37.320544, 145.517042), home, 1000, false));
+
+        System.out.println(Geo.metersToDegreesLatitude(1000.0d, new Location(-37.5, 145.4)));
+        System.out.println(Geo.metersToDegreesLongitude(1000.0d, new Location(-37.5, 145.4)));
+
+        float lon = -37.8136428f - (-37.8136428f + 0.008993216059187306f);
+        float lat = 144.9558319f - 144.9558319f;
+        if (lon < 0) lon = 0-lon;
+        if (lat < 0) lat = 0-lat;
+        float mul = (130000.0f/1169.3573f)*1000.0f;
+        System.out.println (mul);
+        System.out.println ((lon > lat ? lon : lat) * 152016.45);
+        System.out.println ((lon > lat ? lon : lat) * 110000);
+
     }
 
     @Test

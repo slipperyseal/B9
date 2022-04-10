@@ -5,29 +5,27 @@ B9
 
 B9 is a Java library which provides robotics devices support and other cool stuff for the Raspberry Pi.
 
-This project is part of the [Robotics Mission to Antarctica](http://robotics.catchpole.net/)
-
-![Nyx](http://kamome.slipperyseal.net/nyx-float1.jpg "Nyx")
+![Nyx](https://storage.googleapis.com/kyoto.catchpole.net/nyx-float1.jpg "Nyx")
 
 Devices supported:
 
-- ![#1589F0](http://placehold.it/15/1589F0/000000?text=+) [Blue Robotics BlueESC](https://www.bluerobotics.com/store/thrusters/t100-thruster/) T100/T200 Marine Thrusters
-- ![#1589F0](http://placehold.it/15/1589F0/000000?text=+) [Blue Robotics BasicESC](https://www.bluerobotics.com/store/electronics/besc30-r3/) (or similar) via a [PCA9685 PWM servo driver](https://www.adafruit.com/product/815)
-- ![#1589F0](http://placehold.it/15/1589F0/000000?text=+) [RockBLOCK](http://www.rock7mobile.com/products-rockblock) Iridium 9602 Satellite Modem
-- ![#1589F0](http://placehold.it/15/1589F0/000000?text=+) GPS parsing and integration via the Pi's onboard serial
-- ![#1589F0](http://placehold.it/15/1589F0/000000?text=+) HMC5883L Compass Module (I2C)
-- ![#1589F0](http://placehold.it/15/1589F0/000000?text=+) Wii Classic Controller (I2C)
-- ![#1589F0](http://placehold.it/15/1589F0/000000?text=+) Raspberry Pi camera - via the raspistill and raspivid executable
-- ![#1589F0](http://placehold.it/15/1589F0/000000?text=+) Binary Motor Control - forward and reverse 'tank tracks' via GPIO
+- [Blue Robotics BlueESC](https://www.bluerobotics.com/store/thrusters/t100-thruster/) T100/T200 Marine Thrusters
+- [Blue Robotics BasicESC](https://www.bluerobotics.com/store/electronics/besc30-r3/) (or similar) via a [PCA9685 PWM servo driver](https://www.adafruit.com/product/815)
+- [RockBLOCK](http://www.rock7mobile.com/products-rockblock) Iridium 9602 Satellite Modem
+- GPS parsing and integration via the Pi's onboard serial
+- HMC5883L Compass Module (I2C)
+- Wii Classic Controller (I2C)
+- Raspberry Pi camera - via the raspistill and raspivid executable
+- Binary Motor Control - forward and reverse 'tank tracks' via GPIO
 
 *Update: Blue Robotics have suspended production of the BlueESC (internal and external) due to failure issues. The BlueESC should not be used in mission critical situations.*
 
 Library features:
 
-- ![#33ff15](http://placehold.it/15/33ff15/000000?text=+) Spacial maths, decimal degrees, headings, position, target and angle calculations.
-- ![#33ff15](http://placehold.it/15/33ff15/000000?text=+) Compact Binary Symmetric Serialization - for broadcast and logging of telemetry and command data
-- ![#33ff15](http://placehold.it/15/33ff15/000000?text=+) UDP transceivers for telemetry and command data
-- ![#33ff15](http://placehold.it/15/33ff15/000000?text=+) Abstract System Time - supports simulated time for running simulations in non-realtime
+- Spacial maths, decimal degrees, headings, position, target and angle calculations.
+- Compact Binary Symmetric Serialization - for broadcast and logging of telemetry and command data
+- UDP transceivers for telemetry and command data
+- Abstract System Time - supports simulated time for running simulations in non-realtime
 
 B9 uses the excellent [Pi4J](https://github.com/Pi4J) library.
 
