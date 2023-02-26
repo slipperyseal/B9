@@ -5,7 +5,7 @@ B9
 
 B9 is a Java library which provides robotics devices support and other cool stuff for the Raspberry Pi.
 
-![Nyx](https://storage.googleapis.com/kyoto.catchpole.net/nyx-float1.jpg "Nyx")
+![Nyx](https://github.com/slipperyseal/B9/blob/slippery/doc/nyx-float1.jpg "Nyx")
 
 Devices supported:
 
